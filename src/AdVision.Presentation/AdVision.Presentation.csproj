@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net10.0-windows</TargetFramework>
+        <Nullable>enable</Nullable>
+        <UseWindowsForms>true</UseWindowsForms>
+        <ImplicitUsings>enable</ImplicitUsings>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\AdVision.Application\AdVision.Application.csproj" />
+      <ProjectReference Include="..\AdVision.Contracts\AdVision.Contracts.csproj" />
+      <ProjectReference Include="..\AdVision.Domain\AdVision.Domain.csproj" />
+      <ProjectReference Include="..\AdVision.Infrastructure\AdVision.Infrastructure.csproj" />
+    </ItemGroup>
+
+</Project>
