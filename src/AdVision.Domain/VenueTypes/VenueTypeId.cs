@@ -1,3 +1,3 @@
 namespace AdVision.Domain.VenueTypes;
 
-public record VenueTypeId(Guid Id);
+public record VenueTypeId(Guid Value);
