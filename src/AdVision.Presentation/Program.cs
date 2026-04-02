@@ -17,6 +17,7 @@ static class Program
             .MinimumLevel.Information()
             .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
             .CreateBootstrapLogger();
+        
         try
         {
             Log.Information("Приложение запускается");
