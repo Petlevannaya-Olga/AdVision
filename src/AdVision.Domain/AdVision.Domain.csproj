@@ -12,6 +12,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\shared\Shared\Shared.csproj" />
+      <ProjectReference Include="..\AdVision.Contracts\AdVision.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

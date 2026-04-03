@@ -17,6 +17,20 @@ public static class CommonErrors
             $"Значение должно быть длиной от {minLength} до {maxLength} символов для {propertyName}",
             ErrorType.VALIDATION,
             propertyName);
+    
+    public static Error ValueIsGreaterThanMax(string propertyName, double value, double max)
+        => new(
+            $"{propertyName.ToLowerInvariant()}.length.is.greater.than.max",
+            $"Значение {value} не должно превышать {max} для {propertyName}",
+            ErrorType.VALIDATION,
+            propertyName);
+    
+    public static Error ValueIsLessThanMin(string propertyName, double value, double min)
+        => new(
+            $"{propertyName.ToLowerInvariant()}.length.is.greater.than.max",
+            $"Значение {value} не должно быть меньше {min} для {propertyName}",
+            ErrorType.VALIDATION,
+            propertyName);
 
     public static Error LengthIsTooShort(string propertyName, int minLength)
         => new(
