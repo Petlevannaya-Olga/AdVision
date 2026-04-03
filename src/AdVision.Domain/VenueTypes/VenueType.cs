@@ -1,3 +1,5 @@
+using AdVision.Domain.Venues;
+
 namespace AdVision.Domain.VenueTypes;
 
 public sealed class VenueType
@@ -10,12 +12,12 @@ public sealed class VenueType
     /// <summary>
     /// Название
     /// </summary>
-    // public VenueTypeName Name { get; private set; }
+    public VenueTypeName Name { get; private set; }
 
     public VenueType(VenueTypeName name)
     {
         Id = new VenueTypeId(Guid.NewGuid());
-        //Name = name;
+        Name = name;
     }
 
     // EF Core

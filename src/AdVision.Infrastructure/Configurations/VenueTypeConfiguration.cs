@@ -1,3 +1,4 @@
+using AdVision.Domain.Venues;
 using AdVision.Domain.VenueTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -13,8 +14,6 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
 
         builder.HasKey(x => x.Id);
 
-        builder.HasKey(x => x.Id);
-
         builder
             .Property(x => x.Id)
             .HasColumnName("id")
@@ -23,14 +22,19 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
                 value => new VenueTypeId(value)
             );
 
-        // builder
-        //     .Property(x => x.Name)
-        //     .HasConversion(
-        //         v => v.Value,
-        //         v => VenueTypeName.Create(v).Value
-        //     )
-        //     .HasColumnName("name")
-        //     .HasMaxLength(LengthConstants.LENGTH_500)
-        //     .IsRequired();
+        builder
+            .Property(x => x.Name)
+            .HasConversion(
+                v => v.Value,
+                v => VenueTypeName.Create(v).Value
+            )
+            .HasColumnName("name")
+            .HasMaxLength(LengthConstants.LENGTH_500)
+            .IsRequired();
+        
+        builder.HasMany<Venue>()
+            .WithOne(x => x.VenueType)
+            .HasForeignKey(x => x.VenueTypeId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }
