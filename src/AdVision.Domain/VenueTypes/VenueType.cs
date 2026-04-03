@@ -10,12 +10,12 @@ public sealed class VenueType
     /// <summary>
     /// Название
     /// </summary>
-    public VenueName Name { get; private set; }
+    // public VenueTypeName Name { get; private set; }
 
-    public VenueType(VenueName name)
+    public VenueType(VenueTypeName name)
     {
         Id = new VenueTypeId(Guid.NewGuid());
-        Name = name;
+        //Name = name;
     }
 
     // EF Core

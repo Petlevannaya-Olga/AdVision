@@ -5,7 +5,7 @@ using Shared;
 
 namespace AdVision.Infrastructure.Configurations;
 
-public class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
+public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
 {
     public void Configure(EntityTypeBuilder<VenueType> builder)
     {
@@ -13,19 +13,24 @@ public class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
 
         builder.HasKey(x => x.Id);
 
+        builder.HasKey(x => x.Id);
+
         builder
             .Property(x => x.Id)
             .HasColumnName("id")
-            .HasConversion(x => x.Value, name => new VenueTypeId(name));
-
-        builder
-            .Property(x => x.Name)
             .HasConversion(
-                v => v.Value,
-                v => VenueName.Create(v).Value
-            )
-            .HasColumnName("name")
-            .HasMaxLength(LengthConstants.LENGTH_500)
-            .IsRequired();
+                id => id.Value,
+                value => new VenueTypeId(value)
+            );
+
+        // builder
+        //     .Property(x => x.Name)
+        //     .HasConversion(
+        //         v => v.Value,
+        //         v => VenueTypeName.Create(v).Value
+        //     )
+        //     .HasColumnName("name")
+        //     .HasMaxLength(LengthConstants.LENGTH_500)
+        //     .IsRequired();
     }
 }

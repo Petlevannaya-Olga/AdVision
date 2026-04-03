@@ -3,7 +3,7 @@ using Shared;
 
 namespace AdVision.Domain.VenueTypes;
 
-public sealed class VenueName
+public sealed class VenueTypeName
 {
     /// <summary>
     /// Минимальное значение длины строки
@@ -13,14 +13,14 @@ public sealed class VenueName
     /// <summary>
     /// Максимальное значение длины строки
     /// </summary>
-    private const int MAX_LENGTH = 500;
+    private const int MAX_LENGTH = 100;
 
     /// <summary>
     /// Название площадки
     /// </summary>
     public string Value { get; private set; } 
     
-    private VenueName(string name)
+    private VenueTypeName(string name)
     {
         Value = name;
     }
@@ -30,7 +30,7 @@ public sealed class VenueName
     /// </summary>
     /// <param name="value">Название</param>
     /// <returns>Новое название позиции</returns>
-    public static Result<VenueName, Error> Create(string value)
+    public static Result<VenueTypeName, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
         {
@@ -42,6 +42,6 @@ public sealed class VenueName
             return CommonErrors.LengthIsWrong(nameof(value), MIN_LENGTH, MAX_LENGTH);
         }
 
-        return new VenueName(value.Trim());
+        return new VenueTypeName(value.Trim());
     }
 }
