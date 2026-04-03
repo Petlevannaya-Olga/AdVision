@@ -15,11 +15,6 @@ public sealed class Venue
     public VenueTypeId VenueTypeId { get; private set; }
     
     /// <summary>
-    /// Навигационное свойство
-    /// </summary>
-    public VenueType VenueType { get; private set; }
-
-    /// <summary>
     /// Адрес площадки
     /// </summary>
     public VenueAddress Address { get; private set; }
@@ -63,7 +58,7 @@ public sealed class Venue
     {
         Id = new VenueId(Guid.NewGuid());
         Name = name;
-        // VenueTypeId = venueTypeId;
+        VenueTypeId = venueTypeId;
         Address = address;
         Size = size;
         Rating = rating;

@@ -33,7 +33,7 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
             .IsRequired();
         
         builder.HasMany<Venue>()
-            .WithOne(x => x.VenueType)
+            .WithOne()
             .HasForeignKey(x => x.VenueTypeId)
             .OnDelete(DeleteBehavior.Restrict);
     }
