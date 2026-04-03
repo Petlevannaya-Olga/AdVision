@@ -5,21 +5,5 @@ public sealed class VenueType
     /// <summary>
     /// Идентификатор, PK
     /// </summary>
-    public VenueTypeId Id { get; private set; }
-
-    /// <summary>
-    /// Название
-    /// </summary>
-    public VenueName Name { get; private set; }
-
-    public VenueType(VenueName name)
-    {
-        Id = new VenueTypeId(Guid.NewGuid());
-        Name = name;
-    }
-
-    // EF Core
-    private VenueType()
-    {
-    }
+    public VenueTypeId Id { get; private set; } = new(Guid.NewGuid());
 }

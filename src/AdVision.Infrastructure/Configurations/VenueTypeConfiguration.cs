@@ -17,15 +17,5 @@ public class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
             .Property(x => x.Id)
             .HasColumnName("id")
             .HasConversion(x => x.Value, name => new VenueTypeId(name));
-
-        builder
-            .Property(x => x.Name)
-            .HasConversion(
-                v => v.Value,
-                v => VenueName.Create(v).Value
-            )
-            .HasColumnName("name")
-            .HasMaxLength(LengthConstants.LENGTH_500)
-            .IsRequired();
     }
 }
