@@ -1,3 +1,5 @@
+using AdVision.Application;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,10 +12,13 @@ public static class DependencyInjection
     {
         services.AddDbContext<ApplicationDbContext>(options =>
         {
+            options.UseSqlite("Data Source=AdVision.db");
             options.EnableDetailedErrors();
             options.EnableSensitiveDataLogging();
             options.UseLoggerFactory(CreateLoggerFactory()); // только для dev
         });
+        
+        services.AddSingleton<IVenueTypeRepository, VenueTypeRepository>();
 
         return services;
     }

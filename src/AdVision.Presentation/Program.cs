@@ -1,15 +1,17 @@
 using System.Globalization;
+using AdVision.Application;
 using AdVision.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 
 namespace AdVision.Presentation;
 
-static class Program
+internal static class Program
 {
     [STAThread]
-    static void Main()
+    private static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
         
@@ -36,13 +38,19 @@ static class Program
 
             // Собираем ServiceProvider
             var serviceProvider = services.BuildServiceProvider();
+            
+            using (var scope = serviceProvider.CreateScope())
+            {
+                var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+                db.Database.Migrate();
+            }
 
             ApplicationConfiguration.Initialize();
 
             // Получаем Form через DI
-            var form = serviceProvider.GetRequiredService<Form1>();
+            var form = serviceProvider.GetRequiredService<VenueTypeForm>();
 
-            Application.Run(form);
+            System.Windows.Forms.Application.Run(form);
         }
         catch (Exception e)
         {
@@ -57,12 +65,17 @@ static class Program
     private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Регистрируем формы
-        services.AddTransient<Form1>();
+        services.AddTransient<MainForm>();
+        services.AddTransient<VenueTypeForm>();
 
         // Регистрируем зависимости из инфраструктуры
         services.AddInfrastructure(configuration);
+        
+        // Регистрируем зависимости из Application
+        services.AddApplication();
 
         // Регистрируем логирование
         services.AddSerilogLogging(configuration);
+        services.AddLogging();
     }
 }

@@ -36,5 +36,9 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
             .WithOne()
             .HasForeignKey(x => x.VenueTypeId)
             .OnDelete(DeleteBehavior.Restrict);
+        
+        builder
+            .HasIndex(x => x.Name)
+            .IsUnique();
     }
 }
