@@ -12,4 +12,6 @@ public interface IVenueTypeRepository
     Task<Result<VenueType?, Error>> GetByAsync(
         Expression<Func<VenueType, bool>> expression,
         CancellationToken cancellationToken);
+    
+    Task<Result<IReadOnlyList<VenueType>, Error>> GetAllAsync(CancellationToken cancellationToken);
 }

@@ -1,6 +1,6 @@
-using System.Diagnostics.CodeAnalysis;
 using System.Linq.Expressions;
 using AdVision.Application;
+using AdVision.Application.SharedErrors;
 using AdVision.Domain.VenueTypes;
 using CSharpFunctionalExtensions;
 using Microsoft.Data.Sqlite;
@@ -27,13 +27,13 @@ public class VenueTypeRepository(
             if (sqliteException.SqliteErrorCode == 19 &&
                 sqliteException.Message.Contains("venue_types", StringComparison.InvariantCultureIgnoreCase))
             {
-                return Errors.VenueTypeNameConflict(venueType.Name.Value);
+                return VenueTypeErrors.VenueTypeNameConflict(venueType.Name.Value);
             }
 
             logger.LogError(e, "Ошибка добавления нового типа площадки '{VenueTypeName}'", venueType.Name.Value);
 
             return CommonErrors.Db(
-                "add.position.to.db.exception",
+                "add.venue.type.to.db.exception",
                 $"Ошибка добавления нового типа площадки '{venueType.Name.Value}'");
         }
         catch (OperationCanceledException e)
@@ -73,18 +73,29 @@ public class VenueTypeRepository(
             logger.LogError(ex, "Ошибка при получении новой площадки");
             return CommonErrors.Db(
                 "get.venue.type.from.db.exception",
-                $"Ошибка при получении новой площадки");
+                "Ошибка при получении новой площадки");
         }
     }
-    
-    [ExcludeFromCodeCoverage]
-    private static class Errors
+
+    public async Task<Result<IReadOnlyList<VenueType>, Error>> GetAllAsync(CancellationToken cancellationToken)
     {
-        public static Error VenueTypeNameConflict(string name)
+        try
         {
-            return CommonErrors.Conflict(
-                "venue.type.name.conflict",
-                $"Тип площадки {name} уже существует");
+            return await dbContext
+                .VenueTypes
+                .ToListAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения всех типов площадок была отменена");
+            return CommonErrors.OperationCancelled("get.venue.types.operation.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении всех площадок");
+            return CommonErrors.Db(
+                "get.venue.types.from.db.exception",
+                "Ошибка при получении всех площадок");
         }
     }
 }

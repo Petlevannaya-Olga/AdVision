@@ -48,7 +48,7 @@ internal static class Program
             ApplicationConfiguration.Initialize();
 
             // Получаем Form через DI
-            var form = serviceProvider.GetRequiredService<VenueTypeForm>();
+            var form = serviceProvider.GetRequiredService<VenueTypesForm>();
 
             System.Windows.Forms.Application.Run(form);
         }
@@ -67,6 +67,7 @@ internal static class Program
         // Регистрируем формы
         services.AddTransient<MainForm>();
         services.AddTransient<VenueTypeForm>();
+        services.AddTransient<VenueTypesForm>();
 
         // Регистрируем зависимости из инфраструктуры
         services.AddInfrastructure(configuration);

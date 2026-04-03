@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using AdVision.Application.SharedErrors;
 using AdVision.Domain.VenueTypes;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
@@ -27,7 +28,7 @@ public sealed class CreateVenueTypeCommandHandler(
 
         if (getResult.Value is not null)
         {
-            var errors = CreateVenueTypeCommandHandlerErrors.VenueTypeNameConflict(command.Dto.Name).ToErrors();
+            var errors = VenueTypeErrors.VenueTypeNameConflict(command.Dto.Name).ToErrors();
             logger.LogError(
                 "Нельзя добавить тип площадки с названием '{VenueTypeName}', т.к. она уже существует",
                 command.Dto.Name);
@@ -46,16 +47,5 @@ public sealed class CreateVenueTypeCommandHandler(
         logger.LogInformation("Создан новый тип площадки с id = {VenueTypeId}", venueTypeId);
 
         return venueTypeId.Value;
-    }
-    
-    [ExcludeFromCodeCoverage]
-    private static class CreateVenueTypeCommandHandlerErrors
-    {
-        public static Error VenueTypeNameConflict(string name)
-        {
-            return CommonErrors.Conflict(
-                "venue.type.name.conflict",
-                $"Тип площадки {name} уже существует");
-        }
     }
 }
