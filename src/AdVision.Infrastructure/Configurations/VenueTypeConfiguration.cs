@@ -29,7 +29,7 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
                 v => VenueTypeName.Create(v).Value
             )
             .HasColumnName("name")
-            .HasMaxLength(LengthConstants.LENGTH_500)
+            .HasMaxLength(VenueTypeName.MAX_LENGTH)
             .IsRequired();
         
         builder.HasMany<Venue>()

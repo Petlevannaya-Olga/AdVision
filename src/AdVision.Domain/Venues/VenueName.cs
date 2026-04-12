@@ -8,12 +8,12 @@ public sealed class VenueName
     /// <summary>
     /// Минимальное значение длины строки
     /// </summary>
-    private const int MIN_LENGTH = 10;
+    public const int MIN_LENGTH = 10;
 
     /// <summary>
     /// Максимальное значение длины строки
     /// </summary>
-    private const int MAX_LENGTH = 500;
+    public const int MAX_LENGTH = 500;
 
     /// <summary>
     /// Название площадки

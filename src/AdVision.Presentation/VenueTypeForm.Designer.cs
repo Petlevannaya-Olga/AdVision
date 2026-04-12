@@ -28,53 +28,67 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			label1 = new System.Windows.Forms.Label();
-			txtName = new System.Windows.Forms.TextBox();
-			btnSave = new System.Windows.Forms.Button();
+			label1 = new Label();
+			txtName = new TextBox();
+			btnSave = new Button();
+			pbValidation = new PictureBox();
+			((System.ComponentModel.ISupportInitialize)pbValidation).BeginInit();
 			SuspendLayout();
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new System.Drawing.Point(28, 15);
+			label1.Location = new Point(28, 15);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(77, 20);
+			label1.Size = new Size(240, 20);
 			label1.TabIndex = 0;
-			label1.Text = "Название";
+			label1.Text = "Название (от 3 до 100 символов)";
 			// 
 			// txtName
 			// 
-			txtName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-			txtName.Location = new System.Drawing.Point(28, 38);
+			txtName.BorderStyle = BorderStyle.FixedSingle;
+			txtName.Location = new Point(28, 38);
 			txtName.Name = "txtName";
-			txtName.Size = new System.Drawing.Size(299, 27);
+			txtName.Size = new Size(282, 27);
 			txtName.TabIndex = 1;
+			txtName.TextChanged += TxtName_TextChanged;
 			// 
 			// btnSave
 			// 
-			btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-			btnSave.Location = new System.Drawing.Point(28, 71);
+			btnSave.FlatStyle = FlatStyle.Popup;
+			btnSave.Location = new Point(28, 71);
 			btnSave.Name = "btnSave";
-			btnSave.Size = new System.Drawing.Size(299, 29);
+			btnSave.Size = new Size(282, 29);
 			btnSave.TabIndex = 2;
 			btnSave.Text = "Сохранить";
 			btnSave.UseVisualStyleBackColor = true;
 			btnSave.Click += BtnSave_Click;
 			// 
+			// pbValidation
+			// 
+			pbValidation.Location = new Point(316, 38);
+			pbValidation.Name = "pbValidation";
+			pbValidation.Size = new Size(27, 27);
+			pbValidation.TabIndex = 3;
+			pbValidation.TabStop = false;
+			// 
 			// VenueTypeForm
 			// 
-			AutoScaleDimensions = new System.Drawing.SizeF(8F, 20F);
-			AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			ClientSize = new System.Drawing.Size(355, 118);
+			AutoScaleDimensions = new SizeF(8F, 20F);
+			AutoScaleMode = AutoScaleMode.Font;
+			ClientSize = new Size(355, 118);
+			Controls.Add(pbValidation);
 			Controls.Add(btnSave);
 			Controls.Add(txtName);
 			Controls.Add(label1);
-			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+			FormBorderStyle = FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
-			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+			Name = "VenueTypeForm";
+			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Новый тип рекламной площадки";
 			FormClosed += VenueTypeForm_FormClosed;
+			((System.ComponentModel.ISupportInitialize)pbValidation).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -82,7 +96,8 @@
 		#endregion
 
 		private Label label1;
-		private TextBox txtName;
+		private System.Windows.Forms.TextBox txtName;
 		private Button btnSave;
+		private PictureBox pbValidation;
 	}
 }

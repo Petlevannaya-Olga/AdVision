@@ -67,7 +67,7 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 v => VenueName.Create(v).Value
             )
             .HasColumnName("name")
-            .HasMaxLength(LengthConstants.LENGTH_100)
+            .HasMaxLength(VenueName.MAX_LENGTH)
             .IsRequired();
 
         builder.OwnsOne(x => x.Address, address =>
@@ -133,7 +133,7 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 v => VenueDescription.Create(v).Value
             )
             .HasColumnName("description")
-            .HasMaxLength(LengthConstants.LENGTH_2000);
+            .HasMaxLength(VenueDescription.MAX_LENGTH);
         
         builder.Property(x => x.VenueTypeId)
             .HasConversion(
