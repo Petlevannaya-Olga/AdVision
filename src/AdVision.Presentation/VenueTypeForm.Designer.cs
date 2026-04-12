@@ -28,12 +28,9 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			components = new System.ComponentModel.Container();
 			label1 = new System.Windows.Forms.Label();
 			txtName = new System.Windows.Forms.TextBox();
 			btnSave = new System.Windows.Forms.Button();
-			errorProvider1 = new System.Windows.Forms.ErrorProvider(components);
-			((System.ComponentModel.ISupportInitialize)errorProvider1).BeginInit();
 			SuspendLayout();
 			// 
 			// label1
@@ -41,12 +38,13 @@
 			label1.AutoSize = true;
 			label1.Location = new System.Drawing.Point(28, 15);
 			label1.Name = "label1";
-			label1.Size = new System.Drawing.Size(151, 20);
+			label1.Size = new System.Drawing.Size(77, 20);
 			label1.TabIndex = 0;
-			label1.Text = "Название площадки";
+			label1.Text = "Название";
 			// 
 			// txtName
 			// 
+			txtName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
 			txtName.Location = new System.Drawing.Point(28, 38);
 			txtName.Name = "txtName";
 			txtName.Size = new System.Drawing.Size(299, 27);
@@ -54,6 +52,7 @@
 			// 
 			// btnSave
 			// 
+			btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
 			btnSave.Location = new System.Drawing.Point(28, 71);
 			btnSave.Name = "btnSave";
 			btnSave.Size = new System.Drawing.Size(299, 29);
@@ -61,11 +60,6 @@
 			btnSave.Text = "Сохранить";
 			btnSave.UseVisualStyleBackColor = true;
 			btnSave.Click += BtnSave_Click;
-			// 
-			// errorProvider1
-			// 
-			errorProvider1.BlinkStyle = System.Windows.Forms.ErrorBlinkStyle.NeverBlink;
-			errorProvider1.ContainerControl = this;
 			// 
 			// VenueTypeForm
 			// 
@@ -75,12 +69,12 @@
 			Controls.Add(btnSave);
 			Controls.Add(txtName);
 			Controls.Add(label1);
+			FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
 			StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			Text = "Новый тип рекламной площадки";
 			FormClosed += VenueTypeForm_FormClosed;
-			((System.ComponentModel.ISupportInitialize)errorProvider1).EndInit();
 			ResumeLayout(false);
 			PerformLayout();
 		}
@@ -90,6 +84,5 @@
 		private Label label1;
 		private TextBox txtName;
 		private Button btnSave;
-		private ErrorProvider errorProvider1;
 	}
 }

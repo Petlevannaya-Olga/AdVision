@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260403195831_Initial")]
+    [Migration("20260411195352_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -62,19 +62,24 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnType("REAL")
                         .HasColumnName("rating");
 
+                    b.Property<Guid>("TypeId")
+                        .HasColumnType("TEXT");
+
                     b.Property<Guid>("VenueTypeId")
                         .HasColumnType("TEXT")
                         .HasColumnName("venue_type_id");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("TypeId");
+
                     b.HasIndex("VenueTypeId");
 
                     b.ToTable("venues", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Venue_City_NotEmpty", "length(\"city\") > 10");
+                            t.HasCheckConstraint("CK_Venue_City", "length(\"city\") >= 10 AND length(\"city\") <= 300");
 
-                            t.HasCheckConstraint("CK_Venue_District_NotEmpty", "length(\"district\") > 10");
+                            t.HasCheckConstraint("CK_Venue_District", "length(\"district\") >= 10 AND length(\"district\") <= 300");
 
                             t.HasCheckConstraint("CK_Venue_Height", "\"height\" >= 100 AND \"height\" <= 10000");
 
@@ -86,9 +91,9 @@ namespace AdVision.Infrastructure.Migrations
 
                             t.HasCheckConstraint("CK_Venue_Rating", "\"width\" >= 1 AND \"width\" <= 10");
 
-                            t.HasCheckConstraint("CK_Venue_Region_NotEmpty", "length(\"region\") > 10");
+                            t.HasCheckConstraint("CK_Venue_Region", "length(\"region\") >= 10 AND length(\"region\") <= 300");
 
-                            t.HasCheckConstraint("CK_Venue_Street_NotEmpty", "length(\"street\") > 10");
+                            t.HasCheckConstraint("CK_Venue_Street", "length(\"street\") >= 10 AND length(\"street\") <= 300");
 
                             t.HasCheckConstraint("CK_Venue_Width", "\"width\" >= 100 AND \"width\" <= 10000");
                         });
@@ -96,6 +101,12 @@ namespace AdVision.Infrastructure.Migrations
 
             modelBuilder.Entity("AdVision.Domain.Venues.Venue", b =>
                 {
+                    b.HasOne("AdVision.Domain.VenueTypes.VenueType", "Type")
+                        .WithMany()
+                        .HasForeignKey("TypeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("AdVision.Domain.VenueTypes.VenueType", null)
                         .WithMany()
                         .HasForeignKey("VenueTypeId")
@@ -179,6 +190,8 @@ namespace AdVision.Infrastructure.Migrations
 
                     b.Navigation("Size")
                         .IsRequired();
+
+                    b.Navigation("Type");
                 });
 #pragma warning restore 612, 618
         }

@@ -6,16 +6,16 @@ using Shared.Abstractions;
 namespace AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
 
 public sealed class GetAllVenueTypesQueryHandler(IVenueTypeRepository repository)
-    : IQueryHandler<Result<IReadOnlyList<VenueTypeDto>, Error>, GetAllVenueTypesQuery>
+    : IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery>
 {
-    public async Task<Result<IReadOnlyList<VenueTypeDto>, Error>> Handle(GetAllVenueTypesQuery query,
+    public async Task<Result<IReadOnlyList<VenueTypeDto>, Errors>> Handle(GetAllVenueTypesQuery query,
         CancellationToken cancellationToken = default)
     {
         var result = await repository.GetAllAsync(cancellationToken);
 
         if (result.IsFailure)
         {
-            return result.Error;
+            return result.Error.ToErrors();
         }
 
         return result

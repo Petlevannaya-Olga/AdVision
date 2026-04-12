@@ -1,18 +1,20 @@
 ﻿using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
+using AdVision.Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Shared.Abstractions;
 
 namespace AdVision.Presentation
 {
 	public partial class VenueTypesForm : Form
 	{
-		private readonly GetAllVenueTypesQueryHandler _handler;
+		private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _handler;
 		private readonly ILogger<VenueTypesForm> _logger;
 		private readonly CancellationTokenSource _ct = new();
 		private readonly IServiceProvider _serviceProvider;
 
 		public VenueTypesForm(
-			GetAllVenueTypesQueryHandler queryHandler,
+			IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> queryHandler,
 			IServiceProvider serviceProvider,
 			ILogger<VenueTypesForm> logger)
 		{
@@ -29,7 +31,7 @@ namespace AdVision.Presentation
 			form.ShowDialog();
 		}
 
-		private async void ReloadVenueTypes()
+		private async void ReloadVenueTypes(string? name = null)
 		{
 			try
 			{

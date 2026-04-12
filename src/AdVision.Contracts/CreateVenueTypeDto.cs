@@ -1,3 +1,3 @@
 namespace AdVision.Contracts;
 
-public record CreateVenueTypeDto(string Name);
+public sealed record CreateVenueTypeDto(string Name);

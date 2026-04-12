@@ -111,22 +111,22 @@ public sealed class VenueAddress(
             return CommonErrors.IsRequired(nameof(dto.House));
         }
 
-        if (dto.Region.Length is <= MIN_LENGTH or MAX_LENGTH)
+        if (dto.Region.Length is < MIN_LENGTH or > MAX_LENGTH)
         {
             return CommonErrors.LengthIsWrong(nameof(dto.Region), MIN_LENGTH, MAX_LENGTH);
         }
         
-        if (dto.District.Length is <= MIN_LENGTH or MAX_LENGTH)
+        if (dto.District.Length is < MIN_LENGTH or > MAX_LENGTH)
         {
             return CommonErrors.LengthIsWrong(nameof(dto.District), MIN_LENGTH, MAX_LENGTH);
         }
         
-        if (dto.City.Length is <= MIN_LENGTH or MAX_LENGTH)
+        if (dto.City.Length is < MIN_LENGTH or > MAX_LENGTH)
         {
             return CommonErrors.LengthIsWrong(nameof(dto.City), MIN_LENGTH, MAX_LENGTH);
         }
 
-        if (dto.Street.Length is <= MIN_LENGTH or MAX_LENGTH)
+        if (dto.Street.Length is < MIN_LENGTH or > MAX_LENGTH)
         {
             return CommonErrors.LengthIsWrong(nameof(dto.Street), MIN_LENGTH, MAX_LENGTH);
         }

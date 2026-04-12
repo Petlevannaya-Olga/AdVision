@@ -1,9 +1,11 @@
 using System.Globalization;
 using AdVision.Application;
 using AdVision.Infrastructure;
+using AdVision.Presentation.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Toolkit.Uwp.Notifications;
 using Serilog;
 
 namespace AdVision.Presentation;
@@ -14,12 +16,12 @@ internal static class Program
     private static void Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
-        
+
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.Information()
             .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
             .CreateBootstrapLogger();
-        
+
         try
         {
             Log.Information("Приложение запускается");
@@ -29,7 +31,7 @@ internal static class Program
                 .SetBasePath(AppContext.BaseDirectory)
                 .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
-            
+
             // Создаём контейнер DI
             var services = new ServiceCollection();
 
@@ -38,7 +40,7 @@ internal static class Program
 
             // Собираем ServiceProvider
             var serviceProvider = services.BuildServiceProvider();
-            
+
             using (var scope = serviceProvider.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
@@ -48,7 +50,7 @@ internal static class Program
             ApplicationConfiguration.Initialize();
 
             // Получаем Form через DI
-            var form = serviceProvider.GetRequiredService<VenueTypesForm>();
+            var form = serviceProvider.GetRequiredService<MainForm>();
 
             System.Windows.Forms.Application.Run(form);
         }
@@ -61,17 +63,20 @@ internal static class Program
             Log.CloseAndFlush();
         }
     }
-    
+
     private static void ConfigureServices(IServiceCollection services, IConfiguration configuration)
     {
         // Регистрируем формы
         services.AddTransient<MainForm>();
+        services.AddTransient<VenueForm>();
         services.AddTransient<VenueTypeForm>();
-        services.AddTransient<VenueTypesForm>();
 
+        // Регистрируем уведомления
+        services.AddSingleton<INotificationService, NotificationService>();
+        
         // Регистрируем зависимости из инфраструктуры
         services.AddInfrastructure(configuration);
-        
+
         // Регистрируем зависимости из Application
         services.AddApplication();
 

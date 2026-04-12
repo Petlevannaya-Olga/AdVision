@@ -25,20 +25,20 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 "length(\"house\") > 0");
             
             table.HasCheckConstraint(
-                "CK_Venue_Region_NotEmpty",
-                "length(\"region\") > 10");
+                "CK_Venue_Region",
+                "length(\"region\") >= 10 AND length(\"region\") <= 300");
             
             table.HasCheckConstraint(
-                "CK_Venue_District_NotEmpty",
-                "length(\"district\") > 10");
+                "CK_Venue_District",
+                "length(\"district\") >= 10 AND length(\"district\") <= 300");
             
             table.HasCheckConstraint(
-                "CK_Venue_City_NotEmpty",
-                "length(\"city\") > 10");
+                "CK_Venue_City",
+                "length(\"city\") >= 10 AND length(\"city\") <= 300");
             
             table.HasCheckConstraint(
-                "CK_Venue_Street_NotEmpty",
-                "length(\"street\") > 10");
+                "CK_Venue_Street",
+                "length(\"street\") >= 10 AND length(\"street\") <= 300");
             
             table.HasCheckConstraint(
                 "CK_Venue_Height",

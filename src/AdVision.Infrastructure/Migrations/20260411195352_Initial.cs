@@ -29,6 +29,7 @@ namespace AdVision.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
                     venue_type_id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    TypeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     region = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     district = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     city = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
@@ -45,16 +46,22 @@ namespace AdVision.Infrastructure.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_venues", x => x.id);
-                    table.CheckConstraint("CK_Venue_City_NotEmpty", "length(\"city\") > 10");
-                    table.CheckConstraint("CK_Venue_District_NotEmpty", "length(\"district\") > 10");
+                    table.CheckConstraint("CK_Venue_City", "length(\"city\") >= 10 AND length(\"city\") <= 300");
+                    table.CheckConstraint("CK_Venue_District", "length(\"district\") >= 10 AND length(\"district\") <= 300");
                     table.CheckConstraint("CK_Venue_Height", "\"height\" >= 100 AND \"height\" <= 10000");
                     table.CheckConstraint("CK_Venue_House_NotEmpty", "length(\"house\") > 0");
                     table.CheckConstraint("CK_Venue_Latitude", "\"latitude\" >= -90 AND \"latitude\" <= 90");
                     table.CheckConstraint("CK_Venue_Longitude", "\"longitude\" >= -180 AND \"longitude\" <= 180");
                     table.CheckConstraint("CK_Venue_Rating", "\"width\" >= 1 AND \"width\" <= 10");
-                    table.CheckConstraint("CK_Venue_Region_NotEmpty", "length(\"region\") > 10");
-                    table.CheckConstraint("CK_Venue_Street_NotEmpty", "length(\"street\") > 10");
+                    table.CheckConstraint("CK_Venue_Region", "length(\"region\") >= 10 AND length(\"region\") <= 300");
+                    table.CheckConstraint("CK_Venue_Street", "length(\"street\") >= 10 AND length(\"street\") <= 300");
                     table.CheckConstraint("CK_Venue_Width", "\"width\" >= 100 AND \"width\" <= 10000");
+                    table.ForeignKey(
+                        name: "FK_venues_venue_types_TypeId",
+                        column: x => x.TypeId,
+                        principalTable: "venue_types",
+                        principalColumn: "id",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_venues_venue_types_venue_type_id",
                         column: x => x.venue_type_id,
@@ -68,6 +75,11 @@ namespace AdVision.Infrastructure.Migrations
                 table: "venue_types",
                 column: "name",
                 unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_venues_TypeId",
+                table: "venues",
+                column: "TypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_venues_venue_type_id",

@@ -15,6 +15,11 @@ public sealed class Venue
     public VenueTypeId VenueTypeId { get; private set; }
     
     /// <summary>
+    /// Навигационное свойство
+    /// </summary>
+    public required VenueType Type { get; set; }
+    
+    /// <summary>
     /// Адрес площадки
     /// </summary>
     public VenueAddress Address { get; private set; }

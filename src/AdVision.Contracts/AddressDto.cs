@@ -1,6 +1,6 @@
 namespace AdVision.Contracts;
 
-public record AddressDto(
+public sealed record AddressDto(
     string Region,
     string District,
     string City,

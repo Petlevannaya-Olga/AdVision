@@ -1,4 +1,3 @@
-using System.Diagnostics.CodeAnalysis;
 using AdVision.Application.SharedErrors;
 using AdVision.Domain.VenueTypes;
 using CSharpFunctionalExtensions;
