@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260411195352_Initial")]
+    [Migration("20260413145118_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -28,7 +28,7 @@ namespace AdVision.Infrastructure.Migrations
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(500)
+                        .HasMaxLength(100)
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 
@@ -48,13 +48,13 @@ namespace AdVision.Infrastructure.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(1000)
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT")
                         .HasColumnName("description");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasMaxLength(100)
+                        .HasMaxLength(500)
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 
@@ -70,6 +70,9 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnName("venue_type_id");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("TypeId");
 
@@ -89,7 +92,7 @@ namespace AdVision.Infrastructure.Migrations
 
                             t.HasCheckConstraint("CK_Venue_Longitude", "\"longitude\" >= -180 AND \"longitude\" <= 180");
 
-                            t.HasCheckConstraint("CK_Venue_Rating", "\"width\" >= 1 AND \"width\" <= 10");
+                            t.HasCheckConstraint("CK_Venue_Rating", "\"rating\" >= 1 AND \"rating\" <= 10");
 
                             t.HasCheckConstraint("CK_Venue_Region", "length(\"region\") >= 10 AND length(\"region\") <= 300");
 
@@ -157,6 +160,9 @@ namespace AdVision.Infrastructure.Migrations
                                 .HasColumnName("street");
 
                             b1.HasKey("VenueId");
+
+                            b1.HasIndex("Latitude", "Longitude")
+                                .IsUnique();
 
                             b1.ToTable("venues");
 

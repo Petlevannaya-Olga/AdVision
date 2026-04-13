@@ -18,8 +18,4 @@
       <PackageReference Include="Scrutor" Version="7.0.0" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Venues\" />
-    </ItemGroup>
-
 </Project>

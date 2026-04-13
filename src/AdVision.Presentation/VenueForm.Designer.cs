@@ -55,7 +55,7 @@
 			nudRating = new NumericUpDown();
 			label13 = new Label();
 			panel2 = new Panel();
-			pbHouserNumberValidation = new PictureBox();
+			pbHouseNumberValidation = new PictureBox();
 			pbStreetValidation = new PictureBox();
 			pbCityValidation = new PictureBox();
 			pbDistrictValidation = new PictureBox();
@@ -86,7 +86,7 @@
 			((System.ComponentModel.ISupportInitialize)pbVenueTypeValidation).BeginInit();
 			((System.ComponentModel.ISupportInitialize)nudRating).BeginInit();
 			panel2.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)pbHouserNumberValidation).BeginInit();
+			((System.ComponentModel.ISupportInitialize)pbHouseNumberValidation).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pbStreetValidation).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pbCityValidation).BeginInit();
 			((System.ComponentModel.ISupportInitialize)pbDistrictValidation).BeginInit();
@@ -135,6 +135,7 @@
 			cbVenueTypes.Name = "cbVenueTypes";
 			cbVenueTypes.Size = new Size(299, 28);
 			cbVenueTypes.TabIndex = 3;
+			cbVenueTypes.SelectedValueChanged += CbVenueTypes_SelectedValueChanged;
 			cbVenueTypes.TextChanged += CbVenueTypes_TextChanged;
 			// 
 			// openButton
@@ -362,7 +363,7 @@
 			// 
 			panel2.BackColor = SystemColors.Window;
 			panel2.BorderStyle = BorderStyle.FixedSingle;
-			panel2.Controls.Add(pbHouserNumberValidation);
+			panel2.Controls.Add(pbHouseNumberValidation);
 			panel2.Controls.Add(pbStreetValidation);
 			panel2.Controls.Add(pbCityValidation);
 			panel2.Controls.Add(pbDistrictValidation);
@@ -383,13 +384,13 @@
 			panel2.Size = new Size(389, 328);
 			panel2.TabIndex = 12;
 			// 
-			// pbHouserNumberValidation
+			// pbHouseNumberValidation
 			// 
-			pbHouserNumberValidation.Location = new Point(357, 282);
-			pbHouserNumberValidation.Name = "pbHouserNumberValidation";
-			pbHouserNumberValidation.Size = new Size(27, 27);
-			pbHouserNumberValidation.TabIndex = 6;
-			pbHouserNumberValidation.TabStop = false;
+			pbHouseNumberValidation.Location = new Point(357, 282);
+			pbHouseNumberValidation.Name = "pbHouseNumberValidation";
+			pbHouseNumberValidation.Size = new Size(27, 27);
+			pbHouseNumberValidation.TabIndex = 6;
+			pbHouseNumberValidation.TabStop = false;
 			// 
 			// pbStreetValidation
 			// 
@@ -639,6 +640,7 @@
 			Name = "VenueForm";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Новая площадка";
+			FormClosed += VenueForm_FormClosed;
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)pbRatingValidation).EndInit();
@@ -647,7 +649,7 @@
 			((System.ComponentModel.ISupportInitialize)nudRating).EndInit();
 			panel2.ResumeLayout(false);
 			panel2.PerformLayout();
-			((System.ComponentModel.ISupportInitialize)pbHouserNumberValidation).EndInit();
+			((System.ComponentModel.ISupportInitialize)pbHouseNumberValidation).EndInit();
 			((System.ComponentModel.ISupportInitialize)pbStreetValidation).EndInit();
 			((System.ComponentModel.ISupportInitialize)pbCityValidation).EndInit();
 			((System.ComponentModel.ISupportInitialize)pbDistrictValidation).EndInit();
@@ -710,7 +712,7 @@
 		private PictureBox pbRatingValidation;
 		private PictureBox pbNameValidation;
 		private PictureBox pbVenueTypeValidation;
-		private PictureBox pbHouserNumberValidation;
+		private PictureBox pbHouseNumberValidation;
 		private PictureBox pbStreetValidation;
 		private PictureBox pbCityValidation;
 		private PictureBox pbDistrictValidation;

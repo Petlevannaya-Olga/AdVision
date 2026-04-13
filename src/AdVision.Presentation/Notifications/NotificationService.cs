@@ -16,7 +16,7 @@ public class NotificationService : INotificationService
     public void ShowInfo(string title, string message)
         => Show("ℹ️ " + title, message, NotificationType.Info);
 
-    public static void Show(string title, string message, NotificationType type)
+    public void Show(string title, string message, NotificationType type)
     {
         var builder = new ToastContentBuilder()
             .AddArgument("notificationType", type.ToString())

@@ -1,3 +1,3 @@
 namespace AdVision.Contracts;
 
-public record VenueTypeDto(string Name);
+public record VenueTypeDto(Guid Id, string Name);

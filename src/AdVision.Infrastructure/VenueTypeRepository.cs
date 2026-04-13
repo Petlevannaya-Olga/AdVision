@@ -48,7 +48,7 @@ public class VenueTypeRepository(
 
             return CommonErrors.Db(
                 "add.venue.type.to.db.exception",
-                $"Ошибка добавления новой позиции '{venueType.Name.Value}'");
+                $"Ошибка добавления нового типа площадки '{venueType.Name.Value}'");
         }
 
         return venueType.Id.Value;
@@ -70,10 +70,10 @@ public class VenueTypeRepository(
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при получении новой площадки");
+            logger.LogError(ex, "Ошибка при получении типа площадки");
             return CommonErrors.Db(
                 "get.venue.type.from.db.exception",
-                "Ошибка при получении новой площадки");
+                "Ошибка при получении типа площадки");
         }
     }
 

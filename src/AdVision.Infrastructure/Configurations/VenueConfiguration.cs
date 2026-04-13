@@ -19,47 +19,47 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             table.HasCheckConstraint(
                 "CK_Venue_Longitude",
                 "\"longitude\" >= -180 AND \"longitude\" <= 180");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_House_NotEmpty",
                 "length(\"house\") > 0");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_Region",
                 "length(\"region\") >= 10 AND length(\"region\") <= 300");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_District",
                 "length(\"district\") >= 10 AND length(\"district\") <= 300");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_City",
                 "length(\"city\") >= 10 AND length(\"city\") <= 300");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_Street",
                 "length(\"street\") >= 10 AND length(\"street\") <= 300");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_Height",
                 "\"height\" >= 100 AND \"height\" <= 10000");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_Width",
                 "\"width\" >= 100 AND \"width\" <= 10000");
-            
+
             table.HasCheckConstraint(
                 "CK_Venue_Rating",
-                "\"width\" >= 1 AND \"width\" <= 10");
+                "\"rating\" >= 1 AND \"rating\" <= 10");
         });
-        
+
         builder.HasKey(x => x.Id);
 
         builder
             .Property(x => x.Id)
             .HasColumnName("id")
             .HasConversion(x => x.Value, name => new VenueId(name));
-        
+
         builder
             .Property(x => x.Name)
             .HasConversion(
@@ -104,6 +104,9 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             address.Property(x => x.Longitude)
                 .HasColumnName("longitude")
                 .IsRequired();
+            
+            address.HasIndex(x => new { x.Latitude, x.Longitude })
+                .IsUnique();
         });
 
         builder.OwnsOne(x => x.Size, size =>
@@ -111,12 +114,12 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             size.Property(x => x.Height)
                 .HasColumnName("height")
                 .IsRequired();
-            
+
             size.Property(x => x.Width)
                 .HasColumnName("width")
                 .IsRequired();
         });
-        
+
         builder
             .Property(x => x.Rating)
             .HasConversion(
@@ -134,12 +137,16 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             )
             .HasColumnName("description")
             .HasMaxLength(VenueDescription.MAX_LENGTH);
-        
+
         builder.Property(x => x.VenueTypeId)
             .HasConversion(
                 id => id.Value,
                 value => new VenueTypeId(value)
             )
             .HasColumnName("venue_type_id");
+
+        builder
+            .HasIndex(v => v.Name)
+            .IsUnique();
     }
 }

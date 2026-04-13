@@ -17,6 +17,12 @@ public sealed class CreateVenueTypeCommandHandler(
 
         var nameResult = VenueTypeName.Create(command.Dto.Name);
 
+        if (nameResult.IsFailure)
+        {
+            logger.LogError("Ошибка при создании нового типа площадки: {Errors}", nameResult.Error.ToErrors());
+            return nameResult.Error.ToErrors();
+        }
+
         var getResult = await venueTypeRepository
             .GetByAsync(x => x.Name == nameResult.Value, cancellationToken);
 

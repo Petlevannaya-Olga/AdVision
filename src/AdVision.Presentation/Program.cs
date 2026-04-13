@@ -5,7 +5,6 @@ using AdVision.Presentation.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Toolkit.Uwp.Notifications;
 using Serilog;
 
 namespace AdVision.Presentation;

@@ -20,7 +20,7 @@ public sealed class GetAllVenueTypesQueryHandler(IVenueTypeRepository repository
 
         return result
             .Value
-            .Select(vt => new VenueTypeDto(vt.Name.Value))
+            .Select(vt => new VenueTypeDto(vt.Id.Value, vt.Name.Value))
             .ToList();
     }
 }
