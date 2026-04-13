@@ -29,7 +29,6 @@ namespace AdVision.Infrastructure.Migrations
                 {
                     id = table.Column<Guid>(type: "TEXT", nullable: false),
                     venue_type_id = table.Column<Guid>(type: "TEXT", nullable: false),
-                    TypeId = table.Column<Guid>(type: "TEXT", nullable: false),
                     region = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     district = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     city = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
@@ -57,12 +56,6 @@ namespace AdVision.Infrastructure.Migrations
                     table.CheckConstraint("CK_Venue_Street", "length(\"street\") >= 10 AND length(\"street\") <= 300");
                     table.CheckConstraint("CK_Venue_Width", "\"width\" >= 100 AND \"width\" <= 10000");
                     table.ForeignKey(
-                        name: "FK_venues_venue_types_TypeId",
-                        column: x => x.TypeId,
-                        principalTable: "venue_types",
-                        principalColumn: "id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
                         name: "FK_venues_venue_types_venue_type_id",
                         column: x => x.venue_type_id,
                         principalTable: "venue_types",
@@ -87,11 +80,6 @@ namespace AdVision.Infrastructure.Migrations
                 table: "venues",
                 column: "name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_venues_TypeId",
-                table: "venues",
-                column: "TypeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_venues_venue_type_id",

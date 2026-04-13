@@ -7,78 +7,164 @@ using Shared.Abstractions;
 
 namespace AdVision.Presentation
 {
-	public partial class VenueTypeForm : Form
-	{
-		private readonly INotificationService _notificationService;
-		private readonly ICommandHandler<Guid, CreateVenueTypeCommand> _commandHandler;
-		private readonly CancellationTokenSource _ct = new();
-		private readonly ILogger<VenueTypeForm> _logger;
-		private readonly Image _exception = Image.FromFile("..\\..\\..\\Resources\\exception.png");
-		private readonly Image _success = Image.FromFile("..\\..\\..\\Resources\\success.png");
+    public partial class VenueTypeForm : Form
+    {
+        private const string ValidationErrorTitle = "Ошибка валидации";
+        private const string SaveErrorTitle = "Ошибка сохранения типа площадки";
+        private const string UnknownErrorTitle = "Неизвестная ошибка";
+        private const string SaveSuccessTitle = "Данные успешно сохранены";
+        private const string DefaultSaveErrorMessage = "Не удалось сохранить тип площадки";
 
-		public event Action<string>? VenueTypeCreated;
+        private readonly INotificationService _notificationService;
+        private readonly ICommandHandler<Guid, CreateVenueTypeCommand> _commandHandler;
+        private readonly CancellationTokenSource _ct = new();
+        private readonly ILogger<VenueTypeForm> _logger;
 
-		public VenueTypeForm(
-			INotificationService notificationService,
-			ICommandHandler<Guid, CreateVenueTypeCommand> commandHandler,
-			ILogger<VenueTypeForm> logger)
-		{
-			_notificationService = notificationService;
-			_commandHandler = commandHandler;
-			_logger = logger;
+        private bool _isSaving;
 
-			InitializeComponent();
+        public event Action<string>? VenueTypeCreated;
 
-			btnSave.Enabled = false;
-			pbValidation.Image = _exception;
-		}
+        public VenueTypeForm(
+            INotificationService notificationService,
+            ICommandHandler<Guid, CreateVenueTypeCommand> commandHandler,
+            ILogger<VenueTypeForm> logger)
+        {
+            _notificationService = notificationService;
+            _commandHandler = commandHandler;
+            _logger = logger;
 
-		private async void BtnSave_Click(object sender, EventArgs e)
-		{
-			try
-			{
-				if (string.IsNullOrWhiteSpace(txtName.Text))
-				{
-					_notificationService.ShowError("Ошибка валидации", "Введите название типа площадки");
-					return;
-				}
+            InitializeComponent();
+            UpdateValidationState();
+        }
 
-				var result =
-					await _commandHandler.Handle(new CreateVenueTypeCommand(new CreateVenueTypeDto(txtName.Text)),
-						_ct.Token);
+        private async void BtnSave_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                await SaveVenueTypeAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Сохранение типа площадки отменено");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Непредвиденная ошибка при сохранении типа площадки");
+                _notificationService.ShowError(
+                    UnknownErrorTitle,
+                    $"{SaveErrorTitle}: {ex.Message}");
+            }
+        }
 
-				if (result.IsFailure)
-				{
-					var errors = string.Join(Environment.NewLine, result.Error.Select(x => x.Message).ToList());
-					_logger.LogError("Ошибка сохранения типа площадки: {Error}", errors);
-					_notificationService.ShowError("Ошибка сохранения названия типа площадки", $"Ошибка сохранения типа площадки: {errors}");
-					return;
-				}
+        private async Task SaveVenueTypeAsync()
+        {
+            if (_isSaving)
+            {
+                return;
+            }
 
-				_logger.LogInformation("Добавлен новый тип площадки с Id: {Id}", result.Value);
-				_notificationService.ShowSuccess("Данные успешно сохранены", $"Добавлен новый тип площадки с Id: {result.Value}");
-				VenueTypeCreated?.Invoke(txtName.Text);
-				Close();
-			}
-			catch (Exception ex)
-			{
-				_notificationService.ShowError("Неизвестная ошибка", $"Ошибка сохранения названия типа площадки: {ex.Message}");
-				_logger.LogError(ex, "Ошибка сохранения названия типа площадки: {Message}", ex.Message);
-			}
-		}
+            var name = GetTrimmedName();
+            if (!IsNameValid(name))
+            {
+                ShowValidationError();
+                UpdateValidationState();
+                return;
+            }
 
-		private void VenueTypeForm_FormClosed(object sender, FormClosedEventArgs e)
-		{
-			_ct.Dispose();
-		}
+            _isSaving = true;
+            UseWaitCursor = true;
+            UpdateValidationState();
 
-		private void TxtName_TextChanged(object sender, EventArgs e)
-		{
-			var success = !string.IsNullOrWhiteSpace(txtName.Text) && 
-			              txtName.Text.Length is >= VenueTypeName.MIN_LENGTH and <= VenueTypeName.MAX_LENGTH;
+            try
+            {
+                var command = new CreateVenueTypeCommand(new CreateVenueTypeDto(name));
+                var result = await _commandHandler.Handle(command, _ct.Token);
 
-			btnSave.Enabled = success;
-			pbValidation.Image = success ? _success : _exception;
-		}
-	}
+                if (result.IsFailure)
+                {
+                    ShowSaveError(result.Error?.Select(x => x.Message));
+                    return;
+                }
+
+                _logger.LogInformation("Добавлен новый тип площадки с Id: {Id}", result.Value);
+
+                _notificationService.ShowSuccess(
+                    SaveSuccessTitle,
+                    $"Добавлен новый тип площадки с Id: {result.Value}");
+
+                VenueTypeCreated?.Invoke(name);
+                Close();
+            }
+            finally
+            {
+                _isSaving = false;
+                UseWaitCursor = false;
+
+                if (!IsDisposed)
+                {
+                    UpdateValidationState();
+                }
+            }
+        }
+
+        private void ShowValidationError()
+        {
+            _notificationService.ShowError(
+                ValidationErrorTitle,
+                $"Название должно быть от {VenueTypeName.MIN_LENGTH} до {VenueTypeName.MAX_LENGTH} символов");
+        }
+
+        private void ShowSaveError(IEnumerable<string>? errors)
+        {
+            var message = string.Join(Environment.NewLine, errors ?? Enumerable.Empty<string>());
+            ShowSaveError(message);
+        }
+
+        private void ShowSaveError(string? message)
+        {
+            var normalizedMessage = string.IsNullOrWhiteSpace(message)
+                ? DefaultSaveErrorMessage
+                : message;
+
+            _logger.LogError("Ошибка сохранения типа площадки: {Error}", normalizedMessage);
+            _notificationService.ShowError(SaveErrorTitle, normalizedMessage);
+        }
+
+        private string GetTrimmedName()
+        {
+            return txtName.Text?.Trim() ?? string.Empty;
+        }
+
+        private bool IsNameValid(string name)
+        {
+            return !string.IsNullOrWhiteSpace(name) &&
+                   name.Length >= VenueTypeName.MIN_LENGTH &&
+                   name.Length <= VenueTypeName.MAX_LENGTH;
+        }
+
+        private void UpdateValidationState()
+        {
+            var isValid = IsNameValid(GetTrimmedName());
+
+            btnSave.Enabled = !_isSaving && isValid;
+            pbValidation.Image = isValid
+                ? Properties.Resources.success
+                : Properties.Resources.exception;
+        }
+
+        private void TxtName_TextChanged(object sender, EventArgs e)
+        {
+            UpdateValidationState();
+        }
+
+        private void VenueTypeForm_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            if (!_ct.IsCancellationRequested)
+            {
+                _ct.Cancel();
+            }
+
+            _ct.Dispose();
+        }
+    }
 }

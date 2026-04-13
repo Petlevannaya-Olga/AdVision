@@ -59,9 +59,6 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnType("REAL")
                         .HasColumnName("rating");
 
-                    b.Property<Guid>("TypeId")
-                        .HasColumnType("TEXT");
-
                     b.Property<Guid>("VenueTypeId")
                         .HasColumnType("TEXT")
                         .HasColumnName("venue_type_id");
@@ -70,8 +67,6 @@ namespace AdVision.Infrastructure.Migrations
 
                     b.HasIndex("Name")
                         .IsUnique();
-
-                    b.HasIndex("TypeId");
 
                     b.HasIndex("VenueTypeId");
 
@@ -102,12 +97,6 @@ namespace AdVision.Infrastructure.Migrations
             modelBuilder.Entity("AdVision.Domain.Venues.Venue", b =>
                 {
                     b.HasOne("AdVision.Domain.VenueTypes.VenueType", "Type")
-                        .WithMany()
-                        .HasForeignKey("TypeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("AdVision.Domain.VenueTypes.VenueType", null)
                         .WithMany()
                         .HasForeignKey("VenueTypeId")
                         .OnDelete(DeleteBehavior.Restrict)

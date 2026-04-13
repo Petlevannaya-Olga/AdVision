@@ -15,16 +15,13 @@ public class VenueFakeGenerator(
     {
         var address = addressFakeGenerator.Generate();
         var name = nameFakeGenerator.Generate(typeName, address.City, address.Street);
-        
+
         return new Venue(
             name: name,
             venueTypeId: new VenueTypeId(Guid.NewGuid()),
             address: address,
             size: sizeFakeGenerator.Generate(),
             rating: ratingFakeGenerator.Generate(),
-            description: descriptionFakeGenerator.Generate(typeName))
-        {
-            Type = new VenueType(VenueTypeName.Create(typeName).Value)
-        };
+            description: descriptionFakeGenerator.Generate(typeName));
     }
 }

@@ -148,5 +148,12 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
         builder
             .HasIndex(v => v.Name)
             .IsUnique();
+        
+        builder
+            .HasOne(v => v.Type)
+            .WithMany()
+            .HasForeignKey(v => v.VenueTypeId)
+            .OnDelete(DeleteBehavior.Restrict)
+            .IsRequired();
     }
 }

@@ -14,4 +14,8 @@ public interface IVenueRepository
         CancellationToken cancellationToken);
     
     Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(int page, int size, CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyList<string>, Error>> GetDistinctAsync(
+        Expression<Func<Venue, string>> selector,
+        CancellationToken cancellationToken);
 }

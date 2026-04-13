@@ -1,8 +1,6 @@
-using AdVision.Domain.Venues;
 using AdVision.Domain.VenueTypes;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Shared;
 
 namespace AdVision.Infrastructure.Configurations;
 
@@ -31,11 +29,6 @@ public sealed class VenueTypeConfiguration : IEntityTypeConfiguration<VenueType>
             .HasColumnName("name")
             .HasMaxLength(VenueTypeName.MAX_LENGTH)
             .IsRequired();
-        
-        builder.HasMany<Venue>()
-            .WithOne()
-            .HasForeignKey(x => x.VenueTypeId)
-            .OnDelete(DeleteBehavior.Restrict);
         
         builder
             .HasIndex(x => x.Name)

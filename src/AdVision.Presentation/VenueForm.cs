@@ -41,7 +41,7 @@ namespace AdVision.Presentation
             InitializeComponent();
         }
 
-        protected override async void OnLoad(EventArgs e)
+        protected override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
             ReloadVenueTypes();
@@ -163,60 +163,61 @@ namespace AdVision.Presentation
 
         private async void BtnSave_Click(object sender, EventArgs e)
         {
-            var selectedVenueType = cbVenueTypes.SelectedItem;
-
-            if (selectedVenueType is not VenueTypeDto dto)
-            {
-                _logger.LogError("Не удалось преобразовать {VenueType} к типу VenueTypeDto", selectedVenueType);
-                return;
-            }
-
-            if (!double.TryParse(txtLatitude.Text.Trim(), out var latitude))
-            {
-                _notificationService.ShowError("Не удалось преобразовать {Latitude} в тип double",
-                    txtLatitude.Text.Trim());
-                return;
-            }
-
-            if (!double.TryParse(txtLongitude.Text.Trim(), out var longitude))
-            {
-                _notificationService.ShowError("Не удалось преобразовать {Longitude} в тип double",
-                    txtLongitude.Text.Trim());
-                return;
-            }
-
-            if (!double.TryParse(txtWidth.Text.Trim(), out var width))
-            {
-                _notificationService.ShowError("Не удалось преобразовать {Width} в тип double",
-                    txtWidth.Text.Trim());
-                return;
-            }
-
-            if (!double.TryParse(txtHeight.Text.Trim(), out var height))
-            {
-                _notificationService.ShowError("Не удалось преобразовать {Height} в тип double",
-                    txtHeight.Text.Trim());
-                return;
-            }
-
-            var venueDto = new CreateVenueDto(
-                txtName.Text.Trim(),
-                dto,
-                new AddressDto(
-                    Region: txtRegion.Text.Trim(),
-                    District: txtDistrict.Text.Trim(),
-                    City: txtCity.Text.Trim(),
-                    Street: txtStreet.Text.Trim(),
-                    House: txtHouseNumber.Text.Trim(),
-                    Latitude: latitude,
-                    Longitude: longitude),
-                new VenueSizeDto(width, height),
-                (double)Math.Round(nudRating.Value, 0),
-                txtDescription.Text
-            );
-
             try
             {
+                var selectedVenueType = cbVenueTypes.SelectedItem;
+
+                if (selectedVenueType is not VenueTypeDto dto)
+                {
+                    _logger.LogError("Не удалось преобразовать {VenueType} к типу VenueTypeDto", selectedVenueType);
+                    return;
+                }
+
+                if (!double.TryParse(txtLatitude.Text.Trim(), out var latitude))
+                {
+                    _notificationService.ShowError("Не удалось преобразовать {Latitude} в тип double",
+                        txtLatitude.Text.Trim());
+                    return;
+                }
+
+                if (!double.TryParse(txtLongitude.Text.Trim(), out var longitude))
+                {
+                    _notificationService.ShowError("Не удалось преобразовать {Longitude} в тип double",
+                        txtLongitude.Text.Trim());
+                    return;
+                }
+
+                if (!double.TryParse(txtWidth.Text.Trim(), out var width))
+                {
+                    _notificationService.ShowError("Не удалось преобразовать {Width} в тип double",
+                        txtWidth.Text.Trim());
+                    return;
+                }
+
+                if (!double.TryParse(txtHeight.Text.Trim(), out var height))
+                {
+                    _notificationService.ShowError("Не удалось преобразовать {Height} в тип double",
+                        txtHeight.Text.Trim());
+                    return;
+                }
+
+                var venueDto = new CreateVenueDto(
+                    txtName.Text.Trim(),
+                    dto,
+                    new AddressDto(
+                        Region: txtRegion.Text.Trim(),
+                        District: txtDistrict.Text.Trim(),
+                        City: txtCity.Text.Trim(),
+                        Street: txtStreet.Text.Trim(),
+                        House: txtHouseNumber.Text.Trim(),
+                        Latitude: latitude,
+                        Longitude: longitude),
+                    new VenueSizeDto(width, height),
+                    (double)Math.Round(nudRating.Value, 0),
+                    txtDescription.Text
+                );
+
+
                 var result = await _venueCommandHandler.Handle(new CreateVenueCommand(venueDto), _cts.Token);
 
                 if (result.IsFailure)
@@ -231,8 +232,10 @@ namespace AdVision.Presentation
             }
             catch (Exception exception)
             {
-               _logger.LogError("Произошла непредвиденная ошибка в процессе создания новой площадки: {Exception}", exception);
-               _notificationService.ShowError("Непредвиденная ошибка в процессе создания новой площадки", exception.Message);
+                _logger.LogError("Произошла непредвиденная ошибка в процессе создания новой площадки: {Exception}",
+                    exception);
+                _notificationService.ShowError("Непредвиденная ошибка в процессе создания новой площадки",
+                    exception.Message);
             }
         }
 

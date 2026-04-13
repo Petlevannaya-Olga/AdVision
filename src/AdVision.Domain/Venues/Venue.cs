@@ -17,7 +17,7 @@ public sealed class Venue
     /// <summary>
     /// Навигационное свойство
     /// </summary>
-    public required VenueType Type { get; set; }
+    public VenueType Type { get; init; } = null!;
     
     /// <summary>
     /// Адрес площадки

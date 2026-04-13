@@ -45,7 +45,6 @@ public class CreateVenueCommandHandler(
                 .ToErrors();
         }
 
-
         var venueTypeId = new VenueTypeId(command.Dto.Type.Id);
 
         var venueAddressResult = VenueAddress.Create(command.Dto.Address);
@@ -78,7 +77,7 @@ public class CreateVenueCommandHandler(
             return venueDescriptionResult.Error.ToErrors();
         }
 
-        var venueTypeNameResult = VenueTypeName.Create(command.Dto.Name);
+        var venueTypeNameResult = VenueTypeName.Create(command.Dto.Type.Name);
         if (venueTypeNameResult.IsFailure)
         {
             logger.LogError("Ошибка при создании новой площадки: {Errors}", venueTypeNameResult.Error.ToErrors());
@@ -92,10 +91,7 @@ public class CreateVenueCommandHandler(
             size: venueSizeResult.Value,
             rating: venueRatingResult.Value,
             description: venueDescriptionResult.Value
-        )
-        {
-            Type = new VenueType(venueTypeNameResult.Value)
-        };
+        );
 
         var result = await repository.AddAsync(newVenue, cancellationToken);
 

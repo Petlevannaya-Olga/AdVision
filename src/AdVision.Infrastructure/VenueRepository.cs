@@ -99,4 +99,33 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                 "Ошибка при получении всех площадок");
         }
     }
+
+    public async Task<Result<IReadOnlyList<string>, Error>> GetDistinctAsync(
+        Expression<Func<Venue, string>> selector,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var result = await dbContext
+                .Venues
+                .AsNoTracking()
+                .Select(selector)
+                .Distinct()
+                .ToListAsync(cancellationToken);
+
+            return result;
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения значений была отменена");
+            return CommonErrors.OperationCancelled("get.values.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении значений");
+            return CommonErrors.Db(
+                "get.values.from.db.exception",
+                "Ошибка при получении значений");
+        }
+    }
 }
