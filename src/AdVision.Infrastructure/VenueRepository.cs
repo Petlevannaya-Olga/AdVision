@@ -74,29 +74,41 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
         }
     }
 
-    public async Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(int page, int size,
+    public async Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(
+        int page,
+        int size,
+        Expression<Func<Venue, bool>>? filter,
         CancellationToken cancellationToken)
     {
         try
         {
-            return await dbContext
-                .Venues
+            var query = dbContext.Venues
                 .Include(v => v.Type)
+                .AsQueryable();
+
+            if (filter is not null)
+            {
+                query = query.Where(filter);
+            }
+
+            var venues = await query
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
+
+            return venues;
         }
         catch (OperationCanceledException)
         {
-            logger.LogError("Операция получения всех типов площадок была отменена");
-            return CommonErrors.OperationCancelled("get.venue.types.operation.was.canceled");
+            logger.LogWarning("Операция получения площадок была отменена");
+            return CommonErrors.OperationCancelled("get.venues.operation.was.canceled");
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Ошибка при получении всех площадок");
+            logger.LogError(ex, "Ошибка при получении площадок");
             return CommonErrors.Db(
-                "get.venue.types.from.db.exception",
-                "Ошибка при получении всех площадок");
+                "get.venues.from.db.exception",
+                "Ошибка при получении площадок");
         }
     }
 

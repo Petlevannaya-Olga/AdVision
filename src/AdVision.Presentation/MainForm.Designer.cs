@@ -366,6 +366,7 @@ partial class MainForm
 		btnApply.TabIndex = 4;
 		btnApply.Text = "Применить";
 		btnApply.UseVisualStyleBackColor = true;
+		btnApply.Click += BtnApply_Click;
 		// 
 		// tabPage2
 		// 

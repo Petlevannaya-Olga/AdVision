@@ -12,8 +12,12 @@ public interface IVenueRepository
     Task<Result<Venue?, Error>> GetByAsync(
         Expression<Func<Venue, bool>> expression,
         CancellationToken cancellationToken);
-    
-    Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(int page, int size, CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(
+        int page,
+        int size,
+        Expression<Func<Venue, bool>>? filter,
+        CancellationToken cancellationToken);
 
     Task<Result<IReadOnlyList<string>, Error>> GetDistinctAsync(
         Expression<Func<Venue, string>> selector,

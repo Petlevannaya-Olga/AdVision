@@ -12,8 +12,12 @@ namespace AdVision.Presentation
 {
     public partial class VenueForm : Form
     {
-        private readonly Image _exception = Image.FromFile("..\\..\\..\\Resources\\exception.png");
-        private readonly Image _success = Image.FromFile("..\\..\\..\\Resources\\success.png");
+        private const string LoadVenueTypesErrorTitle = "Ошибка загрузки типов площадок";
+        private const string ValidationErrorTitle = "Ошибка валидации";
+        private const string SaveErrorTitle = "Ошибка создания новой площадки";
+        private const string SaveSuccessTitle = "Добавлена новая площадка";
+        private const string GenerateErrorTitle = "Ошибка генерации";
+        private const string UnknownErrorTitle = "Непредвиденная ошибка";
 
         private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
         private readonly ICommandHandler<Guid, CreateVenueCommand> _venueCommandHandler;
@@ -22,6 +26,11 @@ namespace AdVision.Presentation
         private readonly CancellationTokenSource _cts = new();
         private readonly IVenueFakeGenerator _venueFakeGenerator;
         private readonly INotificationService _notificationService;
+
+        private bool _isSaving;
+        private bool _isLoadingVenueTypes;
+        
+        public event Action? VenueCreated;
 
         public VenueForm(
             IVenueFakeGenerator venueFakeGenerator,
@@ -39,42 +48,54 @@ namespace AdVision.Presentation
             _serviceProvider = serviceProvider;
 
             InitializeComponent();
+            UpdateValidationState();
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override async void OnLoad(EventArgs e)
         {
-            base.OnLoad(e);
-            ReloadVenueTypes();
-
-            if (cbVenueTypes.Items.Count <= 0)
+            try
             {
-                pbCityValidation.Image = _exception;
-                pbDescriptionValidation.Image = _exception;
-                pbDistrictValidation.Image = _exception;
-                pbHeightValidation.Image = _exception;
-                pbHouseNumberValidation.Image = _exception;
-                pbLatitudeValidation.Image = _exception;
-                pbLongitudeValidation.Image = _exception;
-                pbNameValidation.Image = _exception;
-                pbRatingValidation.Image = _success;
-                pbRegionValidation.Image = _exception;
-                pbStreetValidation.Image = _exception;
-                pbWidthValidation.Image = _exception;
-                pbVenueTypeValidation.Image = _exception;
-                btnSave.Enabled = false;
-                btnGenerate.Enabled = false;
-                _notificationService.ShowInfo("Как запустить генерацию",
-                    "Для запуска генерации нужно создать хотя бы один тип площадки");
+                base.OnLoad(e);
+                await ReloadVenueTypesAsync();
+
+                if (!HasVenueTypes())
+                {
+                    SetInitialInvalidState();
+                    btnSave.Enabled = false;
+                    btnGenerate.Enabled = false;
+
+                    _notificationService.ShowInfo(
+                        "Как запустить генерацию",
+                        "Для запуска генерации нужно создать хотя бы один тип площадки");
+
+                    return;
+                }
+
+                cbVenueTypes.SelectedIndex = 0;
+                Generate();
+                UpdateValidationState();
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Загрузка формы площадки была отменена");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка инициализации формы площадки");
+                _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+            }
+        }
+
+        private async Task ReloadVenueTypesAsync(string? selectedName = null)
+        {
+            if (_isLoadingVenueTypes)
+            {
                 return;
             }
 
+            _isLoadingVenueTypes = true;
+            UseWaitCursor = true;
 
-            cbVenueTypes.SelectedIndex = 0;
-            Generate();
-        }
-
-        private async void ReloadVenueTypes(string? name = null)
-        {
             try
             {
                 cbVenueTypes.DataSource = null;
@@ -85,9 +106,13 @@ namespace AdVision.Presentation
 
                 if (result.IsFailure)
                 {
-                    _logger.LogError("Не удалось загрузить типы площадок: {Error}", result.Error);
-                    _notificationService.ShowError("Ошибка загрузки типов площадок",
-                        string.Join(Environment.NewLine, result.Error));
+                    var errors = string.Join(Environment.NewLine, result.Error);
+                    _logger.LogError("Не удалось загрузить типы площадок: {Error}", errors);
+
+                    _notificationService.ShowError(
+                        LoadVenueTypesErrorTitle,
+                        string.IsNullOrWhiteSpace(errors) ? "Не удалось загрузить типы площадок" : errors);
+
                     return;
                 }
 
@@ -96,35 +121,56 @@ namespace AdVision.Presentation
                     .ToList();
 
                 cbVenueTypes.DataSource = list;
-                cbVenueTypes.DisplayMember = "Name";
-                cbVenueTypes.ValueMember = "Id";
+                cbVenueTypes.DisplayMember = nameof(VenueTypeDto.Name);
+                cbVenueTypes.ValueMember = nameof(VenueTypeDto.Id);
 
-                if (!string.IsNullOrEmpty(name))
+                if (!string.IsNullOrWhiteSpace(selectedName))
                 {
-                    cbVenueTypes.SelectedIndex = cbVenueTypes.FindString(name);
+                    var index = cbVenueTypes.FindStringExact(selectedName);
+                    cbVenueTypes.SelectedIndex = index >= 0 ? index : (list.Count > 0 ? 0 : -1);
                 }
-                else if (list.Count > 0)
+                else
                 {
-                    cbVenueTypes.SelectedIndex = 0;
+                    cbVenueTypes.SelectedIndex = list.Count > 0 ? 0 : -1;
                 }
             }
-            catch (Exception ex)
+            finally
             {
-                _notificationService.ShowError("Ошибка загрузки типов площадок", ex.Message);
-                _logger.LogError(ex, "Ошибка загрузки типов площадок: {Message}", ex.Message);
+                _isLoadingVenueTypes = false;
+                UseWaitCursor = false;
+                UpdateValidationState();
             }
         }
 
         private void OpenButton_Click(object sender, EventArgs e)
         {
             var form = _serviceProvider.GetRequiredService<VenueTypeForm>();
-            form.VenueTypeCreated += ReloadVenueTypes;
+            form.VenueTypeCreated += OnVenueTypeCreated;
             form.ShowDialog();
+            form.VenueTypeCreated -= OnVenueTypeCreated;
+        }
+
+        private async void OnVenueTypeCreated(string name)
+        {
+            try
+            {
+                await ReloadVenueTypesAsync(name);
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Обновление списка типов площадок отменено");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Ошибка обновления списка типов площадок");
+                _notificationService.ShowError(LoadVenueTypesErrorTitle, ex.Message);
+            }
         }
 
         private void BtnGenerate_Click(object sender, EventArgs e)
         {
             Generate();
+            UpdateValidationState();
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)
@@ -132,152 +178,170 @@ namespace AdVision.Presentation
             Close();
         }
 
-        private static bool IsValidLength(Control control, int min, int max)
-        {
-            var len = control.Text.Trim().Length;
-
-            if (len < min || len > max)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
-        private static bool IsDoubleValid(Control control, double min, double max)
-        {
-            var result = double.TryParse(control.Text.Trim(), out var value);
-
-            if (!result)
-            {
-                return false;
-            }
-
-            if (value < min || value > max)
-            {
-                return false;
-            }
-
-            return true;
-        }
-
         private async void BtnSave_Click(object sender, EventArgs e)
         {
             try
             {
-                var selectedVenueType = cbVenueTypes.SelectedItem;
+                await SaveVenueAsync();
+            }
+            catch (OperationCanceledException)
+            {
+                _logger.LogInformation("Сохранение площадки отменено");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Непредвиденная ошибка при создании новой площадки");
+                _notificationService.ShowError(UnknownErrorTitle, $"{SaveErrorTitle}: {ex.Message}");
+            }
+        }
 
-                if (selectedVenueType is not VenueTypeDto dto)
-                {
-                    _logger.LogError("Не удалось преобразовать {VenueType} к типу VenueTypeDto", selectedVenueType);
-                    return;
-                }
+        private async Task SaveVenueAsync()
+        {
+            if (_isSaving)
+            {
+                return;
+            }
 
-                if (!double.TryParse(txtLatitude.Text.Trim(), out var latitude))
-                {
-                    _notificationService.ShowError("Не удалось преобразовать {Latitude} в тип double",
-                        txtLatitude.Text.Trim());
-                    return;
-                }
+            if (!TryBuildVenueDto(out var venueDto))
+            {
+                ShowValidationError();
+                UpdateValidationState();
+                return;
+            }
 
-                if (!double.TryParse(txtLongitude.Text.Trim(), out var longitude))
-                {
-                    _notificationService.ShowError("Не удалось преобразовать {Longitude} в тип double",
-                        txtLongitude.Text.Trim());
-                    return;
-                }
+            _isSaving = true;
+            UseWaitCursor = true;
+            UpdateValidationState();
 
-                if (!double.TryParse(txtWidth.Text.Trim(), out var width))
-                {
-                    _notificationService.ShowError("Не удалось преобразовать {Width} в тип double",
-                        txtWidth.Text.Trim());
-                    return;
-                }
-
-                if (!double.TryParse(txtHeight.Text.Trim(), out var height))
-                {
-                    _notificationService.ShowError("Не удалось преобразовать {Height} в тип double",
-                        txtHeight.Text.Trim());
-                    return;
-                }
-
-                var venueDto = new CreateVenueDto(
-                    txtName.Text.Trim(),
-                    dto,
-                    new AddressDto(
-                        Region: txtRegion.Text.Trim(),
-                        District: txtDistrict.Text.Trim(),
-                        City: txtCity.Text.Trim(),
-                        Street: txtStreet.Text.Trim(),
-                        House: txtHouseNumber.Text.Trim(),
-                        Latitude: latitude,
-                        Longitude: longitude),
-                    new VenueSizeDto(width, height),
-                    (double)Math.Round(nudRating.Value, 0),
-                    txtDescription.Text
-                );
-
-
-                var result = await _venueCommandHandler.Handle(new CreateVenueCommand(venueDto), _cts.Token);
+            try
+            {
+                var result = await _venueCommandHandler.Handle(
+                    new CreateVenueCommand(venueDto),
+                    _cts.Token);
 
                 if (result.IsFailure)
                 {
-                    _logger.LogError("Не удалось создать новую площадку: {Error}", result.Error);
-                    _notificationService.ShowError("Ошибка создания новой площадки", string.Join("", result.Error));
+                    var errors = string.Join(Environment.NewLine, result.Error);
+                    ShowSaveError(errors);
                     return;
                 }
 
                 _logger.LogInformation("Создана новая площадка с id = {Id}", result.Value);
-                _notificationService.ShowSuccess("Добавлена новая площадка", $"Id = {result.Value}");
+                _notificationService.ShowSuccess(SaveSuccessTitle, $"Id = {result.Value}");
+                
+                VenueCreated?.Invoke();
             }
-            catch (Exception exception)
+            finally
             {
-                _logger.LogError("Произошла непредвиденная ошибка в процессе создания новой площадки: {Exception}",
-                    exception);
-                _notificationService.ShowError("Непредвиденная ошибка в процессе создания новой площадки",
-                    exception.Message);
+                _isSaving = false;
+                UseWaitCursor = false;
+
+                if (!IsDisposed)
+                {
+                    UpdateValidationState();
+                }
             }
         }
 
-        private void NudRating_ValueChanged(object sender, EventArgs e)
+        private bool TryBuildVenueDto(out CreateVenueDto venueDto)
         {
-            var success = nudRating.Value is > 0 and <= 10;
-            SetIcon(pbRatingValidation, success);
-            btnSave.Enabled = !HasErrors();
+            venueDto = default!;
+
+            if (cbVenueTypes.SelectedItem is not VenueTypeDto venueTypeDto)
+            {
+                _logger.LogError("Не удалось преобразовать выбранный тип площадки к {Type}", nameof(VenueTypeDto));
+                return false;
+            }
+
+            var name = txtName.Text.Trim();
+            var region = txtRegion.Text.Trim();
+            var district = txtDistrict.Text.Trim();
+            var city = txtCity.Text.Trim();
+            var street = txtStreet.Text.Trim();
+            var houseNumber = txtHouseNumber.Text.Trim();
+            var description = txtDescription.Text.Trim();
+
+            if (!IsNameValid(name) ||
+                !IsAddressPartValid(region) ||
+                !IsAddressPartValid(district) ||
+                !IsAddressPartValid(city) ||
+                !IsAddressPartValid(street) ||
+                string.IsNullOrWhiteSpace(houseNumber) ||
+                !IsDescriptionValid(description))
+            {
+                return false;
+            }
+
+            if (!TryParseDouble(txtLatitude.Text, out var latitude) ||
+                !IsLatitudeValid(latitude))
+            {
+                return false;
+            }
+
+            if (!TryParseDouble(txtLongitude.Text, out var longitude) ||
+                !IsLongitudeValid(longitude))
+            {
+                return false;
+            }
+
+            if (!TryParseDouble(txtWidth.Text, out var width) ||
+                !IsWidthValid(width))
+            {
+                return false;
+            }
+
+            if (!TryParseDouble(txtHeight.Text, out var height) ||
+                !IsHeightValid(height))
+            {
+                return false;
+            }
+
+            var rating = (double)Math.Round(nudRating.Value, 0);
+            if (!IsRatingValid(rating))
+            {
+                return false;
+            }
+
+            venueDto = new CreateVenueDto(
+                name,
+                venueTypeDto,
+                new AddressDto(
+                    Region: region,
+                    District: district,
+                    City: city,
+                    Street: street,
+                    House: houseNumber,
+                    Latitude: latitude,
+                    Longitude: longitude),
+                new VenueSizeDto(width, height),
+                rating,
+                description);
+
+            return true;
         }
 
-        private void CbVenueTypes_TextChanged(object sender, EventArgs e)
+        private void ShowValidationError()
         {
-            var hasSelectedItem = cbVenueTypes.SelectedIndex > -1;
-            SetIcon(pbVenueTypeValidation, hasSelectedItem);
-            btnSave.Enabled = !HasErrors();
+            _notificationService.ShowError(
+                ValidationErrorTitle,
+                "Проверьте корректность заполнения всех полей формы");
         }
 
-        private void TxtName_TextChanged(object sender, EventArgs e)
+        private void ShowSaveError(string? message)
         {
-            var success = IsValidLength(txtName, VenueName.MIN_LENGTH, VenueName.MAX_LENGTH);
-            SetIcon(pbNameValidation, success);
-            btnSave.Enabled = !HasErrors();
-        }
+            var normalizedMessage = string.IsNullOrWhiteSpace(message)
+                ? "Не удалось создать новую площадку"
+                : message;
 
-        private void SetIcon(PictureBox box, bool success)
-        {
-            box.Image = success ? _success : _exception;
+            _logger.LogError("Не удалось создать новую площадку: {Error}", normalizedMessage);
+            _notificationService.ShowError(SaveErrorTitle, normalizedMessage);
         }
 
         private void Generate()
         {
-            if (cbVenueTypes.SelectedIndex < 0)
+            if (cbVenueTypes.SelectedItem is not VenueTypeDto dto)
             {
-                _notificationService.ShowError("Ошибка генерации", "Сначала нужно добавить тип площадки");
-                return;
-            }
-
-            var venueType = cbVenueTypes?.SelectedItem;
-
-            if (venueType is not VenueTypeDto dto)
-            {
-                _logger.LogError("Не удалось преобразовать {VenueType} к типу VenueTypeDto", venueType);
+                _notificationService.ShowError(GenerateErrorTitle, "Сначала нужно добавить тип площадки");
                 return;
             }
 
@@ -297,106 +361,159 @@ namespace AdVision.Presentation
             txtDescription.Text = venue.Description.Value;
         }
 
-        private void TxtDescription_TextChanged(object sender, EventArgs e)
+        private void SetInitialInvalidState()
         {
-            var success = IsValidLength(txtDescription, VenueDescription.MIN_LENGTH, VenueDescription.MAX_LENGTH);
-            SetIcon(pbDescriptionValidation, success);
-            btnSave.Enabled = !HasErrors();
+            SetIcon(pbCityValidation, false);
+            SetIcon(pbDescriptionValidation, false);
+            SetIcon(pbDistrictValidation, false);
+            SetIcon(pbHeightValidation, false);
+            SetIcon(pbHouseNumberValidation, false);
+            SetIcon(pbLatitudeValidation, false);
+            SetIcon(pbLongitudeValidation, false);
+            SetIcon(pbNameValidation, false);
+            SetIcon(pbRatingValidation, true);
+            SetIcon(pbRegionValidation, false);
+            SetIcon(pbStreetValidation, false);
+            SetIcon(pbWidthValidation, false);
+            SetIcon(pbVenueTypeValidation, false);
         }
 
-        private void TxtHouseNumber_TextChanged(object sender, EventArgs e)
+        private void SetIcon(PictureBox box, bool success)
         {
-            var hasValue = !string.IsNullOrEmpty(txtHouseNumber.Text.Trim());
-            SetIcon(pbHouseNumberValidation, hasValue);
-            btnSave.Enabled = !HasErrors();
+            box.Image = success
+                ? Properties.Resources.success
+                : Properties.Resources.exception;
         }
 
-        private void TxtRegion_TextChanged(object sender, EventArgs e)
+        private void UpdateValidationState()
         {
-            var success = IsValidLength(txtRegion, VenueAddress.MIN_LENGTH, VenueAddress.MAX_LENGTH);
-            SetIcon(pbRegionValidation, success);
-            btnSave.Enabled = !HasErrors();
+            var hasVenueTypes = HasVenueTypes();
+
+            var nameValid = IsNameValid(txtName.Text.Trim());
+            var regionValid = IsAddressPartValid(txtRegion.Text.Trim());
+            var districtValid = IsAddressPartValid(txtDistrict.Text.Trim());
+            var cityValid = IsAddressPartValid(txtCity.Text.Trim());
+            var streetValid = IsAddressPartValid(txtStreet.Text.Trim());
+            var houseValid = !string.IsNullOrWhiteSpace(txtHouseNumber.Text.Trim());
+            var latitudeValid = TryParseDouble(txtLatitude.Text, out var latitude) && IsLatitudeValid(latitude);
+            var longitudeValid = TryParseDouble(txtLongitude.Text, out var longitude) && IsLongitudeValid(longitude);
+            var widthValid = TryParseDouble(txtWidth.Text, out var width) && IsWidthValid(width);
+            var heightValid = TryParseDouble(txtHeight.Text, out var height) && IsHeightValid(height);
+            var descriptionValid = IsDescriptionValid(txtDescription.Text.Trim());
+            var ratingValid = IsRatingValid((double)nudRating.Value);
+            var venueTypeValid = hasVenueTypes && cbVenueTypes.SelectedIndex >= 0;
+
+            SetIcon(pbNameValidation, nameValid);
+            SetIcon(pbRegionValidation, regionValid);
+            SetIcon(pbDistrictValidation, districtValid);
+            SetIcon(pbCityValidation, cityValid);
+            SetIcon(pbStreetValidation, streetValid);
+            SetIcon(pbHouseNumberValidation, houseValid);
+            SetIcon(pbLatitudeValidation, latitudeValid);
+            SetIcon(pbLongitudeValidation, longitudeValid);
+            SetIcon(pbWidthValidation, widthValid);
+            SetIcon(pbHeightValidation, heightValid);
+            SetIcon(pbDescriptionValidation, descriptionValid);
+            SetIcon(pbRatingValidation, ratingValid);
+            SetIcon(pbVenueTypeValidation, venueTypeValid);
+
+            var isFormValid =
+                venueTypeValid &&
+                nameValid &&
+                regionValid &&
+                districtValid &&
+                cityValid &&
+                streetValid &&
+                houseValid &&
+                latitudeValid &&
+                longitudeValid &&
+                widthValid &&
+                heightValid &&
+                descriptionValid &&
+                ratingValid;
+
+            btnGenerate.Enabled = !_isLoadingVenueTypes && hasVenueTypes;
+            btnSave.Enabled = !_isSaving && !_isLoadingVenueTypes && isFormValid;
         }
 
-        private void TxtDistrict_TextChanged(object sender, EventArgs e)
+        private bool HasVenueTypes()
         {
-            var success = IsValidLength(txtDistrict, VenueAddress.MIN_LENGTH, VenueAddress.MAX_LENGTH);
-            SetIcon(pbDistrictValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return cbVenueTypes.Items.Count > 0;
         }
 
-        private void TxtCity_TextChanged(object sender, EventArgs e)
+        private static bool TryParseDouble(string? text, out double value)
         {
-            var success = IsValidLength(txtCity, VenueAddress.MIN_LENGTH, VenueAddress.MAX_LENGTH);
-            SetIcon(pbCityValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return double.TryParse(text?.Trim(), out value);
         }
 
-        private void TxtStreet_TextChanged(object sender, EventArgs e)
+        private static bool IsValidLength(string value, int min, int max)
         {
-            var success = IsValidLength(txtStreet, VenueAddress.MIN_LENGTH, VenueAddress.MAX_LENGTH);
-            SetIcon(pbStreetValidation, success);
-            btnSave.Enabled = !HasErrors();
+            var len = value.Trim().Length;
+            return len >= min && len <= max;
         }
 
-        private void TxtLatitude_TextChanged(object sender, EventArgs e)
+        private static bool IsNameValid(string value)
         {
-            var success = IsDoubleValid(txtLatitude, VenueAddress.MIN_LATITUDE_VALUE, VenueAddress.MAX_LATITUDE_VALUE);
-            SetIcon(pbLatitudeValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return IsValidLength(value, VenueName.MIN_LENGTH, VenueName.MAX_LENGTH);
         }
 
-        private void TxtLongitude_TextChanged(object sender, EventArgs e)
+        private static bool IsDescriptionValid(string value)
         {
-            var success = IsDoubleValid(txtLongitude, VenueAddress.MIN_LONGITUDE_VALUE,
-                VenueAddress.MAX_LONGITUDE_VALUE);
-            SetIcon(pbLongitudeValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return IsValidLength(value, VenueDescription.MIN_LENGTH, VenueDescription.MAX_LENGTH);
         }
 
-        private void TxtWidth_TextChanged(object sender, EventArgs e)
+        private static bool IsAddressPartValid(string value)
         {
-            var success = IsDoubleValid(txtWidth, VenueSize.MIN_WIDTH, VenueSize.MAX_WIDTH);
-            SetIcon(pbWidthValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return IsValidLength(value, VenueAddress.MIN_LENGTH, VenueAddress.MAX_LENGTH);
         }
 
-        private void TxtHeight_TextChanged(object sender, EventArgs e)
+        private static bool IsLatitudeValid(double value)
         {
-            var success = IsDoubleValid(txtHeight, VenueSize.MIN_WIDTH, VenueSize.MAX_WIDTH);
-            SetIcon(pbHeightValidation, success);
-            btnSave.Enabled = !HasErrors();
+            return value is >= VenueAddress.MIN_LATITUDE_VALUE and <= VenueAddress.MAX_LATITUDE_VALUE;
         }
 
-        private void CbVenueTypes_SelectedValueChanged(object sender, EventArgs e)
+        private static bool IsLongitudeValid(double value)
         {
-            if (cbVenueTypes.SelectedIndex >= 0)
-            {
-                btnGenerate.Enabled = true;
-            }
+            return value is >= VenueAddress.MIN_LONGITUDE_VALUE and <= VenueAddress.MAX_LONGITUDE_VALUE;
         }
 
-        private bool HasErrors()
+        private static bool IsWidthValid(double value)
         {
-            var hasErrors =
-                pbCityValidation.Image == _exception ||
-                pbDescriptionValidation.Image == _exception ||
-                pbDistrictValidation.Image == _exception ||
-                pbHeightValidation.Image == _exception ||
-                pbHouseNumberValidation.Image == _exception ||
-                pbLatitudeValidation.Image == _exception ||
-                pbLongitudeValidation.Image == _exception ||
-                pbNameValidation.Image == _exception ||
-                pbRegionValidation.Image == _exception ||
-                pbStreetValidation.Image == _exception ||
-                pbWidthValidation.Image == _exception ||
-                pbVenueTypeValidation.Image == _exception;
-
-            return hasErrors;
+            return value is >= VenueSize.MIN_WIDTH and <= VenueSize.MAX_WIDTH;
         }
+
+        private static bool IsHeightValid(double value)
+        {
+            return value is >= VenueSize.MIN_HEIGHT and <= VenueSize.MAX_HEIGHT;
+        }
+
+        private static bool IsRatingValid(double value)
+        {
+            return value is > 0 and <= 10;
+        }
+
+        private void NudRating_ValueChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void CbVenueTypes_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtName_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtDescription_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtHouseNumber_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtRegion_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtDistrict_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtCity_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtStreet_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtLatitude_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtLongitude_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtWidth_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void TxtHeight_TextChanged(object sender, EventArgs e) => UpdateValidationState();
+        private void CbVenueTypes_SelectedValueChanged(object sender, EventArgs e) => UpdateValidationState();
 
         private void VenueForm_FormClosed(object sender, FormClosedEventArgs e)
         {
+            if (!_cts.IsCancellationRequested)
+            {
+                _cts.Cancel();
+            }
+
             _cts.Dispose();
         }
     }

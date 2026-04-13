@@ -1,5 +1,10 @@
+using System.Linq.Expressions;
+using AdVision.Domain.Venues;
 using Shared.Abstractions;
 
 namespace AdVision.Application.Venues.GetVenuesQuery;
 
-public sealed record GetVenuesQuery(int Page, int Size) : IQuery;
+public sealed record GetVenuesQuery(
+    int Page,
+    int Size,
+    Expression<Func<Venue, bool>>? Filter = null) : IQuery;
