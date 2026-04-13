@@ -22,7 +22,9 @@ public class CreateVenueCommandHandler(
         }
 
         var existingVenue = await repository.GetByAsync(v =>
-                v.Name == venueNameResult.Value,
+                v.Name == venueNameResult.Value &&
+                Math.Abs(v.Address.Latitude - command.Dto.Address.Latitude) < 0.05 &&
+                Math.Abs(v.Address.Longitude - command.Dto.Address.Longitude) < 0.05,
             cancellationToken);
 
         if (existingVenue.IsFailure)
