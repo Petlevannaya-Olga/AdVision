@@ -60,6 +60,8 @@ public partial class MainForm : Form
         InitializeComponent();
         ConfigureVenuesGrid();
         UpdatePagingState();
+        
+        venuesDataGridView.CellDoubleClick += VenuesDataGridView_CellDoubleClick;
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -139,12 +141,19 @@ public partial class MainForm : Form
         });
     }
 
+    private bool IsSortDescending()
+    {
+        return chkDescending.Checked;
+    }
+
     private async Task LoadVenuesAsync()
     {
         var filter = BuildFilter();
+        var orderBy = BuildSort();
+        var descending = IsSortDescending();
 
         var result = await _venuesQueryHandler.Handle(
-            new GetVenuesQuery(_page, PageSize, filter),
+            new GetVenuesQuery(_page, PageSize, filter, orderBy, descending),
             _cts.Token);
 
         if (result.IsFailure)
@@ -178,6 +187,7 @@ public partial class MainForm : Form
         await LoadDistrictsAsync();
         await LoadCitiesAsync();
         UpdateResetButtonState();
+        ResetFilters();
     }
 
     private async Task LoadVenueTypesAsync()
@@ -331,14 +341,38 @@ public partial class MainForm : Form
                 EF.Functions.Like(v.Address.Street, pattern));
         }
 
-        var ratingFrom = (double)nudRatingFrom.Value;
-        var ratingTo = (double)nudRatingTo.Value;
+        var ratingFrom = nudRatingFrom.Value;
+        var ratingTo = nudRatingTo.Value;
 
-        filter = filter
-            .And(v => v.Rating.Value >= ratingFrom)
-            .And(v => v.Rating.Value <= ratingTo);
+        if (ratingFrom > nudRatingFrom.Minimum)
+        {
+            filter = filter.And(v => v.Rating.Value >= (double)ratingFrom);
+        }
+
+        if (ratingTo < nudRatingTo.Maximum)
+        {
+            filter = filter.And(v => v.Rating.Value <= (double)ratingTo);
+        }
 
         return filter;
+    }
+
+    private Expression<Func<Venue, object>> BuildSort()
+    {
+        return cbSortOrder.SelectedItem?.ToString() switch
+        {
+            "Название" => v => v.Name.Value,
+            "Тип" => v => v.Type,
+            "Регион" => v => v.Address.Region,
+            "Район" => v => v.Address.District,
+            "Город" => v => v.Address.City,
+            "Улица" => v => v.Address.Street,
+            "Широта" => v => v.Address.Latitude,
+            "Долгота" => v => v.Address.Longitude,
+            "Ширина" => v => v.Size.Width,
+            "Высота" => v => v.Size.Height,
+            _ => v => v.Name.Value
+        };
     }
 
     private async void BtnApply_Click(object sender, EventArgs e)
@@ -432,7 +466,6 @@ public partial class MainForm : Form
         try
         {
             ResetFilters();
-
             _page = 1; // важно!
             await LoadVenuesAsync();
         }
@@ -455,6 +488,10 @@ public partial class MainForm : Form
         cbRegions.SelectedIndex = -1;
         cbDistricts.SelectedIndex = -1;
         cbCities.SelectedIndex = -1;
+        nudRatingFrom.Value = 1;
+        nudRatingTo.Value = 10;
+        cbSortOrder.SelectedIndex = 0;
+        chkDescending.Checked = false;
     }
 
     private void UpdateResetButtonState()
@@ -463,6 +500,44 @@ public partial class MainForm : Form
             cbVenueTypes.SelectedIndex >= 0 ||
             cbRegions.SelectedIndex >= 0 ||
             cbDistricts.SelectedIndex >= 0 ||
-            cbCities.SelectedIndex >= 0;
+            cbCities.SelectedIndex >= 0 ||
+            chkDescending.Checked ||
+            nudRatingTo.Value > 1 ||
+            nudRatingFrom.Value < 10 ||
+            cbSortOrder.SelectedIndex >= 0;
+    }
+    
+    private void VenuesDataGridView_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0)
+        {
+            return; // клик по заголовку
+        }
+
+        var row = venuesDataGridView.Rows[e.RowIndex];
+
+        if (row.DataBoundItem is not VenueDto venue)
+        {
+            _logger.LogWarning("Не удалось получить VenueDto из строки DataGridView");
+            return;
+        }
+
+        OpenVenueForm(venue);
+    }
+    
+    private void OpenVenueForm(VenueDto venue)
+    {
+        // var form = _serviceProvider.GetRequiredService<VenueForm>();
+        //
+        // // 👉 если форма поддерживает редактирование
+        // form.LoadVenue(venue);
+        //
+        // form.VenueCreated += OnVenueCreated;
+        //
+        // form.ShowDialog();
+        //
+        // form.VenueCreated -= OnVenueCreated;
+
+        MessageBox.Show("asdad");
     }
 }

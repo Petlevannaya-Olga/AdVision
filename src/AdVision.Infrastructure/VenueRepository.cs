@@ -78,20 +78,12 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
         int page,
         int size,
         Expression<Func<Venue, bool>>? filter = null,
+        Expression<Func<Venue, object>>? orderBy = null,
+        bool orderByDescending = false,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            if (page <= 0)
-            {
-                return CommonErrors.Validation("page.invalid", "Номер страницы должен быть больше 0");
-            }
-
-            if (size <= 0)
-            {
-                return CommonErrors.Validation("page.size.invalid", "Размер страницы должен быть больше 0");
-            }
-
             var query = dbContext.Venues
                 .Include(v => v.Type)
                 .AsQueryable();
@@ -100,6 +92,8 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
             {
                 query = query.Where(filter);
             }
+
+            query = ApplySorting(query, orderBy, orderByDescending);
 
             var totalCount = await query.CountAsync(cancellationToken);
 
@@ -151,5 +145,20 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                 "get.values.from.db.exception",
                 "Ошибка при получении значений");
         }
+    }
+    
+    private static IQueryable<Venue> ApplySorting(
+        IQueryable<Venue> query,
+        Expression<Func<Venue, object>>? orderBy,
+        bool orderByDescending)
+    {
+        if (orderBy is null)
+        {
+            return query.OrderBy(v => v.Name.Value);
+        }
+
+        return orderByDescending
+            ? query.OrderByDescending(orderBy)
+            : query.OrderBy(orderBy);
     }
 }

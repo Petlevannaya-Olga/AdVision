@@ -1,6 +1,7 @@
 using AdVision.Application;
 using AdVision.Application.Generators;
 using AdVision.Infrastructure.Generators;
+using AdVision.Infrastructure.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,6 +20,9 @@ public static class DependencyInjection
             options.EnableSensitiveDataLogging();
             options.UseLoggerFactory(CreateLoggerFactory()); // только для dev
         });
+        
+        // Сидеры
+        services.AddScoped<ISeeder, VenueTypesSeeder>();
         
         // Репозитории
         services.AddSingleton<IVenueTypeRepository, VenueTypeRepository>();

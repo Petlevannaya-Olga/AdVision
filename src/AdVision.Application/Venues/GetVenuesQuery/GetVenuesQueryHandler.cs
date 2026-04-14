@@ -18,6 +18,8 @@ public sealed class GetVenuesQueryHandler(IVenueRepository repository)
             query.Page,
             query.Size,
             query.Filter,
+            query.OrderBy,
+            query.OrderByDescending,
             cancellationToken);
 
         if (result.IsFailure)

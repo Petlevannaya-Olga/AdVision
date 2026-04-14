@@ -7,4 +7,6 @@ namespace AdVision.Application.Venues.GetVenuesQuery;
 public sealed record GetVenuesQuery(
     int Page,
     int Size,
-    Expression<Func<Venue, bool>>? Filter = null) : IQuery;
+    Expression<Func<Venue, bool>>? Filter = null,
+    Expression<Func<Venue, object>>? OrderBy = null,
+    bool OrderByDescending = false) : IQuery;

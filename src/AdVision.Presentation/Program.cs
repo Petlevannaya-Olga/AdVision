@@ -1,6 +1,7 @@
 using System.Globalization;
 using AdVision.Application;
 using AdVision.Infrastructure;
+using AdVision.Infrastructure.Seeding;
 using AdVision.Presentation.Notifications;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -12,7 +13,7 @@ namespace AdVision.Presentation;
 internal static class Program
 {
     [STAThread]
-    private static void Main()
+    private static async Task Main()
     {
         Console.OutputEncoding = System.Text.Encoding.UTF8;
 
@@ -39,13 +40,16 @@ internal static class Program
 
             // Собираем ServiceProvider
             var serviceProvider = services.BuildServiceProvider();
+            
+            // Сидирование
+            await serviceProvider.RunSeeders();
 
             using (var scope = serviceProvider.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                db.Database.Migrate();
+                await db.Database.MigrateAsync();
             }
-
+            
             ApplicationConfiguration.Initialize();
 
             // Получаем Form через DI
@@ -59,7 +63,7 @@ internal static class Program
         }
         finally
         {
-            Log.CloseAndFlush();
+            await Log.CloseAndFlushAsync();
         }
     }
 

@@ -39,6 +39,9 @@ partial class MainForm
 		btnNext = new Button();
 		btnCreate = new Button();
 		panel2 = new Panel();
+		btnApply = new Button();
+		btnReset = new Button();
+		chkDescending = new CheckBox();
 		nudRatingTo = new NumericUpDown();
 		nudRatingFrom = new NumericUpDown();
 		label10 = new Label();
@@ -58,9 +61,6 @@ partial class MainForm
 		label6 = new Label();
 		label2 = new Label();
 		label1 = new Label();
-		panel3 = new Panel();
-		btnReset = new Button();
-		btnApply = new Button();
 		tabPage2 = new TabPage();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
@@ -70,7 +70,6 @@ partial class MainForm
 		panel2.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).BeginInit();
 		((System.ComponentModel.ISupportInitialize)nudRatingFrom).BeginInit();
-		panel3.SuspendLayout();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -81,7 +80,7 @@ partial class MainForm
 		tabControl1.Location = new Point(0, 0);
 		tabControl1.Name = "tabControl1";
 		tabControl1.SelectedIndex = 0;
-		tabControl1.Size = new Size(800, 504);
+		tabControl1.Size = new Size(1030, 538);
 		tabControl1.TabIndex = 0;
 		// 
 		// tabPage1
@@ -90,7 +89,7 @@ partial class MainForm
 		tabPage1.Location = new Point(4, 29);
 		tabPage1.Name = "tabPage1";
 		tabPage1.Padding = new Padding(3);
-		tabPage1.Size = new Size(792, 471);
+		tabPage1.Size = new Size(1022, 505);
 		tabPage1.TabIndex = 0;
 		tabPage1.Text = "Площадки";
 		tabPage1.UseVisualStyleBackColor = true;
@@ -103,24 +102,24 @@ partial class MainForm
 		tableLayoutPanel2.Controls.Add(venuesDataGridView, 1, 0);
 		tableLayoutPanel2.Controls.Add(panel1, 1, 1);
 		tableLayoutPanel2.Controls.Add(panel2, 0, 0);
-		tableLayoutPanel2.Controls.Add(panel3, 0, 1);
 		tableLayoutPanel2.Dock = DockStyle.Fill;
 		tableLayoutPanel2.Location = new Point(3, 3);
 		tableLayoutPanel2.Name = "tableLayoutPanel2";
 		tableLayoutPanel2.RowCount = 2;
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
-		tableLayoutPanel2.Size = new Size(786, 465);
+		tableLayoutPanel2.Size = new Size(1016, 499);
 		tableLayoutPanel2.TabIndex = 2;
 		// 
 		// venuesDataGridView
 		// 
+		venuesDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		venuesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		venuesDataGridView.Dock = DockStyle.Fill;
 		venuesDataGridView.Location = new Point(303, 3);
 		venuesDataGridView.Name = "venuesDataGridView";
 		venuesDataGridView.RowHeadersWidth = 51;
-		venuesDataGridView.Size = new Size(480, 424);
+		venuesDataGridView.Size = new Size(710, 458);
 		venuesDataGridView.TabIndex = 0;
 		// 
 		// panel1
@@ -130,9 +129,9 @@ partial class MainForm
 		panel1.Controls.Add(btnNext);
 		panel1.Controls.Add(btnCreate);
 		panel1.Dock = DockStyle.Fill;
-		panel1.Location = new Point(303, 433);
+		panel1.Location = new Point(303, 467);
 		panel1.Name = "panel1";
-		panel1.Size = new Size(480, 29);
+		panel1.Size = new Size(710, 29);
 		panel1.TabIndex = 2;
 		// 
 		// label11
@@ -149,7 +148,7 @@ partial class MainForm
 		btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnPrev.BackColor = Color.Transparent;
 		btnPrev.FlatStyle = FlatStyle.Popup;
-		btnPrev.Location = new Point(283, 0);
+		btnPrev.Location = new Point(513, 0);
 		btnPrev.Name = "btnPrev";
 		btnPrev.Size = new Size(44, 29);
 		btnPrev.TabIndex = 1;
@@ -162,7 +161,7 @@ partial class MainForm
 		btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnNext.BackColor = Color.Transparent;
 		btnNext.FlatStyle = FlatStyle.Popup;
-		btnNext.Location = new Point(333, 0);
+		btnNext.Location = new Point(563, 0);
 		btnNext.Name = "btnNext";
 		btnNext.Size = new Size(44, 29);
 		btnNext.TabIndex = 1;
@@ -175,7 +174,7 @@ partial class MainForm
 		btnCreate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnCreate.BackColor = Color.Transparent;
 		btnCreate.FlatStyle = FlatStyle.Popup;
-		btnCreate.Location = new Point(383, 0);
+		btnCreate.Location = new Point(613, 0);
 		btnCreate.Name = "btnCreate";
 		btnCreate.Size = new Size(94, 29);
 		btnCreate.TabIndex = 1;
@@ -185,6 +184,9 @@ partial class MainForm
 		// 
 		// panel2
 		// 
+		panel2.Controls.Add(btnApply);
+		panel2.Controls.Add(btnReset);
+		panel2.Controls.Add(chkDescending);
 		panel2.Controls.Add(nudRatingTo);
 		panel2.Controls.Add(nudRatingFrom);
 		panel2.Controls.Add(label10);
@@ -207,8 +209,40 @@ partial class MainForm
 		panel2.Dock = DockStyle.Fill;
 		panel2.Location = new Point(3, 3);
 		panel2.Name = "panel2";
-		panel2.Size = new Size(294, 424);
+		panel2.Size = new Size(294, 458);
 		panel2.TabIndex = 3;
+		// 
+		// btnApply
+		// 
+		btnApply.FlatStyle = FlatStyle.Popup;
+		btnApply.Location = new Point(149, 427);
+		btnApply.Name = "btnApply";
+		btnApply.Size = new Size(145, 29);
+		btnApply.TabIndex = 4;
+		btnApply.Text = "Применить";
+		btnApply.UseVisualStyleBackColor = true;
+		btnApply.Click += BtnApply_Click;
+		// 
+		// btnReset
+		// 
+		btnReset.FlatStyle = FlatStyle.Popup;
+		btnReset.Location = new Point(0, 427);
+		btnReset.Name = "btnReset";
+		btnReset.Size = new Size(146, 29);
+		btnReset.TabIndex = 4;
+		btnReset.Text = "Сбросить";
+		btnReset.UseVisualStyleBackColor = true;
+		btnReset.Click += BtnReset_Click;
+		// 
+		// chkDescending
+		// 
+		chkDescending.AutoSize = true;
+		chkDescending.Location = new Point(152, 391);
+		chkDescending.Name = "chkDescending";
+		chkDescending.Size = new Size(128, 24);
+		chkDescending.TabIndex = 7;
+		chkDescending.Text = "По убыванию";
+		chkDescending.UseVisualStyleBackColor = true;
 		// 
 		// nudRatingTo
 		// 
@@ -252,15 +286,15 @@ partial class MainForm
 		// 
 		cbSortOrder.FormattingEnabled = true;
 		cbSortOrder.Items.AddRange(new object[] { "Название", "Тип", "Регион", "Район", "Город", "Улица", "Широта", "Долгота", "Ширина", "Высота" });
-		cbSortOrder.Location = new Point(0, 393);
+		cbSortOrder.Location = new Point(0, 389);
 		cbSortOrder.Name = "cbSortOrder";
-		cbSortOrder.Size = new Size(291, 28);
+		cbSortOrder.Size = new Size(146, 28);
 		cbSortOrder.TabIndex = 4;
 		// 
 		// label7
 		// 
 		label7.AutoSize = true;
-		label7.Location = new Point(3, 370);
+		label7.Location = new Point(3, 367);
 		label7.Name = "label7";
 		label7.Size = new Size(121, 20);
 		label7.TabIndex = 3;
@@ -377,44 +411,12 @@ partial class MainForm
 		label1.TabIndex = 0;
 		label1.Text = "Название";
 		// 
-		// panel3
-		// 
-		panel3.Controls.Add(btnReset);
-		panel3.Controls.Add(btnApply);
-		panel3.Dock = DockStyle.Fill;
-		panel3.Location = new Point(3, 433);
-		panel3.Name = "panel3";
-		panel3.Size = new Size(294, 29);
-		panel3.TabIndex = 4;
-		// 
-		// btnReset
-		// 
-		btnReset.FlatStyle = FlatStyle.Popup;
-		btnReset.Location = new Point(3, 0);
-		btnReset.Name = "btnReset";
-		btnReset.Size = new Size(143, 29);
-		btnReset.TabIndex = 4;
-		btnReset.Text = "Сбросить";
-		btnReset.UseVisualStyleBackColor = true;
-		btnReset.Click += BtnReset_Click;
-		// 
-		// btnApply
-		// 
-		btnApply.FlatStyle = FlatStyle.Popup;
-		btnApply.Location = new Point(149, 0);
-		btnApply.Name = "btnApply";
-		btnApply.Size = new Size(145, 29);
-		btnApply.TabIndex = 4;
-		btnApply.Text = "Применить";
-		btnApply.UseVisualStyleBackColor = true;
-		btnApply.Click += BtnApply_Click;
-		// 
 		// tabPage2
 		// 
 		tabPage2.Location = new Point(4, 29);
 		tabPage2.Name = "tabPage2";
 		tabPage2.Padding = new Padding(3);
-		tabPage2.Size = new Size(792, 471);
+		tabPage2.Size = new Size(1022, 505);
 		tabPage2.TabIndex = 1;
 		tabPage2.Text = "tabPage2";
 		tabPage2.UseVisualStyleBackColor = true;
@@ -423,7 +425,7 @@ partial class MainForm
 		// 
 		AutoScaleDimensions = new SizeF(8F, 20F);
 		AutoScaleMode = AutoScaleMode.Font;
-		ClientSize = new Size(800, 504);
+		ClientSize = new Size(1030, 538);
 		Controls.Add(tabControl1);
 		Name = "MainForm";
 		StartPosition = FormStartPosition.CenterScreen;
@@ -439,7 +441,6 @@ partial class MainForm
 		panel2.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).EndInit();
 		((System.ComponentModel.ISupportInitialize)nudRatingFrom).EndInit();
-		panel3.ResumeLayout(false);
 		ResumeLayout(false);
 	}
 
@@ -475,7 +476,7 @@ partial class MainForm
 	private Label label8;
 	private NumericUpDown nudRatingTo;
 	private NumericUpDown nudRatingFrom;
-	private Panel panel3;
 	private Button btnReset;
 	private Label label11;
+	private CheckBox chkDescending;
 }
