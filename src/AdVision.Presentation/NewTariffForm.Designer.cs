@@ -28,23 +28,15 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			dtpDateTo = new DateTimePicker();
 			label1 = new Label();
-			dtpEndDate = new DateTimePicker();
 			label2 = new Label();
 			label3 = new Label();
 			txtPrice = new TextBox();
 			btnSave = new Button();
 			btnExit = new Button();
+			dtpStartDate = new DateTimePicker();
+			dtpEndDate = new DateTimePicker();
 			SuspendLayout();
-			// 
-			// dtpDateTo
-			// 
-			dtpDateTo.Location = new Point(12, 37);
-			dtpDateTo.Name = "dtpDateTo";
-			dtpDateTo.Size = new Size(250, 27);
-			dtpDateTo.TabIndex = 0;
-			dtpDateTo.ValueChanged += DtpStartDate_ValueChanged;
 			// 
 			// label1
 			// 
@@ -54,14 +46,6 @@
 			label1.Size = new Size(94, 20);
 			label1.TabIndex = 1;
 			label1.Text = "Дата начала";
-			// 
-			// dtpEndDate
-			// 
-			dtpEndDate.Location = new Point(12, 99);
-			dtpEndDate.Name = "dtpEndDate";
-			dtpEndDate.Size = new Size(250, 27);
-			dtpEndDate.TabIndex = 0;
-			dtpEndDate.ValueChanged += DtpEndDate_ValueChanged;
 			// 
 			// label2
 			// 
@@ -110,19 +94,33 @@
 			btnExit.UseVisualStyleBackColor = true;
 			btnExit.Click += BtnExit_Click;
 			// 
+			// dtpStartDate
+			// 
+			dtpStartDate.Location = new Point(12, 37);
+			dtpStartDate.Name = "dtpStartDate";
+			dtpStartDate.Size = new Size(250, 27);
+			dtpStartDate.TabIndex = 4;
+			// 
+			// dtpEndDate
+			// 
+			dtpEndDate.Location = new Point(12, 100);
+			dtpEndDate.Name = "dtpEndDate";
+			dtpEndDate.Size = new Size(250, 27);
+			dtpEndDate.TabIndex = 5;
+			// 
 			// NewTariffForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
 			ClientSize = new Size(274, 237);
+			Controls.Add(dtpEndDate);
+			Controls.Add(dtpStartDate);
 			Controls.Add(btnExit);
 			Controls.Add(btnSave);
 			Controls.Add(txtPrice);
 			Controls.Add(label3);
 			Controls.Add(label2);
 			Controls.Add(label1);
-			Controls.Add(dtpEndDate);
-			Controls.Add(dtpDateTo);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
@@ -136,14 +134,13 @@
 
 		#endregion
 
-		private DateTimePicker dtpStartDate;
 		private Label label1;
-		private DateTimePicker dtpEndDate;
 		private Label label2;
 		private Label label3;
 		private TextBox txtPrice;
 		private Button btnSave;
 		private Button btnExit;
-		private DateTimePicker dtpDateTo;
+		private DateTimePicker dtpStartDate;
+		private DateTimePicker dtpEndDate;
 	}
 }

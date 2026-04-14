@@ -62,6 +62,24 @@ partial class MainForm
 		label2 = new Label();
 		label1 = new Label();
 		tabPage2 = new TabPage();
+		tableLayoutPanel3 = new TableLayoutPanel();
+		tableLayoutPanel1 = new TableLayoutPanel();
+		panel3 = new Panel();
+		button5 = new Button();
+		button4 = new Button();
+		button3 = new Button();
+		btnPositions = new Button();
+		btnVenueTypes = new Button();
+		tableLayoutPanel4 = new TableLayoutPanel();
+		pnlFilters = new Panel();
+		dgvDirectories = new DataGridView();
+		panel4 = new Panel();
+		btnPrevPage = new Button();
+		btnNextPage = new Button();
+		btnAdd = new Button();
+		tabPage3 = new TabPage();
+		tabPage4 = new TabPage();
+		tabPage5 = new TabPage();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -70,12 +88,22 @@ partial class MainForm
 		panel2.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).BeginInit();
 		((System.ComponentModel.ISupportInitialize)nudRatingFrom).BeginInit();
+		tabPage2.SuspendLayout();
+		tableLayoutPanel3.SuspendLayout();
+		tableLayoutPanel1.SuspendLayout();
+		panel3.SuspendLayout();
+		tableLayoutPanel4.SuspendLayout();
+		((System.ComponentModel.ISupportInitialize)dgvDirectories).BeginInit();
+		panel4.SuspendLayout();
 		SuspendLayout();
 		// 
 		// tabControl1
 		// 
 		tabControl1.Controls.Add(tabPage1);
 		tabControl1.Controls.Add(tabPage2);
+		tabControl1.Controls.Add(tabPage3);
+		tabControl1.Controls.Add(tabPage4);
+		tabControl1.Controls.Add(tabPage5);
 		tabControl1.Dock = DockStyle.Fill;
 		tabControl1.Location = new Point(0, 0);
 		tabControl1.Name = "tabControl1";
@@ -113,6 +141,8 @@ partial class MainForm
 		// 
 		// venuesDataGridView
 		// 
+		venuesDataGridView.AllowUserToAddRows = false;
+		venuesDataGridView.AllowUserToDeleteRows = false;
 		venuesDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		venuesDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		venuesDataGridView.Dock = DockStyle.Fill;
@@ -413,13 +443,213 @@ partial class MainForm
 		// 
 		// tabPage2
 		// 
+		tabPage2.Controls.Add(tableLayoutPanel3);
 		tabPage2.Location = new Point(4, 29);
 		tabPage2.Name = "tabPage2";
 		tabPage2.Padding = new Padding(3);
 		tabPage2.Size = new Size(1022, 505);
 		tabPage2.TabIndex = 1;
-		tabPage2.Text = "tabPage2";
+		tabPage2.Text = "Справочники";
 		tabPage2.UseVisualStyleBackColor = true;
+		// 
+		// tableLayoutPanel3
+		// 
+		tableLayoutPanel3.ColumnCount = 1;
+		tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel3.Controls.Add(tableLayoutPanel1, 0, 0);
+		tableLayoutPanel3.Controls.Add(panel4, 0, 1);
+		tableLayoutPanel3.Dock = DockStyle.Fill;
+		tableLayoutPanel3.Location = new Point(3, 3);
+		tableLayoutPanel3.Name = "tableLayoutPanel3";
+		tableLayoutPanel3.RowCount = 2;
+		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+		tableLayoutPanel3.Size = new Size(1016, 499);
+		tableLayoutPanel3.TabIndex = 1;
+		// 
+		// tableLayoutPanel1
+		// 
+		tableLayoutPanel1.ColumnCount = 2;
+		tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
+		tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel1.Controls.Add(panel3, 0, 0);
+		tableLayoutPanel1.Controls.Add(tableLayoutPanel4, 1, 0);
+		tableLayoutPanel1.Dock = DockStyle.Fill;
+		tableLayoutPanel1.Location = new Point(3, 3);
+		tableLayoutPanel1.Name = "tableLayoutPanel1";
+		tableLayoutPanel1.RowCount = 1;
+		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel1.Size = new Size(1010, 449);
+		tableLayoutPanel1.TabIndex = 0;
+		// 
+		// panel3
+		// 
+		panel3.Controls.Add(button5);
+		panel3.Controls.Add(button4);
+		panel3.Controls.Add(button3);
+		panel3.Controls.Add(btnPositions);
+		panel3.Controls.Add(btnVenueTypes);
+		panel3.Dock = DockStyle.Fill;
+		panel3.Location = new Point(3, 3);
+		panel3.Name = "panel3";
+		panel3.Size = new Size(294, 443);
+		panel3.TabIndex = 0;
+		// 
+		// button5
+		// 
+		button5.FlatStyle = FlatStyle.Popup;
+		button5.Location = new Point(3, 143);
+		button5.Name = "button5";
+		button5.Size = new Size(288, 29);
+		button5.TabIndex = 0;
+		button5.Text = "Скидки";
+		button5.UseVisualStyleBackColor = true;
+		// 
+		// button4
+		// 
+		button4.FlatStyle = FlatStyle.Popup;
+		button4.Location = new Point(3, 108);
+		button4.Name = "button4";
+		button4.Size = new Size(288, 29);
+		button4.TabIndex = 0;
+		button4.Text = "Заказчики";
+		button4.UseVisualStyleBackColor = true;
+		// 
+		// button3
+		// 
+		button3.FlatStyle = FlatStyle.Popup;
+		button3.Location = new Point(3, 73);
+		button3.Name = "button3";
+		button3.Size = new Size(288, 29);
+		button3.TabIndex = 0;
+		button3.Text = "Сотрудники";
+		button3.UseVisualStyleBackColor = true;
+		// 
+		// btnPositions
+		// 
+		btnPositions.FlatStyle = FlatStyle.Popup;
+		btnPositions.Location = new Point(3, 38);
+		btnPositions.Name = "btnPositions";
+		btnPositions.Size = new Size(288, 29);
+		btnPositions.TabIndex = 0;
+		btnPositions.Text = "Должности";
+		btnPositions.UseVisualStyleBackColor = true;
+		// 
+		// btnVenueTypes
+		// 
+		btnVenueTypes.FlatStyle = FlatStyle.Popup;
+		btnVenueTypes.Location = new Point(3, 3);
+		btnVenueTypes.Name = "btnVenueTypes";
+		btnVenueTypes.Size = new Size(288, 29);
+		btnVenueTypes.TabIndex = 0;
+		btnVenueTypes.Text = "Типы площадок";
+		btnVenueTypes.UseVisualStyleBackColor = true;
+		// 
+		// tableLayoutPanel4
+		// 
+		tableLayoutPanel4.ColumnCount = 1;
+		tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel4.Controls.Add(pnlFilters, 0, 0);
+		tableLayoutPanel4.Controls.Add(dgvDirectories, 0, 1);
+		tableLayoutPanel4.Dock = DockStyle.Fill;
+		tableLayoutPanel4.Location = new Point(303, 3);
+		tableLayoutPanel4.Name = "tableLayoutPanel4";
+		tableLayoutPanel4.RowCount = 2;
+		tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 200F));
+		tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel4.Size = new Size(704, 443);
+		tableLayoutPanel4.TabIndex = 1;
+		// 
+		// pnlFilters
+		// 
+		pnlFilters.Dock = DockStyle.Fill;
+		pnlFilters.Location = new Point(3, 3);
+		pnlFilters.Name = "pnlFilters";
+		pnlFilters.Size = new Size(698, 194);
+		pnlFilters.TabIndex = 1;
+		// 
+		// dgvDirectories
+		// 
+		dgvDirectories.AllowUserToAddRows = false;
+		dgvDirectories.AllowUserToDeleteRows = false;
+		dgvDirectories.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dgvDirectories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dgvDirectories.Dock = DockStyle.Fill;
+		dgvDirectories.Location = new Point(3, 203);
+		dgvDirectories.Name = "dgvDirectories";
+		dgvDirectories.ReadOnly = true;
+		dgvDirectories.RowHeadersWidth = 51;
+		dgvDirectories.Size = new Size(698, 237);
+		dgvDirectories.TabIndex = 1;
+		// 
+		// panel4
+		// 
+		panel4.Controls.Add(btnPrevPage);
+		panel4.Controls.Add(btnNextPage);
+		panel4.Controls.Add(btnAdd);
+		panel4.Dock = DockStyle.Fill;
+		panel4.Location = new Point(3, 458);
+		panel4.Name = "panel4";
+		panel4.Size = new Size(1010, 38);
+		panel4.TabIndex = 1;
+		// 
+		// btnPrevPage
+		// 
+		btnPrevPage.FlatStyle = FlatStyle.Popup;
+		btnPrevPage.Location = new Point(743, 3);
+		btnPrevPage.Name = "btnPrevPage";
+		btnPrevPage.Size = new Size(47, 29);
+		btnPrevPage.TabIndex = 0;
+		btnPrevPage.Text = "<";
+		btnPrevPage.UseVisualStyleBackColor = true;
+		// 
+		// btnNextPage
+		// 
+		btnNextPage.FlatStyle = FlatStyle.Popup;
+		btnNextPage.Location = new Point(796, 3);
+		btnNextPage.Name = "btnNextPage";
+		btnNextPage.Size = new Size(47, 29);
+		btnNextPage.TabIndex = 0;
+		btnNextPage.Text = ">";
+		btnNextPage.UseVisualStyleBackColor = true;
+		// 
+		// btnAdd
+		// 
+		btnAdd.FlatStyle = FlatStyle.Popup;
+		btnAdd.Location = new Point(849, 3);
+		btnAdd.Name = "btnAdd";
+		btnAdd.Size = new Size(159, 29);
+		btnAdd.TabIndex = 0;
+		btnAdd.Text = "Добавить";
+		btnAdd.UseVisualStyleBackColor = true;
+		// 
+		// tabPage3
+		// 
+		tabPage3.Location = new Point(4, 29);
+		tabPage3.Name = "tabPage3";
+		tabPage3.Padding = new Padding(3);
+		tabPage3.Size = new Size(1022, 505);
+		tabPage3.TabIndex = 2;
+		tabPage3.Text = "Договоры";
+		tabPage3.UseVisualStyleBackColor = true;
+		// 
+		// tabPage4
+		// 
+		tabPage4.Location = new Point(4, 29);
+		tabPage4.Name = "tabPage4";
+		tabPage4.Size = new Size(1022, 505);
+		tabPage4.TabIndex = 3;
+		tabPage4.Text = "Заказы";
+		tabPage4.UseVisualStyleBackColor = true;
+		// 
+		// tabPage5
+		// 
+		tabPage5.Location = new Point(4, 29);
+		tabPage5.Name = "tabPage5";
+		tabPage5.Size = new Size(1022, 505);
+		tabPage5.TabIndex = 4;
+		tabPage5.Text = "Оплаты";
+		tabPage5.UseVisualStyleBackColor = true;
 		// 
 		// MainForm
 		// 
@@ -441,6 +671,13 @@ partial class MainForm
 		panel2.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).EndInit();
 		((System.ComponentModel.ISupportInitialize)nudRatingFrom).EndInit();
+		tabPage2.ResumeLayout(false);
+		tableLayoutPanel3.ResumeLayout(false);
+		tableLayoutPanel1.ResumeLayout(false);
+		panel3.ResumeLayout(false);
+		tableLayoutPanel4.ResumeLayout(false);
+		((System.ComponentModel.ISupportInitialize)dgvDirectories).EndInit();
+		panel4.ResumeLayout(false);
 		ResumeLayout(false);
 	}
 
@@ -479,4 +716,22 @@ partial class MainForm
 	private Button btnReset;
 	private Label label11;
 	private CheckBox chkDescending;
+	private TableLayoutPanel tableLayoutPanel3;
+	private TableLayoutPanel tableLayoutPanel1;
+	private Panel panel3;
+	private Button btnPositions;
+	private Button btnVenueTypes;
+	private TabPage tabPage3;
+	private TabPage tabPage4;
+	private TabPage tabPage5;
+	private Button button4;
+	private Button button3;
+	private DataGridView dgvDirectories;
+	private Button button5;
+	private Panel pnlFilters;
+	private TableLayoutPanel tableLayoutPanel4;
+	private Panel panel4;
+	private Button btnPrevPage;
+	private Button btnNextPage;
+	private Button btnAdd;
 }
