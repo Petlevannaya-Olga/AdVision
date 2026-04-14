@@ -28,7 +28,7 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			dtpStartDate = new DateTimePicker();
+			dtpDateTo = new DateTimePicker();
 			label1 = new Label();
 			dtpEndDate = new DateTimePicker();
 			label2 = new Label();
@@ -38,13 +38,13 @@
 			btnExit = new Button();
 			SuspendLayout();
 			// 
-			// dtpStartDate
+			// dtpDateTo
 			// 
-			dtpStartDate.Location = new Point(12, 37);
-			dtpStartDate.Name = "dtpStartDate";
-			dtpStartDate.Size = new Size(250, 27);
-			dtpStartDate.TabIndex = 0;
-			dtpStartDate.ValueChanged += DtpStartDate_ValueChanged;
+			dtpDateTo.Location = new Point(12, 37);
+			dtpDateTo.Name = "dtpDateTo";
+			dtpDateTo.Size = new Size(250, 27);
+			dtpDateTo.TabIndex = 0;
+			dtpDateTo.ValueChanged += DtpStartDate_ValueChanged;
 			// 
 			// label1
 			// 
@@ -122,7 +122,7 @@
 			Controls.Add(label2);
 			Controls.Add(label1);
 			Controls.Add(dtpEndDate);
-			Controls.Add(dtpStartDate);
+			Controls.Add(dtpDateTo);
 			FormBorderStyle = FormBorderStyle.FixedSingle;
 			MaximizeBox = false;
 			MinimizeBox = false;
@@ -144,5 +144,6 @@
 		private TextBox txtPrice;
 		private Button btnSave;
 		private Button btnExit;
+		private DateTimePicker dtpDateTo;
 	}
 }

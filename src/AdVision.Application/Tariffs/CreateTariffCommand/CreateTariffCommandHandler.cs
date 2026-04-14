@@ -29,6 +29,7 @@ public sealed class CreateTariffCommandHandler(
 
         var existingTariffsResult = await repository.GetByVenueIdAsync(
             venueId,
+            null,
             cancellationToken);
 
         if (existingTariffsResult.IsFailure)
@@ -48,8 +49,8 @@ public sealed class CreateTariffCommandHandler(
         if (hasIntersection)
         {
             return CommonErrors.Conflict(
-                "tariff.interval.intersects",
-                "Для этой площадки уже существует тариф, пересекающийся с указанным интервалом")
+                    "tariff.interval.intersects",
+                    "Для этой площадки уже существует тариф, пересекающийся с указанным интервалом")
                 .ToErrors();
         }
 

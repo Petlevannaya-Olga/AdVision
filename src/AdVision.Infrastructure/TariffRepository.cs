@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdVision.Application;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
@@ -13,12 +14,21 @@ public class TariffRepository(ApplicationDbContext dbContext, ILogger<VenueRepos
 {
     public async Task<Result<IReadOnlyList<Tariff>, Error>> GetByVenueIdAsync(
         VenueId venueId,
+        Expression<Func<Tariff, bool>>? filter = null,
         CancellationToken cancellationToken = default)
     {
         try
         {
-            var tariffs = await dbContext.Tariffs
-                .Where(x => x.VenueId == venueId)
+            var query = dbContext.Tariffs
+                .AsNoTracking()
+                .Where(x => x.VenueId == venueId);
+
+            if (filter is not null)
+            {
+                query = query.Where(filter);
+            }
+
+            var tariffs = await query
                 .OrderBy(x => x.Interval.StartDate)
                 .ThenBy(x => x.Interval.EndDate)
                 .ToListAsync(cancellationToken);
@@ -31,18 +41,18 @@ public class TariffRepository(ApplicationDbContext dbContext, ILogger<VenueRepos
                 "Операция получения тарифов по площадке {VenueId} была отменена",
                 venueId.Value);
 
-            return CommonErrors.OperationCancelled("get.tariffs.by.venue.operation.was.canceled");
+            return CommonErrors.OperationCancelled("get.tariffs.by.venue.was.canceled");
         }
         catch (Exception ex)
         {
             logger.LogError(
                 ex,
-                "Ошибка при получении тарифов по площадке {VenueId}",
+                "Ошибка получения тарифов по площадке {VenueId}",
                 venueId.Value);
 
             return CommonErrors.Db(
-                "get.tariffs.by.venue.from.db.exception",
-                "Ошибка при получении тарифов по площадке");
+                "get.tariffs.by.venue.exception",
+                "Ошибка получения тарифов по площадке");
         }
     }
     

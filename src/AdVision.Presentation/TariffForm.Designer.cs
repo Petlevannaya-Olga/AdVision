@@ -67,16 +67,16 @@
 			btnClose = new Button();
 			btnCreate = new Button();
 			panel6 = new Panel();
-			button4 = new Button();
-			button3 = new Button();
-			textBox2 = new TextBox();
-			textBox1 = new TextBox();
+			btnReset = new Button();
+			btnApply = new Button();
+			txtPriceFrom = new TextBox();
+			txtPriceTo = new TextBox();
 			label21 = new Label();
 			label22 = new Label();
 			label20 = new Label();
 			label19 = new Label();
-			dateTimePicker2 = new DateTimePicker();
-			dateTimePicker1 = new DateTimePicker();
+			dtpDateTo = new DateTimePicker();
+			dtpDateFrom = new DateTimePicker();
 			label10 = new Label();
 			panel5.SuspendLayout();
 			panel4.SuspendLayout();
@@ -476,57 +476,59 @@
 			// 
 			panel6.BackColor = SystemColors.Window;
 			panel6.BorderStyle = BorderStyle.FixedSingle;
-			panel6.Controls.Add(button4);
-			panel6.Controls.Add(button3);
-			panel6.Controls.Add(textBox2);
-			panel6.Controls.Add(textBox1);
+			panel6.Controls.Add(btnReset);
+			panel6.Controls.Add(btnApply);
+			panel6.Controls.Add(txtPriceFrom);
+			panel6.Controls.Add(txtPriceTo);
 			panel6.Controls.Add(label21);
 			panel6.Controls.Add(label22);
 			panel6.Controls.Add(label20);
 			panel6.Controls.Add(label19);
-			panel6.Controls.Add(dateTimePicker2);
-			panel6.Controls.Add(dateTimePicker1);
+			panel6.Controls.Add(dtpDateTo);
+			panel6.Controls.Add(dtpDateFrom);
 			panel6.Controls.Add(label10);
 			panel6.Location = new Point(8, 571);
 			panel6.Name = "panel6";
 			panel6.Size = new Size(389, 168);
 			panel6.TabIndex = 21;
 			// 
-			// button4
+			// btnReset
 			// 
-			button4.FlatStyle = FlatStyle.Popup;
-			button4.Location = new Point(35, 117);
-			button4.Name = "button4";
-			button4.Size = new Size(150, 29);
-			button4.TabIndex = 13;
-			button4.Text = "Сбросить";
-			button4.UseVisualStyleBackColor = true;
+			btnReset.FlatStyle = FlatStyle.Popup;
+			btnReset.Location = new Point(35, 117);
+			btnReset.Name = "btnReset";
+			btnReset.Size = new Size(150, 29);
+			btnReset.TabIndex = 13;
+			btnReset.Text = "Сбросить";
+			btnReset.UseVisualStyleBackColor = true;
+			btnReset.Click += BtnReset_Click;
 			// 
-			// button3
+			// btnApply
 			// 
-			button3.FlatStyle = FlatStyle.Popup;
-			button3.Location = new Point(221, 117);
-			button3.Name = "button3";
-			button3.Size = new Size(150, 29);
-			button3.TabIndex = 13;
-			button3.Text = "Применить";
-			button3.UseVisualStyleBackColor = true;
+			btnApply.FlatStyle = FlatStyle.Popup;
+			btnApply.Location = new Point(221, 117);
+			btnApply.Name = "btnApply";
+			btnApply.Size = new Size(150, 29);
+			btnApply.TabIndex = 13;
+			btnApply.Text = "Применить";
+			btnApply.UseVisualStyleBackColor = true;
+			btnApply.Click += BtnApply_Click;
 			// 
-			// textBox2
+			// txtPriceFrom
 			// 
-			textBox2.BorderStyle = BorderStyle.FixedSingle;
-			textBox2.Location = new Point(35, 84);
-			textBox2.Name = "textBox2";
-			textBox2.Size = new Size(150, 27);
-			textBox2.TabIndex = 12;
+			txtPriceFrom.BorderStyle = BorderStyle.FixedSingle;
+			txtPriceFrom.Location = new Point(35, 84);
+			txtPriceFrom.Name = "txtPriceFrom";
+			txtPriceFrom.Size = new Size(150, 27);
+			txtPriceFrom.TabIndex = 12;
 			// 
-			// textBox1
+			// txtPriceTo
 			// 
-			textBox1.BorderStyle = BorderStyle.FixedSingle;
-			textBox1.Location = new Point(221, 84);
-			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(150, 27);
-			textBox1.TabIndex = 12;
+			txtPriceTo.BorderStyle = BorderStyle.FixedSingle;
+			txtPriceTo.Location = new Point(221, 84);
+			txtPriceTo.Name = "txtPriceTo";
+			txtPriceTo.Size = new Size(150, 27);
+			txtPriceTo.TabIndex = 12;
 			// 
 			// label21
 			// 
@@ -564,21 +566,21 @@
 			label19.TabIndex = 8;
 			label19.Text = "с";
 			// 
-			// dateTimePicker2
+			// dtpDateTo
 			// 
-			dateTimePicker2.Format = DateTimePickerFormat.Short;
-			dateTimePicker2.Location = new Point(221, 44);
-			dateTimePicker2.Name = "dateTimePicker2";
-			dateTimePicker2.Size = new Size(150, 27);
-			dateTimePicker2.TabIndex = 7;
+			dtpDateTo.Format = DateTimePickerFormat.Short;
+			dtpDateTo.Location = new Point(221, 44);
+			dtpDateTo.Name = "dtpDateTo";
+			dtpDateTo.Size = new Size(150, 27);
+			dtpDateTo.TabIndex = 7;
 			// 
-			// dateTimePicker1
+			// dtpDateFrom
 			// 
-			dateTimePicker1.Format = DateTimePickerFormat.Short;
-			dateTimePicker1.Location = new Point(35, 44);
-			dateTimePicker1.Name = "dateTimePicker1";
-			dateTimePicker1.Size = new Size(150, 27);
-			dateTimePicker1.TabIndex = 7;
+			dtpDateFrom.Format = DateTimePickerFormat.Short;
+			dtpDateFrom.Location = new Point(35, 44);
+			dtpDateFrom.Name = "dtpDateFrom";
+			dtpDateFrom.Size = new Size(150, 27);
+			dtpDateFrom.TabIndex = 7;
 			// 
 			// label10
 			// 
@@ -669,15 +671,15 @@
 		private Button btnCreate;
 		private Panel panel6;
 		private Label label10;
-		private Button button4;
-		private Button button3;
-		private TextBox textBox2;
-		private TextBox textBox1;
+		private Button btnReset;
+		private Button btnApply;
+		private TextBox txtPriceFrom;
+		private TextBox txtPriceTo;
 		private Label label21;
 		private Label label22;
 		private Label label20;
 		private Label label19;
-		private DateTimePicker dateTimePicker2;
-		private DateTimePicker dateTimePicker1;
+		private DateTimePicker dtpDateTo;
+		private DateTimePicker dtpDateFrom;
 	}
 }

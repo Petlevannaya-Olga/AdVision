@@ -1,3 +1,4 @@
+using System.Linq.Expressions;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using CSharpFunctionalExtensions;
@@ -9,7 +10,9 @@ public interface ITariffRepository
 {
     Task<Result<IReadOnlyList<Tariff>, Error>> GetByVenueIdAsync(
         VenueId venueId,
+        Expression<Func<Tariff, bool>>? filter = null,
         CancellationToken cancellationToken = default);
+
 
     Task<Result<TariffId, Error>> AddAsync(
         Tariff tariff,
