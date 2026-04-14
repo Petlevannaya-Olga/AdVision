@@ -5,7 +5,9 @@ using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
 using AdVision.Contracts;
 using AdVision.Domain.Venues;
 using AdVision.Domain.VenueTypes;
+using AdVision.Infrastructure;
 using AdVision.Presentation.Notifications;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
@@ -15,296 +17,452 @@ namespace AdVision.Presentation;
 
 public partial class MainForm : Form
 {
-	private const int PageSize = 10;
+    private const string LoadVenuesErrorTitle = "Ошибка загрузки площадок";
+    private const string LoadVenueTypesErrorTitle = "Ошибка загрузки типов площадок";
+    private const string LoadRegionsErrorTitle = "Ошибка загрузки регионов";
+    private const string LoadDistrictsErrorTitle = "Ошибка загрузки районов";
+    private const string LoadCitiesErrorTitle = "Ошибка загрузки городов";
+    private const string UnknownErrorTitle = "Непредвиденная ошибка";
+    private const string DefaultLoadErrorMessage = "Не удалось загрузить данные";
+    private const int PageSize = 10;
 
-	private const string LoadVenuesErrorTitle = "Ошибка загрузки площадок";
-	private const string LoadVenueTypesErrorTitle = "Ошибка загрузки типов площадок";
-	private const string LoadRegionsErrorTitle = "Ошибка загрузки регионов";
-	private const string LoadDistrictsErrorTitle = "Ошибка загрузки районов";
-	private const string LoadCitiesErrorTitle = "Ошибка загрузки городов";
-	private const string UnknownErrorTitle = "Непредвиденная ошибка";
-	private const string DefaultLoadErrorMessage = "Не удалось загрузить данные";
+    private readonly CancellationTokenSource _cts = new();
+    private readonly INotificationService _notificationService;
+    private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
+    private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
+    private readonly IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> _venuesQueryHandler;
+    private readonly IServiceProvider _serviceProvider;
+    private readonly ILogger<MainForm> _logger;
 
-	private readonly CancellationTokenSource _cts = new();
-	private readonly INotificationService _notificationService;
-	private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
-	private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
-	private readonly IQueryHandler<IReadOnlyList<VenueDto>, GetVenuesQuery> _venuesQueryHandler;
-	private readonly IServiceProvider _serviceProvider;
-	private readonly ILogger<MainForm> _logger;
+    private bool _isLoading;
+    private int _page = 1;
+    private int _totalCount;
 
-	private int _page = 1;
-	private bool _isLoading;
+    private int TotalPages => _totalCount == 0
+        ? 0
+        : (int)Math.Ceiling((double)_totalCount / PageSize);
 
-	public MainForm(
-		INotificationService notificationService,
-		IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> venueTypesQueryHandler,
-		IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
-		IQueryHandler<IReadOnlyList<VenueDto>, GetVenuesQuery> venuesQueryHandler,
-		IServiceProvider serviceProvider,
-		ILogger<MainForm> logger)
-	{
-		_notificationService = notificationService;
-		_venueTypesQueryHandler = venueTypesQueryHandler;
-		_getDistinctQueryHandler = getDistinctQueryHandler;
-		_venuesQueryHandler = venuesQueryHandler;
-		_serviceProvider = serviceProvider;
-		_logger = logger;
+    public MainForm(
+        INotificationService notificationService,
+        IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> venueTypesQueryHandler,
+        IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
+        IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> venuesQueryHandler,
+        IServiceProvider serviceProvider,
+        ILogger<MainForm> logger)
+    {
+        _notificationService = notificationService;
+        _venueTypesQueryHandler = venueTypesQueryHandler;
+        _getDistinctQueryHandler = getDistinctQueryHandler;
+        _venuesQueryHandler = venuesQueryHandler;
+        _serviceProvider = serviceProvider;
+        _logger = logger;
 
-		InitializeComponent();
-		ConfigureVenuesGrid();
-	}
+        InitializeComponent();
+        ConfigureVenuesGrid();
+        UpdatePagingState();
+    }
 
-	protected override async void OnLoad(EventArgs e)
-	{
-		base.OnLoad(e);
+    protected override async void OnLoad(EventArgs e)
+    {
+        base.OnLoad(e);
 
-		try
-		{
-			await InitializeAsync();
-		}
-		catch (OperationCanceledException)
-		{
-			_logger.LogInformation("Инициализация главной формы отменена");
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Ошибка инициализации главной формы");
-			_notificationService.ShowError(UnknownErrorTitle, ex.Message);
-		}
-	}
+        try
+        {
+            await InitializeAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Инициализация главной формы отменена");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка инициализации главной формы");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
 
-	private async Task InitializeAsync()
-	{
-		await RefreshDataAsync();
-	}
+    private async Task InitializeAsync()
+    {
+        await RefreshDataAsync();
+    }
 
-	private async Task RefreshDataAsync()
-	{
-		if (_isLoading)
-		{
-			return;
-		}
+    private async Task RefreshDataAsync()
+    {
+        if (_isLoading)
+        {
+            return;
+        }
 
-		_isLoading = true;
-		UseWaitCursor = true;
+        _isLoading = true;
+        UseWaitCursor = true;
+        UpdatePagingState();
 
-		try
-		{
-			await LoadVenuesAsync();
-			await LoadFiltersAsync();
-		}
-		finally
-		{
-			_isLoading = false;
-			UseWaitCursor = false;
-		}
-	}
+        try
+        {
+            await LoadFiltersAsync();
+            await LoadVenuesAsync();
+        }
+        finally
+        {
+            _isLoading = false;
+            UseWaitCursor = false;
+            UpdatePagingState();
+        }
+    }
 
-	private void ConfigureVenuesGrid()
-	{
-		venuesDataGridView.AutoGenerateColumns = false;
-		venuesDataGridView.Columns.Clear();
+    private void ConfigureVenuesGrid()
+    {
+        venuesDataGridView.AutoGenerateColumns = false;
+        venuesDataGridView.Columns.Clear();
 
-		AddTextColumn(nameof(VenueDto.Name), "Название", "colName");
-		AddTextColumn(nameof(VenueDto.Type), "Тип", "colType");
-		AddTextColumn(nameof(VenueDto.Region), "Регион", "colRegion");
-		AddTextColumn(nameof(VenueDto.District), "Район", "colDistrict");
-		AddTextColumn(nameof(VenueDto.City), "Город", "colCity");
-		AddTextColumn(nameof(VenueDto.Street), "Улица", "colStreet");
-		AddTextColumn(nameof(VenueDto.House), "Дом", "colHouse");
-		AddTextColumn(nameof(VenueDto.Latitude), "Широта", "colLatitude");
-		AddTextColumn(nameof(VenueDto.Longitude), "Долгота", "colLongitude");
-		AddTextColumn(nameof(VenueDto.Width), "Ширина", "colWidth");
-		AddTextColumn(nameof(VenueDto.Height), "Высота", "colHeight");
-		AddTextColumn(nameof(VenueDto.Rating), "Рейтинг", "colRating");
-	}
+        AddTextColumn(nameof(VenueDto.Name), "Название", "colName");
+        AddTextColumn(nameof(VenueDto.Type), "Тип", "colType");
+        AddTextColumn(nameof(VenueDto.Region), "Регион", "colRegion");
+        AddTextColumn(nameof(VenueDto.District), "Район", "colDistrict");
+        AddTextColumn(nameof(VenueDto.City), "Город", "colCity");
+        AddTextColumn(nameof(VenueDto.Street), "Улица", "colStreet");
+        AddTextColumn(nameof(VenueDto.House), "Дом", "colHouse");
+        AddTextColumn(nameof(VenueDto.Latitude), "Широта", "colLatitude");
+        AddTextColumn(nameof(VenueDto.Longitude), "Долгота", "colLongitude");
+        AddTextColumn(nameof(VenueDto.Width), "Ширина", "colWidth");
+        AddTextColumn(nameof(VenueDto.Height), "Высота", "colHeight");
+        AddTextColumn(nameof(VenueDto.Rating), "Рейтинг", "colRating");
+    }
 
-	private void AddTextColumn(string dataPropertyName, string headerText, string columnName)
-	{
-		venuesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
-		{
-			DataPropertyName = dataPropertyName,
-			HeaderText = headerText,
-			Name = columnName
-		});
-	}
+    private void AddTextColumn(string dataPropertyName, string headerText, string columnName)
+    {
+        venuesDataGridView.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = dataPropertyName,
+            HeaderText = headerText,
+            Name = columnName
+        });
+    }
 
-	private async Task LoadVenuesAsync()
-	{
-		var filter = BuildFilter();
+    private async Task LoadVenuesAsync()
+    {
+        var filter = BuildFilter();
 
-		var result = await _venuesQueryHandler.Handle(
-			new GetVenuesQuery(_page, PageSize, filter),
-			_cts.Token);
+        var result = await _venuesQueryHandler.Handle(
+            new GetVenuesQuery(_page, PageSize, filter),
+            _cts.Token);
 
-		if (result.IsFailure)
-		{
-			ShowLoadError(LoadVenuesErrorTitle, result.Error);
-			return;
-		}
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadVenuesErrorTitle, result.Error);
+            return;
+        }
 
-		venuesDataGridView.DataSource = new BindingSource
-		{
-			DataSource = result.Value
-		};
-	}
+        var paged = result.Value;
+        _totalCount = paged.TotalCount;
 
-	private async Task LoadFiltersAsync()
-	{
-		await LoadVenueTypesAsync();
-		await LoadRegionsAsync();
-		await LoadDistrictsAsync();
-		await LoadCitiesAsync();
-	}
+        venuesDataGridView.DataSource = new BindingSource
+        {
+            DataSource = paged.Items
+        };
 
-	private async Task LoadVenueTypesAsync()
-	{
-		cbVenueTypes.DataSource = null;
+        UpdatePagingState();
+    }
 
-		var result = await _venueTypesQueryHandler.Handle(
-			new GetAllVenueTypesQuery(),
-			_cts.Token);
+    private void UpdatePagingState()
+    {
+        btnPrev.Enabled = !_isLoading && _page > 1;
+        btnNext.Enabled = !_isLoading && _page < TotalPages;
+        label11.Text = $@"Количество записей: {_totalCount}, стр. {_page} из {TotalPages}";
+    }
 
-		if (result.IsFailure)
-		{
-			ShowLoadError(LoadVenueTypesErrorTitle, result.Error);
-			return;
-		}
+    private async Task LoadFiltersAsync()
+    {
+        await LoadVenueTypesAsync();
+        await LoadRegionsAsync();
+        await LoadDistrictsAsync();
+        await LoadCitiesAsync();
+        UpdateResetButtonState();
+    }
 
-		var venueTypes = result.Value
-			.OrderBy(x => x.Name)
-			.ToList();
+    private async Task LoadVenueTypesAsync()
+    {
+        cbVenueTypes.DataSource = null;
 
-		cbVenueTypes.DataSource = venueTypes;
-		cbVenueTypes.DisplayMember = nameof(VenueTypeDto.Name);
-		cbVenueTypes.ValueMember = nameof(VenueTypeDto.Id);
-		cbVenueTypes.SelectedIndex = -1;
-	}
+        var result = await _venueTypesQueryHandler.Handle(
+            new GetAllVenueTypesQuery(),
+            _cts.Token);
 
-	private Task LoadRegionsAsync()
-	{
-		return LoadDistinctAsync(
-			cbRegions,
-			new GetDistinctQuery(v => v.Address.Region),
-			LoadRegionsErrorTitle);
-	}
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadVenueTypesErrorTitle, result.Error);
+            return;
+        }
 
-	private Task LoadDistrictsAsync()
-	{
-		return LoadDistinctAsync(
-			cbDistricts,
-			new GetDistinctQuery(v => v.Address.District),
-			LoadDistrictsErrorTitle);
-	}
+        var venueTypes = result.Value
+            .OrderBy(x => x.Name)
+            .ToList();
 
-	private Task LoadCitiesAsync()
-	{
-		return LoadDistinctAsync(
-			cbCities,
-			new GetDistinctQuery(v => v.Address.City),
-			LoadCitiesErrorTitle);
-	}
+        cbVenueTypes.DataSource = venueTypes;
+        cbVenueTypes.DisplayMember = nameof(VenueTypeDto.Name);
+        cbVenueTypes.ValueMember = nameof(VenueTypeDto.Id);
+        cbVenueTypes.SelectedIndex = -1;
+    }
 
-	private async Task LoadDistinctAsync(
-		ComboBox comboBox,
-		GetDistinctQuery query,
-		string errorTitle)
-	{
-		comboBox.DataSource = null;
+    private Task LoadRegionsAsync()
+    {
+        return LoadDistinctAsync(
+            cbRegions,
+            new GetDistinctQuery(v => v.Address.Region),
+            LoadRegionsErrorTitle);
+    }
 
-		var result = await _getDistinctQueryHandler.Handle(query, _cts.Token);
+    private Task LoadDistrictsAsync()
+    {
+        return LoadDistinctAsync(
+            cbDistricts,
+            new GetDistinctQuery(v => v.Address.District),
+            LoadDistrictsErrorTitle);
+    }
 
-		if (result.IsFailure)
-		{
-			ShowLoadError(errorTitle, result.Error);
-			return;
-		}
+    private Task LoadCitiesAsync()
+    {
+        return LoadDistinctAsync(
+            cbCities,
+            new GetDistinctQuery(v => v.Address.City),
+            LoadCitiesErrorTitle);
+    }
 
-		comboBox.DataSource = result.Value;
-		comboBox.SelectedIndex = -1;
-	}
+    private async Task LoadDistinctAsync(
+        ComboBox comboBox,
+        GetDistinctQuery query,
+        string errorTitle)
+    {
+        comboBox.DataSource = null;
 
-	private void ShowLoadError(string title, IEnumerable<object>? errors)
-	{
-		var message = string.Join(Environment.NewLine, errors ?? []);
-		var normalizedMessage = string.IsNullOrWhiteSpace(message)
-			? DefaultLoadErrorMessage
-			: message;
+        var result = await _getDistinctQueryHandler.Handle(query, _cts.Token);
 
-		_logger.LogError("{Title}: {Error}", title, normalizedMessage);
-		_notificationService.ShowError(title, normalizedMessage);
-	}
+        if (result.IsFailure)
+        {
+            ShowLoadError(errorTitle, result.Error);
+            return;
+        }
 
-	private void BtnCreate_Click(object sender, EventArgs e)
-	{
-		var form = _serviceProvider.GetRequiredService<VenueForm>();
-		form.VenueCreated += OnVenueCreated;
-		form.ShowDialog();
-		form.VenueCreated -= OnVenueCreated;
-	}
+        comboBox.DataSource = result.Value;
+        comboBox.SelectedIndex = -1;
+    }
 
-	private async void OnVenueCreated()
-	{
-		try
-		{
-			await RefreshDataAsync();
-		}
-		catch (OperationCanceledException)
-		{
-			_logger.LogInformation("Обновление данных после создания площадки отменено");
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Ошибка обновления данных после создания площадки");
-			_notificationService.ShowError(UnknownErrorTitle, ex.Message);
-		}
-	}
+    private void ShowLoadError(string title, IEnumerable<object>? errors)
+    {
+        var message = string.Join(Environment.NewLine, errors ?? []);
+        var normalizedMessage = string.IsNullOrWhiteSpace(message)
+            ? DefaultLoadErrorMessage
+            : message;
 
-	private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
-	{
-		if (!_cts.IsCancellationRequested)
-		{
-			_cts.Cancel();
-		}
+        _logger.LogError("{Title}: {Error}", title, normalizedMessage);
+        _notificationService.ShowError(title, normalizedMessage);
+    }
 
-		_cts.Dispose();
-	}
+    private void BtnCreate_Click(object sender, EventArgs e)
+    {
+        var form = _serviceProvider.GetRequiredService<VenueForm>();
+        form.VenueCreated += OnVenueCreated;
+        form.ShowDialog();
+        form.VenueCreated -= OnVenueCreated;
+    }
 
-	private Expression<Func<Venue, bool>> BuildFilter()
-	{
-		Expression<Func<Venue, bool>> filter = v => true;
+    private async void OnVenueCreated()
+    {
+        try
+        {
+            _page = 1;
+            await RefreshDataAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Обновление данных после создания площадки отменено");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка обновления данных после создания площадки");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
 
-		var selectedRegion = cbRegions.SelectedItem as string;
-		var selectedDistrict = cbDistricts.SelectedItem as string;
-		var selectedCity = cbCities.SelectedItem as string;
+    private Expression<Func<Venue, bool>> BuildFilter()
+    {
+        Expression<Func<Venue, bool>> filter = v => true;
 
-		if (cbVenueTypes.SelectedItem is VenueTypeDto selectedVenueType)
-		{
-			var venueTypeId = new VenueTypeId(selectedVenueType.Id);
-			filter = filter.And(v => v.VenueTypeId == venueTypeId);
-		}
+        var selectedRegion = cbRegions.SelectedItem as string;
+        var selectedDistrict = cbDistricts.SelectedItem as string;
+        var selectedCity = cbCities.SelectedItem as string;
+        var selectedName = txtName.Text.Trim();
+        var selectedStreet = txtStreet.Text.Trim();
 
-		if (!string.IsNullOrWhiteSpace(selectedRegion))
-		{
-			filter = filter.And(v => v.Address.Region == selectedRegion);
-		}
+        if (cbVenueTypes.SelectedItem is VenueTypeDto selectedVenueType)
+        {
+            var venueTypeId = new VenueTypeId(selectedVenueType.Id);
+            filter = filter.And(v => v.VenueTypeId == venueTypeId);
+        }
 
-		if (!string.IsNullOrWhiteSpace(selectedDistrict))
-		{
-			filter = filter.And(v => v.Address.District == selectedDistrict);
-		}
+        if (!string.IsNullOrWhiteSpace(selectedRegion))
+        {
+            filter = filter.And(v => v.Address.Region == selectedRegion);
+        }
 
-		if (!string.IsNullOrWhiteSpace(selectedCity))
-		{
-			filter = filter.And(v => v.Address.City == selectedCity);
-		}
+        if (!string.IsNullOrWhiteSpace(selectedDistrict))
+        {
+            filter = filter.And(v => v.Address.District == selectedDistrict);
+        }
 
-		return filter;
-	}
+        if (!string.IsNullOrWhiteSpace(selectedCity))
+        {
+            filter = filter.And(v => v.Address.City == selectedCity);
+        }
 
-	private async void BtnApply_Click(object sender, EventArgs e)
-	{
-		await LoadVenuesAsync();
-	}
+        if (!string.IsNullOrWhiteSpace(selectedName))
+        {
+            var pattern = $"%{selectedName}%";
+
+            filter = filter.And(v =>
+                EF.Functions.Like(v.Name.Value, pattern));
+        }
+
+        if (!string.IsNullOrWhiteSpace(selectedStreet))
+        {
+            var pattern = $"%{selectedStreet}%";
+
+            filter = filter.And(v =>
+                EF.Functions.Like(v.Address.Street, pattern));
+        }
+
+        var ratingFrom = (double)nudRatingFrom.Value;
+        var ratingTo = (double)nudRatingTo.Value;
+
+        filter = filter
+            .And(v => v.Rating.Value >= ratingFrom)
+            .And(v => v.Rating.Value <= ratingTo);
+
+        return filter;
+    }
+
+    private async void BtnApply_Click(object sender, EventArgs e)
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        try
+        {
+            _page = 1;
+            await LoadVenuesAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Применение фильтров отменено");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка применения фильтров");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+
+        UpdateResetButtonState();
+    }
+
+    private async void BtnNext_Click(object sender, EventArgs e)
+    {
+        if (_page >= TotalPages || _isLoading)
+        {
+            return;
+        }
+
+        try
+        {
+            _page++;
+            await LoadVenuesAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Переход на следующую страницу отменен");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка загрузки следующей страницы");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
+
+    private async void BtnPrev_Click(object sender, EventArgs e)
+    {
+        if (_page <= 1 || _isLoading)
+        {
+            return;
+        }
+
+        try
+        {
+            _page--;
+            await LoadVenuesAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Переход на предыдущую страницу отменен");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка загрузки предыдущей страницы");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
+
+    private void MainForm_FormClosed(object sender, FormClosedEventArgs e)
+    {
+        if (!_cts.IsCancellationRequested)
+        {
+            _cts.Cancel();
+        }
+
+        _cts.Dispose();
+    }
+
+    private async void BtnReset_Click(object sender, EventArgs e)
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        try
+        {
+            ResetFilters();
+
+            _page = 1; // важно!
+            await LoadVenuesAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Сброс фильтров отменен");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка сброса фильтров");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+
+        UpdateResetButtonState();
+    }
+
+    private void ResetFilters()
+    {
+        cbVenueTypes.SelectedIndex = -1;
+        cbRegions.SelectedIndex = -1;
+        cbDistricts.SelectedIndex = -1;
+        cbCities.SelectedIndex = -1;
+    }
+
+    private void UpdateResetButtonState()
+    {
+        btnReset.Enabled =
+            cbVenueTypes.SelectedIndex >= 0 ||
+            cbRegions.SelectedIndex >= 0 ||
+            cbDistricts.SelectedIndex >= 0 ||
+            cbCities.SelectedIndex >= 0;
+    }
 }

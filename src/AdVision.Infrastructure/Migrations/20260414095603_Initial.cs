@@ -36,11 +36,11 @@ namespace AdVision.Infrastructure.Migrations
                     house = table.Column<string>(type: "TEXT", maxLength: 300, nullable: false),
                     latitude = table.Column<double>(type: "REAL", nullable: false),
                     longitude = table.Column<double>(type: "REAL", nullable: false),
-                    name = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false),
                     width = table.Column<double>(type: "REAL", nullable: false),
                     height = table.Column<double>(type: "REAL", nullable: false),
                     rating = table.Column<double>(type: "REAL", nullable: false),
-                    description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false)
+                    description = table.Column<string>(type: "TEXT", maxLength: 2000, nullable: false),
+                    name = table.Column<string>(type: "TEXT", maxLength: 500, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,12 +73,6 @@ namespace AdVision.Infrastructure.Migrations
                 name: "IX_venues_latitude_longitude",
                 table: "venues",
                 columns: new[] { "latitude", "longitude" },
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_venues_name",
-                table: "venues",
-                column: "name",
                 unique: true);
 
             migrationBuilder.CreateIndex(

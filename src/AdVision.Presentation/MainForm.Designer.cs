@@ -34,12 +34,13 @@ partial class MainForm
 		tableLayoutPanel2 = new TableLayoutPanel();
 		venuesDataGridView = new DataGridView();
 		panel1 = new Panel();
+		label11 = new Label();
 		btnPrev = new Button();
 		btnNext = new Button();
 		btnCreate = new Button();
 		panel2 = new Panel();
-		numericUpDown2 = new NumericUpDown();
-		numericUpDown1 = new NumericUpDown();
+		nudRatingTo = new NumericUpDown();
+		nudRatingFrom = new NumericUpDown();
 		label10 = new Label();
 		label9 = new Label();
 		cbSortOrder = new ComboBox();
@@ -57,6 +58,8 @@ partial class MainForm
 		label6 = new Label();
 		label2 = new Label();
 		label1 = new Label();
+		panel3 = new Panel();
+		btnReset = new Button();
 		btnApply = new Button();
 		tabPage2 = new TabPage();
 		tabControl1.SuspendLayout();
@@ -65,8 +68,9 @@ partial class MainForm
 		((System.ComponentModel.ISupportInitialize)venuesDataGridView).BeginInit();
 		panel1.SuspendLayout();
 		panel2.SuspendLayout();
-		((System.ComponentModel.ISupportInitialize)numericUpDown2).BeginInit();
-		((System.ComponentModel.ISupportInitialize)numericUpDown1).BeginInit();
+		((System.ComponentModel.ISupportInitialize)nudRatingTo).BeginInit();
+		((System.ComponentModel.ISupportInitialize)nudRatingFrom).BeginInit();
+		panel3.SuspendLayout();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -99,7 +103,7 @@ partial class MainForm
 		tableLayoutPanel2.Controls.Add(venuesDataGridView, 1, 0);
 		tableLayoutPanel2.Controls.Add(panel1, 1, 1);
 		tableLayoutPanel2.Controls.Add(panel2, 0, 0);
-		tableLayoutPanel2.Controls.Add(btnApply, 0, 1);
+		tableLayoutPanel2.Controls.Add(panel3, 0, 1);
 		tableLayoutPanel2.Dock = DockStyle.Fill;
 		tableLayoutPanel2.Location = new Point(3, 3);
 		tableLayoutPanel2.Name = "tableLayoutPanel2";
@@ -121,6 +125,7 @@ partial class MainForm
 		// 
 		// panel1
 		// 
+		panel1.Controls.Add(label11);
 		panel1.Controls.Add(btnPrev);
 		panel1.Controls.Add(btnNext);
 		panel1.Controls.Add(btnCreate);
@@ -129,6 +134,15 @@ partial class MainForm
 		panel1.Name = "panel1";
 		panel1.Size = new Size(480, 29);
 		panel1.TabIndex = 2;
+		// 
+		// label11
+		// 
+		label11.AutoSize = true;
+		label11.Location = new Point(3, 4);
+		label11.Name = "label11";
+		label11.Size = new Size(58, 20);
+		label11.TabIndex = 2;
+		label11.Text = "label11";
 		// 
 		// btnPrev
 		// 
@@ -141,7 +155,7 @@ partial class MainForm
 		btnPrev.TabIndex = 1;
 		btnPrev.Text = "<";
 		btnPrev.UseVisualStyleBackColor = false;
-		btnPrev.Click += BtnCreate_Click;
+		btnPrev.Click += BtnPrev_Click;
 		// 
 		// btnNext
 		// 
@@ -154,7 +168,7 @@ partial class MainForm
 		btnNext.TabIndex = 1;
 		btnNext.Text = ">";
 		btnNext.UseVisualStyleBackColor = false;
-		btnNext.Click += BtnCreate_Click;
+		btnNext.Click += BtnNext_Click;
 		// 
 		// btnCreate
 		// 
@@ -171,8 +185,8 @@ partial class MainForm
 		// 
 		// panel2
 		// 
-		panel2.Controls.Add(numericUpDown2);
-		panel2.Controls.Add(numericUpDown1);
+		panel2.Controls.Add(nudRatingTo);
+		panel2.Controls.Add(nudRatingFrom);
 		panel2.Controls.Add(label10);
 		panel2.Controls.Add(label9);
 		panel2.Controls.Add(cbSortOrder);
@@ -196,19 +210,25 @@ partial class MainForm
 		panel2.Size = new Size(294, 424);
 		panel2.TabIndex = 3;
 		// 
-		// numericUpDown2
+		// nudRatingTo
 		// 
-		numericUpDown2.Location = new Point(178, 334);
-		numericUpDown2.Name = "numericUpDown2";
-		numericUpDown2.Size = new Size(113, 27);
-		numericUpDown2.TabIndex = 6;
+		nudRatingTo.Location = new Point(178, 334);
+		nudRatingTo.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+		nudRatingTo.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+		nudRatingTo.Name = "nudRatingTo";
+		nudRatingTo.Size = new Size(113, 27);
+		nudRatingTo.TabIndex = 6;
+		nudRatingTo.Value = new decimal(new int[] { 10, 0, 0, 0 });
 		// 
-		// numericUpDown1
+		// nudRatingFrom
 		// 
-		numericUpDown1.Location = new Point(30, 334);
-		numericUpDown1.Name = "numericUpDown1";
-		numericUpDown1.Size = new Size(113, 27);
-		numericUpDown1.TabIndex = 6;
+		nudRatingFrom.Location = new Point(30, 334);
+		nudRatingFrom.Maximum = new decimal(new int[] { 10, 0, 0, 0 });
+		nudRatingFrom.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
+		nudRatingFrom.Name = "nudRatingFrom";
+		nudRatingFrom.Size = new Size(113, 27);
+		nudRatingFrom.TabIndex = 6;
+		nudRatingFrom.Value = new decimal(new int[] { 1, 0, 0, 0 });
 		// 
 		// label10
 		// 
@@ -231,7 +251,8 @@ partial class MainForm
 		// cbSortOrder
 		// 
 		cbSortOrder.FormattingEnabled = true;
-		cbSortOrder.Location = new Point(3, 393);
+		cbSortOrder.Items.AddRange(new object[] { "Название", "Тип", "Регион", "Район", "Город", "Улица", "Широта", "Долгота", "Ширина", "Высота" });
+		cbSortOrder.Location = new Point(0, 393);
 		cbSortOrder.Name = "cbSortOrder";
 		cbSortOrder.Size = new Size(291, 28);
 		cbSortOrder.TabIndex = 4;
@@ -356,13 +377,33 @@ partial class MainForm
 		label1.TabIndex = 0;
 		label1.Text = "Название";
 		// 
+		// panel3
+		// 
+		panel3.Controls.Add(btnReset);
+		panel3.Controls.Add(btnApply);
+		panel3.Dock = DockStyle.Fill;
+		panel3.Location = new Point(3, 433);
+		panel3.Name = "panel3";
+		panel3.Size = new Size(294, 29);
+		panel3.TabIndex = 4;
+		// 
+		// btnReset
+		// 
+		btnReset.FlatStyle = FlatStyle.Popup;
+		btnReset.Location = new Point(3, 0);
+		btnReset.Name = "btnReset";
+		btnReset.Size = new Size(143, 29);
+		btnReset.TabIndex = 4;
+		btnReset.Text = "Сбросить";
+		btnReset.UseVisualStyleBackColor = true;
+		btnReset.Click += BtnReset_Click;
+		// 
 		// btnApply
 		// 
-		btnApply.Dock = DockStyle.Fill;
 		btnApply.FlatStyle = FlatStyle.Popup;
-		btnApply.Location = new Point(3, 433);
+		btnApply.Location = new Point(149, 0);
 		btnApply.Name = "btnApply";
-		btnApply.Size = new Size(294, 29);
+		btnApply.Size = new Size(145, 29);
 		btnApply.TabIndex = 4;
 		btnApply.Text = "Применить";
 		btnApply.UseVisualStyleBackColor = true;
@@ -393,10 +434,12 @@ partial class MainForm
 		tableLayoutPanel2.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)venuesDataGridView).EndInit();
 		panel1.ResumeLayout(false);
+		panel1.PerformLayout();
 		panel2.ResumeLayout(false);
 		panel2.PerformLayout();
-		((System.ComponentModel.ISupportInitialize)numericUpDown2).EndInit();
-		((System.ComponentModel.ISupportInitialize)numericUpDown1).EndInit();
+		((System.ComponentModel.ISupportInitialize)nudRatingTo).EndInit();
+		((System.ComponentModel.ISupportInitialize)nudRatingFrom).EndInit();
+		panel3.ResumeLayout(false);
 		ResumeLayout(false);
 	}
 
@@ -430,6 +473,9 @@ partial class MainForm
 	private Label label10;
 	private Label label9;
 	private Label label8;
-	private NumericUpDown numericUpDown2;
-	private NumericUpDown numericUpDown1;
+	private NumericUpDown nudRatingTo;
+	private NumericUpDown nudRatingFrom;
+	private Panel panel3;
+	private Button btnReset;
+	private Label label11;
 }

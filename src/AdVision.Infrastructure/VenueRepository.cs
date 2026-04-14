@@ -74,14 +74,24 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
         }
     }
 
-    public async Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(
+    public async Task<Result<PagedResult<Venue>, Error>> GetAsync(
         int page,
         int size,
-        Expression<Func<Venue, bool>>? filter,
-        CancellationToken cancellationToken)
+        Expression<Func<Venue, bool>>? filter = null,
+        CancellationToken cancellationToken = default)
     {
         try
         {
+            if (page <= 0)
+            {
+                return CommonErrors.Validation("page.invalid", "Номер страницы должен быть больше 0");
+            }
+
+            if (size <= 0)
+            {
+                return CommonErrors.Validation("page.size.invalid", "Размер страницы должен быть больше 0");
+            }
+
             var query = dbContext.Venues
                 .Include(v => v.Type)
                 .AsQueryable();
@@ -91,16 +101,18 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                 query = query.Where(filter);
             }
 
+            var totalCount = await query.CountAsync(cancellationToken);
+
             var venues = await query
                 .Skip((page - 1) * size)
                 .Take(size)
                 .ToListAsync(cancellationToken);
 
-            return venues;
+            return new PagedResult<Venue>(venues, page, size, totalCount);
         }
         catch (OperationCanceledException)
         {
-            logger.LogWarning("Операция получения площадок была отменена");
+            logger.LogInformation("Операция получения площадок была отменена");
             return CommonErrors.OperationCancelled("get.venues.operation.was.canceled");
         }
         catch (Exception ex)

@@ -1,4 +1,6 @@
 using AdVision.Contracts;
+using AdVision.Domain.Venues;
+using AdVision.Infrastructure;
 using CSharpFunctionalExtensions;
 using Shared;
 using Shared.Abstractions;
@@ -6,9 +8,9 @@ using Shared.Abstractions;
 namespace AdVision.Application.Venues.GetVenuesQuery;
 
 public sealed class GetVenuesQueryHandler(IVenueRepository repository)
-    : IQueryHandler<IReadOnlyList<VenueDto>, GetVenuesQuery>
+    : IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery>
 {
-    public async Task<Result<IReadOnlyList<VenueDto>, Errors>> Handle(
+    public async Task<Result<PagedResult<VenueDto>, Errors>> Handle(
         GetVenuesQuery query,
         CancellationToken cancellationToken = default)
     {
@@ -23,21 +25,34 @@ public sealed class GetVenuesQueryHandler(IVenueRepository repository)
             return result.Error.ToErrors();
         }
 
-        return result.Value
-            .Select(v => new VenueDto(
-                v.Name.Value,
-                v.Type.Name.Value,
-                v.Address.Region,
-                v.Address.District,
-                v.Address.City,
-                v.Address.Street,
-                v.Address.House,
-                v.Address.Latitude,
-                v.Address.Longitude,
-                v.Size.Width,
-                v.Size.Height,
-                v.Rating.Value,
-                v.Description.Value))
+        var paged = result.Value;
+
+        var items = paged.Items
+            .Select(Map)
             .ToList();
+
+        return new PagedResult<VenueDto>(
+            items,
+            paged.Page,
+            paged.PageSize,
+            paged.TotalCount);
+    }
+
+    private static VenueDto Map(Venue venue)
+    {
+        return new VenueDto(
+            venue.Name.Value,
+            venue.Type.Name.Value,
+            venue.Address.Region,
+            venue.Address.District,
+            venue.Address.City,
+            venue.Address.Street,
+            venue.Address.House,
+            venue.Address.Latitude,
+            venue.Address.Longitude,
+            venue.Size.Width,
+            venue.Size.Height,
+            venue.Rating.Value,
+            venue.Description.Value);
     }
 }

@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdVision.Domain.Venues;
+using AdVision.Infrastructure;
 using CSharpFunctionalExtensions;
 using Shared;
 
@@ -13,11 +14,11 @@ public interface IVenueRepository
         Expression<Func<Venue, bool>> expression,
         CancellationToken cancellationToken);
 
-    Task<Result<IReadOnlyList<Venue>, Error>> GetAsync(
+    Task<Result<PagedResult<Venue>, Error>> GetAsync(
         int page,
         int size,
-        Expression<Func<Venue, bool>>? filter,
-        CancellationToken cancellationToken);
+        Expression<Func<Venue, bool>>? filter = null,
+        CancellationToken cancellationToken = default);
 
     Task<Result<IReadOnlyList<string>, Error>> GetDistinctAsync(
         Expression<Func<Venue, string>> selector,

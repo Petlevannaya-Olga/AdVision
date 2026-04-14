@@ -20,9 +20,9 @@ public sealed class VenueName
     /// </summary>
     public string Value { get; private set; } 
     
-    private VenueName(string name)
+    private VenueName(string value)
     {
-        Value = name;
+        Value = value;
     }
 
     /// <summary>

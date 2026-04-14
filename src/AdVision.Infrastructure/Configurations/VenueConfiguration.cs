@@ -58,17 +58,15 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
         builder
             .Property(x => x.Id)
             .HasColumnName("id")
-            .HasConversion(x => x.Value, name => new VenueId(name));
+            .HasConversion(x => x.Value, value => new VenueId(value));
 
-        builder
-            .Property(x => x.Name)
-            .HasConversion(
-                v => v.Value,
-                v => VenueName.Create(v).Value
-            )
-            .HasColumnName("name")
-            .HasMaxLength(VenueName.MAX_LENGTH)
-            .IsRequired();
+        builder.ComplexProperty(x => x.Name, nameBuilder =>
+        {
+            nameBuilder.Property(x => x.Value)
+                .HasColumnName("name")
+                .HasMaxLength(VenueName.MAX_LENGTH)
+                .IsRequired();
+        });
 
         builder.OwnsOne(x => x.Address, address =>
         {
@@ -104,7 +102,7 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             address.Property(x => x.Longitude)
                 .HasColumnName("longitude")
                 .IsRequired();
-            
+
             address.HasIndex(x => new { x.Latitude, x.Longitude })
                 .IsUnique();
         });
@@ -120,14 +118,12 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
                 .IsRequired();
         });
 
-        builder
-            .Property(x => x.Rating)
-            .HasConversion(
-                v => v.Value,
-                v => VenueRating.Create(v).Value
-            )
-            .HasColumnName("rating")
-            .IsRequired();
+        builder.ComplexProperty(x => x.Rating, ratingBuilder =>
+        {
+            ratingBuilder.Property(x => x.Value)
+                .HasColumnName("rating")
+                .IsRequired();
+        });
 
         builder
             .Property(x => x.Description)
@@ -145,10 +141,10 @@ public sealed class VenueConfiguration : IEntityTypeConfiguration<Venue>
             )
             .HasColumnName("venue_type_id");
 
-        builder
-            .HasIndex(v => v.Name)
-            .IsUnique();
-        
+        // builder
+        //     .HasIndex(x=>x.Name)
+        //     .IsUnique();
+
         builder
             .HasOne(v => v.Type)
             .WithMany()

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AdVision.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260414095603_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -50,6 +53,10 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("description");
 
+                    b.Property<double>("Rating")
+                        .HasColumnType("REAL")
+                        .HasColumnName("rating");
+
                     b.Property<Guid>("VenueTypeId")
                         .HasColumnType("TEXT")
                         .HasColumnName("venue_type_id");
@@ -63,15 +70,6 @@ namespace AdVision.Infrastructure.Migrations
                                 .HasMaxLength(500)
                                 .HasColumnType("TEXT")
                                 .HasColumnName("name");
-                        });
-
-                    b.ComplexProperty(typeof(Dictionary<string, object>), "Rating", "AdVision.Domain.Venues.Venue.Rating#VenueRating", b1 =>
-                        {
-                            b1.IsRequired();
-
-                            b1.Property<double>("Value")
-                                .HasColumnType("REAL")
-                                .HasColumnName("rating");
                         });
 
                     b.HasKey("Id");
