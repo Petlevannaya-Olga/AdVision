@@ -522,22 +522,13 @@ public partial class MainForm : Form
             return;
         }
 
-        OpenVenueForm(venue);
+        OpenTariffForm(venue);
     }
     
-    private void OpenVenueForm(VenueDto venue)
+    private void OpenTariffForm(VenueDto venue)
     {
-        // var form = _serviceProvider.GetRequiredService<VenueForm>();
-        //
-        // // 👉 если форма поддерживает редактирование
-        // form.LoadVenue(venue);
-        //
-        // form.VenueCreated += OnVenueCreated;
-        //
-        // form.ShowDialog();
-        //
-        // form.VenueCreated -= OnVenueCreated;
-
-        MessageBox.Show("asdad");
+        var form = _serviceProvider.GetRequiredService<TariffForm>();
+        form.LoadVenue(venue);
+        form.ShowDialog();
     }
 }

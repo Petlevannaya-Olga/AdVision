@@ -1,3 +1,4 @@
+using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using AdVision.Domain.VenueTypes;
 using Microsoft.EntityFrameworkCore;
@@ -9,6 +10,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<VenueType> VenueTypes { get; set; }
 
     public DbSet<Venue> Venues { get; set; }
+    
+    public DbSet<Tariff> Tariffs { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

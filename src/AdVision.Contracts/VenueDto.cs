@@ -1,6 +1,7 @@
 namespace AdVision.Contracts;
 
 public sealed record VenueDto(
+    Guid Id,
     string Name,
     string Type,
     string Region,

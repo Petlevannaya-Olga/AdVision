@@ -43,6 +43,7 @@ public sealed class GetVenuesQueryHandler(IVenueRepository repository)
     private static VenueDto Map(Venue venue)
     {
         return new VenueDto(
+            venue.Id.Value,
             venue.Name.Value,
             venue.Type.Name.Value,
             venue.Address.Region,
