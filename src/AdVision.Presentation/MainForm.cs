@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using AdVision.Application.Positions.GetAllPositionsQuery;
 using AdVision.Application.Venues.GetDistinctQuery;
 using AdVision.Application.Venues.GetVenuesQuery;
 using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
@@ -19,6 +20,7 @@ public partial class MainForm : Form
 {
     private const string LoadVenuesErrorTitle = "Ошибка загрузки площадок";
     private const string LoadVenueTypesErrorTitle = "Ошибка загрузки типов площадок";
+    private const string LoadPositionsErrorTitle = "Ошибка загрузки позиций";
     private const string LoadRegionsErrorTitle = "Ошибка загрузки регионов";
     private const string LoadDistrictsErrorTitle = "Ошибка загрузки районов";
     private const string LoadCitiesErrorTitle = "Ошибка загрузки городов";
@@ -32,6 +34,7 @@ public partial class MainForm : Form
     private readonly INotificationService _notificationService;
     private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
     private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
+    private readonly IQueryHandler<IReadOnlyList<PositionDto>, GetAllPositionsQuery> _positionsQueryHandler;
     private readonly IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> _venuesQueryHandler;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MainForm> _logger;
@@ -45,9 +48,15 @@ public partial class MainForm : Form
     // Справочники -> Типы площадок
     private int _venueTypesPage = 1;
     private int _venueTypesTotalCount;
+
+    // Справочники -> Позиции
+    private int _positionsPage = 1;
+    private int _positionsTotalCount;
+    
     private bool _directoriesTabInitialized;
     private DirectoryType _currentDirectoryType = DirectoryType.None;
     private VenueTypesFilterUserControl? _venueTypesFilterControl;
+    private PositionsFilterUserControl? _positionsFilterControl;
 
     private int TotalPages => _totalCount == 0
         ? 0
@@ -57,9 +66,14 @@ public partial class MainForm : Form
         ? 0
         : (int)Math.Ceiling((double)_venueTypesTotalCount / DirectoryPageSize);
 
+    private int PositionsTotalPages => _positionsTotalCount == 0
+        ? 0
+        : (int)Math.Ceiling((double)_positionsTotalCount / DirectoryPageSize);
+
     public MainForm(
         INotificationService notificationService,
         IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> venueTypesQueryHandler,
+        IQueryHandler<IReadOnlyList<PositionDto>, GetAllPositionsQuery> positionsQueryHandler,
         IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
         IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> venuesQueryHandler,
         IServiceProvider serviceProvider,
@@ -67,6 +81,7 @@ public partial class MainForm : Form
     {
         _notificationService = notificationService;
         _venueTypesQueryHandler = venueTypesQueryHandler;
+        _positionsQueryHandler = positionsQueryHandler;
         _getDistinctQueryHandler = getDistinctQueryHandler;
         _venuesQueryHandler = venuesQueryHandler;
         _serviceProvider = serviceProvider;
@@ -76,7 +91,7 @@ public partial class MainForm : Form
 
         ConfigureVenuesGrid();
         UpdatePagingState();
-        UpdateVenueTypesPagingState();
+        UpdateDirectoryPagingState();
 
         venuesDataGridView.CellDoubleClick += VenuesDataGridView_CellDoubleClick;
     }
@@ -115,7 +130,7 @@ public partial class MainForm : Form
         _isLoading = true;
         UseWaitCursor = true;
         UpdatePagingState();
-        UpdateVenueTypesPagingState();
+        UpdateDirectoryPagingState();
 
         try
         {
@@ -127,7 +142,7 @@ public partial class MainForm : Form
             _isLoading = false;
             UseWaitCursor = false;
             UpdatePagingState();
-            UpdateVenueTypesPagingState();
+            UpdateDirectoryPagingState();
         }
     }
 
@@ -596,7 +611,21 @@ public partial class MainForm : Form
         dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
         {
             DataPropertyName = nameof(VenueTypeDto.Name),
-            HeaderText = "Название",
+            HeaderText = @"Название",
+            Name = "colName",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        });
+    }
+
+    private void ConfigurePositionsGrid()
+    {
+        dgvDirectories.AutoGenerateColumns = false;
+        dgvDirectories.Columns.Clear();
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(PositionDto.Name),
+            HeaderText = @"Название",
             Name = "colName",
             AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
         });
@@ -649,24 +678,102 @@ public partial class MainForm : Form
             DataSource = pagedItems
         };
 
-        UpdateVenueTypesPagingState();
-        UpdateVenueTypesResetButtonState();
+        UpdateDirectoryPagingState();
+        UpdateDirectoryResetButtonState();
     }
 
-    private void UpdateVenueTypesPagingState()
+    private async Task LoadPositionsToGridAsync()
     {
-        btnPrevPage.Enabled = !_isLoading && _venueTypesPage > 1;
-        btnNextPage.Enabled = !_isLoading && _venueTypesPage < VenueTypesTotalPages;
+        var result = await _positionsQueryHandler.Handle(
+            new GetAllPositionsQuery(),
+            _cts.Token);
 
-        label12.Text = _venueTypesTotalCount == 0
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadPositionsErrorTitle, result.Error);
+            return;
+        }
+
+        IEnumerable<PositionDto> positions = result.Value;
+
+        var nameFilter = _positionsFilterControl?.NameFilter;
+        if (!string.IsNullOrWhiteSpace(nameFilter))
+        {
+            positions = positions.Where(x =>
+                x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var filteredItems = positions
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        _positionsTotalCount = filteredItems.Count;
+
+        if (_positionsPage > PositionsTotalPages && PositionsTotalPages > 0)
+        {
+            _positionsPage = PositionsTotalPages;
+        }
+
+        if (_positionsPage <= 0)
+        {
+            _positionsPage = 1;
+        }
+
+        var pagedItems = filteredItems
+            .Skip((_positionsPage - 1) * DirectoryPageSize)
+            .Take(DirectoryPageSize)
+            .ToList();
+
+        dgvDirectories.DataSource = new BindingSource
+        {
+            DataSource = pagedItems
+        };
+
+        UpdateDirectoryPagingState();
+        UpdateDirectoryResetButtonState();
+    }
+
+    private void UpdateDirectoryPagingState()
+    {
+        var currentPage = _currentDirectoryType switch
+        {
+            DirectoryType.VenueTypes => _venueTypesPage,
+            DirectoryType.Positions => _positionsPage,
+            _ => 1
+        };
+
+        var totalPages = _currentDirectoryType switch
+        {
+            DirectoryType.VenueTypes => VenueTypesTotalPages,
+            DirectoryType.Positions => PositionsTotalPages,
+            _ => 0
+        };
+
+        var totalCount = _currentDirectoryType switch
+        {
+            DirectoryType.VenueTypes => _venueTypesTotalCount,
+            DirectoryType.Positions => _positionsTotalCount,
+            _ => 0
+        };
+
+        btnPrevPage.Enabled = !_isLoading && currentPage > 1;
+        btnNextPage.Enabled = !_isLoading && currentPage < totalPages;
+
+        label12.Text = totalCount == 0
             ? "Количество записей: 0"
-            : $"Количество записей: {_venueTypesTotalCount}, стр. {_venueTypesPage} из {VenueTypesTotalPages}";
+            : $"Количество записей: {totalCount}, стр. {currentPage} из {totalPages}";
     }
 
     private async void BtnVenueTypes_Click(object sender, EventArgs e)
     {
         _currentDirectoryType = DirectoryType.VenueTypes;
         await OpenVenueTypesAsync(true);
+    }
+
+    private async void BtnPositions_Click(object sender, EventArgs e)
+    {
+        _currentDirectoryType = DirectoryType.Positions;
+        await OpenPositionsAsync(true);
     }
 
     private async void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
@@ -684,14 +791,11 @@ public partial class MainForm : Form
 
         try
         {
+            UpdateDirectoryButtonsState();
+
             LoadVenueTypesFilterControl();
             ConfigureVenueTypesGrid();
             await LoadVenueTypesToGridAsync();
-
-            if (highlightButton)
-            {
-                btnVenueTypes.BackColor = Color.LightBlue;
-            }
         }
         catch (OperationCanceledException)
         {
@@ -700,6 +804,29 @@ public partial class MainForm : Form
         catch (Exception ex)
         {
             _logger.LogError(ex, "Ошибка загрузки типов площадок");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
+
+    private async Task OpenPositionsAsync(bool highlightButton = false)
+    {
+        _currentDirectoryType = DirectoryType.Positions;
+
+        try
+        {
+            UpdateDirectoryButtonsState();
+
+            LoadPositionsFilterControl();
+            ConfigurePositionsGrid();
+            await LoadPositionsToGridAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Загрузка позиций отменена");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка загрузки позиций");
             _notificationService.ShowError(UnknownErrorTitle, ex.Message);
         }
     }
@@ -719,6 +846,23 @@ public partial class MainForm : Form
 
         pnlFilters.Controls.Add(_venueTypesFilterControl);
         pnlFilters.Height = _venueTypesFilterControl.Height;
+    }
+
+    private void LoadPositionsFilterControl()
+    {
+        pnlFilters.Controls.Clear();
+
+        _positionsFilterControl = _serviceProvider.GetRequiredService<PositionsFilterUserControl>();
+        pnlFilters.Height = _positionsFilterControl.Height;
+        _positionsFilterControl.Dock = DockStyle.Fill;
+
+        _positionsFilterControl.ApplyClicked += OnPositionsFilterApplyClicked;
+        _positionsFilterControl.ResetClicked += OnPositionsFilterResetClicked;
+        _positionsFilterControl.FiltersChanged += OnPositionsFiltersChanged;
+        _positionsFilterControl.SetResetEnabled(false);
+
+        pnlFilters.Controls.Add(_positionsFilterControl);
+        pnlFilters.Height = _positionsFilterControl.Height;
     }
 
     private async void OnVenueTypesFilterApplyClicked()
@@ -758,13 +902,52 @@ public partial class MainForm : Form
         }
     }
 
+    private async void OnPositionsFilterApplyClicked()
+    {
+        try
+        {
+            _positionsPage = 1;
+            await LoadPositionsToGridAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Применение фильтра позиций отменено");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка применения фильтра позиций");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
+
+    private async void OnPositionsFilterResetClicked()
+    {
+        try
+        {
+            _positionsFilterControl?.ResetFilters();
+            _positionsPage = 1;
+            await LoadPositionsToGridAsync();
+        }
+        catch (OperationCanceledException)
+        {
+            _logger.LogInformation("Сброс фильтра позиций отменен");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка сброса фильтра позиций");
+            _notificationService.ShowError(UnknownErrorTitle, ex.Message);
+        }
+    }
+
     private async void OnVenueTypeCreated(string _)
     {
         try
         {
+            _venueTypesFilterControl?.ResetFilters();
             _venueTypesPage = 1;
             await LoadVenueTypesToGridAsync();
             await LoadVenueTypesToComboboxAsync();
+            UpdateDirectoryResetButtonState();
         }
         catch (Exception ex)
         {
@@ -773,9 +956,25 @@ public partial class MainForm : Form
         }
     }
 
+    private async void OnPositionCreated(string _)
+    {
+        try
+        {
+            _positionsFilterControl?.ResetFilters();
+            _positionsPage = 1;
+            await LoadPositionsToGridAsync();
+            UpdateDirectoryResetButtonState();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Ошибка обновления списка позиций");
+            _notificationService.ShowError("Ошибка", ex.Message);
+        }
+    }
+
     private async void BtnPrevPage_Click(object sender, EventArgs e)
     {
-        if (_isLoading || _venueTypesPage <= 1)
+        if (_isLoading)
         {
             return;
         }
@@ -783,10 +982,18 @@ public partial class MainForm : Form
         try
         {
             if (tabControl1.SelectedTab == tabPage2 &&
-                _currentDirectoryType == DirectoryType.VenueTypes)
+                _currentDirectoryType == DirectoryType.VenueTypes &&
+                _venueTypesPage > 1)
             {
                 _venueTypesPage--;
                 await LoadVenueTypesToGridAsync();
+            }
+            else if (tabControl1.SelectedTab == tabPage2 &&
+                     _currentDirectoryType == DirectoryType.Positions &&
+                     _positionsPage > 1)
+            {
+                _positionsPage--;
+                await LoadPositionsToGridAsync();
             }
         }
         catch (OperationCanceledException)
@@ -802,7 +1009,7 @@ public partial class MainForm : Form
 
     private async void BtnNextPage_Click(object sender, EventArgs e)
     {
-        if (_isLoading || _venueTypesPage >= VenueTypesTotalPages)
+        if (_isLoading)
         {
             return;
         }
@@ -810,10 +1017,18 @@ public partial class MainForm : Form
         try
         {
             if (tabControl1.SelectedTab == tabPage2 &&
-                _currentDirectoryType == DirectoryType.VenueTypes)
+                _currentDirectoryType == DirectoryType.VenueTypes &&
+                _venueTypesPage < VenueTypesTotalPages)
             {
                 _venueTypesPage++;
                 await LoadVenueTypesToGridAsync();
+            }
+            else if (tabControl1.SelectedTab == tabPage2 &&
+                     _currentDirectoryType == DirectoryType.Positions &&
+                     _positionsPage < PositionsTotalPages)
+            {
+                _positionsPage++;
+                await LoadPositionsToGridAsync();
             }
         }
         catch (OperationCanceledException)
@@ -834,6 +1049,10 @@ public partial class MainForm : Form
             case DirectoryType.VenueTypes:
                 OpenVenueTypeForm();
                 break;
+
+            case DirectoryType.Positions:
+                OpenPositionForm();
+                break;
         }
     }
 
@@ -845,21 +1064,91 @@ public partial class MainForm : Form
         form.VenueTypeCreated -= OnVenueTypeCreated;
     }
 
+    private void OpenPositionForm()
+    {
+        var form = _serviceProvider.GetRequiredService<PositionForm>();
+        form.PositionCreated += OnPositionCreated;
+        form.ShowDialog();
+        form.PositionCreated -= OnPositionCreated;
+    }
+
     private bool HasActiveVenueTypeFilters()
     {
         return !string.IsNullOrWhiteSpace(_venueTypesFilterControl?.NameFilter);
     }
 
-    private void UpdateVenueTypesResetButtonState()
+    private bool HasActivePositionFilters()
     {
-        _venueTypesFilterControl?.SetResetEnabled(HasActiveVenueTypeFilters());
+        return !string.IsNullOrWhiteSpace(_positionsFilterControl?.NameFilter);
+    }
+
+    private void UpdateDirectoryResetButtonState()
+    {
+        switch (_currentDirectoryType)
+        {
+            case DirectoryType.VenueTypes:
+                _venueTypesFilterControl?.SetResetEnabled(HasActiveVenueTypeFilters());
+                break;
+
+            case DirectoryType.Positions:
+                _positionsFilterControl?.SetResetEnabled(HasActivePositionFilters());
+                break;
+        }
     }
 
     private void OnVenueTypesFiltersChanged()
     {
-        UpdateVenueTypesResetButtonState();
+        UpdateDirectoryResetButtonState();
     }
 
+    private void OnPositionsFiltersChanged()
+    {
+        UpdateDirectoryResetButtonState();
+    }
+
+    private void UpdateDirectoryButtonsState()
+    {
+        btnVenueTypes.BackColor = SystemColors.Control;
+        btnPositions.BackColor = SystemColors.Control;
+
+        btnVenueTypes.Enabled = true;
+        btnPositions.Enabled = true;
+        btnEmployees.Enabled = true;
+        btnCustomers.Enabled = true;
+        btnDiscounts.Enabled = true;
+
+        switch (_currentDirectoryType)
+        {
+            case DirectoryType.VenueTypes:
+                btnVenueTypes.BackColor = Color.LightBlue;
+                btnVenueTypes.Enabled = false;
+                break;
+
+            case DirectoryType.Positions:
+                btnPositions.BackColor = Color.LightBlue;
+                btnPositions.Enabled = false;
+                break;
+            
+            case DirectoryType.Employees:
+                btnEmployees.BackColor = Color.LightBlue;
+                btnEmployees.Enabled = false;
+                break;
+            
+            case DirectoryType.Customers:
+                btnCustomers.BackColor = Color.LightBlue;
+                btnCustomers.Enabled = false;
+                break;
+            
+            case DirectoryType.Discounts:
+                btnDiscounts.BackColor = Color.LightBlue;
+                btnDiscounts.Enabled = false;
+                break;
+            
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+    
     #endregion
 
     private void ShowLoadError(string title, IEnumerable<object>? errors)

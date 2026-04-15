@@ -1,3 +1,4 @@
+using AdVision.Domain.Positions;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using AdVision.Domain.VenueTypes;
@@ -12,6 +13,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Venue> Venues { get; set; }
     
     public DbSet<Tariff> Tariffs { get; set; }
+    
+    public DbSet<Position> Positions { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

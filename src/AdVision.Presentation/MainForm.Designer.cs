@@ -65,9 +65,9 @@ partial class MainForm
 		tableLayoutPanel3 = new TableLayoutPanel();
 		tableLayoutPanel1 = new TableLayoutPanel();
 		panel3 = new Panel();
-		button5 = new Button();
-		button4 = new Button();
-		button3 = new Button();
+		btnDiscounts = new Button();
+		btnCustomers = new Button();
+		btnEmployees = new Button();
 		btnPositions = new Button();
 		btnVenueTypes = new Button();
 		tableLayoutPanel4 = new TableLayoutPanel();
@@ -496,9 +496,9 @@ partial class MainForm
 		// 
 		// panel3
 		// 
-		panel3.Controls.Add(button5);
-		panel3.Controls.Add(button4);
-		panel3.Controls.Add(button3);
+		panel3.Controls.Add(btnDiscounts);
+		panel3.Controls.Add(btnCustomers);
+		panel3.Controls.Add(btnEmployees);
 		panel3.Controls.Add(btnPositions);
 		panel3.Controls.Add(btnVenueTypes);
 		panel3.Dock = DockStyle.Fill;
@@ -507,35 +507,35 @@ partial class MainForm
 		panel3.Size = new Size(294, 443);
 		panel3.TabIndex = 0;
 		// 
-		// button5
+		// btnDiscounts
 		// 
-		button5.FlatStyle = FlatStyle.Popup;
-		button5.Location = new Point(3, 143);
-		button5.Name = "button5";
-		button5.Size = new Size(288, 29);
-		button5.TabIndex = 0;
-		button5.Text = "Скидки";
-		button5.UseVisualStyleBackColor = true;
+		btnDiscounts.FlatStyle = FlatStyle.Popup;
+		btnDiscounts.Location = new Point(3, 143);
+		btnDiscounts.Name = "btnDiscounts";
+		btnDiscounts.Size = new Size(288, 29);
+		btnDiscounts.TabIndex = 0;
+		btnDiscounts.Text = "Скидки";
+		btnDiscounts.UseVisualStyleBackColor = true;
 		// 
-		// button4
+		// btnCustomers
 		// 
-		button4.FlatStyle = FlatStyle.Popup;
-		button4.Location = new Point(3, 108);
-		button4.Name = "button4";
-		button4.Size = new Size(288, 29);
-		button4.TabIndex = 0;
-		button4.Text = "Заказчики";
-		button4.UseVisualStyleBackColor = true;
+		btnCustomers.FlatStyle = FlatStyle.Popup;
+		btnCustomers.Location = new Point(3, 108);
+		btnCustomers.Name = "btnCustomers";
+		btnCustomers.Size = new Size(288, 29);
+		btnCustomers.TabIndex = 0;
+		btnCustomers.Text = "Заказчики";
+		btnCustomers.UseVisualStyleBackColor = true;
 		// 
-		// button3
+		// btnEmployees
 		// 
-		button3.FlatStyle = FlatStyle.Popup;
-		button3.Location = new Point(3, 73);
-		button3.Name = "button3";
-		button3.Size = new Size(288, 29);
-		button3.TabIndex = 0;
-		button3.Text = "Сотрудники";
-		button3.UseVisualStyleBackColor = true;
+		btnEmployees.FlatStyle = FlatStyle.Popup;
+		btnEmployees.Location = new Point(3, 73);
+		btnEmployees.Name = "btnEmployees";
+		btnEmployees.Size = new Size(288, 29);
+		btnEmployees.TabIndex = 0;
+		btnEmployees.Text = "Сотрудники";
+		btnEmployees.UseVisualStyleBackColor = true;
 		// 
 		// btnPositions
 		// 
@@ -546,6 +546,7 @@ partial class MainForm
 		btnPositions.TabIndex = 0;
 		btnPositions.Text = "Должности";
 		btnPositions.UseVisualStyleBackColor = true;
+		btnPositions.Click += BtnPositions_Click;
 		// 
 		// btnVenueTypes
 		// 
@@ -753,10 +754,10 @@ partial class MainForm
 	private TabPage tabPage3;
 	private TabPage tabPage4;
 	private TabPage tabPage5;
-	private Button button4;
-	private Button button3;
+	private Button btnCustomers;
+	private Button btnEmployees;
 	private DataGridView dgvDirectories;
-	private Button button5;
+	private Button btnDiscounts;
 	private Panel pnlFilters;
 	private TableLayoutPanel tableLayoutPanel4;
 	private Panel panel4;

@@ -28,6 +28,7 @@ public static class DependencyInjection
         services.AddSingleton<IVenueTypeRepository, VenueTypeRepository>();
         services.AddSingleton<IVenueRepository, VenueRepository>();
         services.AddSingleton<ITariffRepository, TariffRepository>();
+        services.AddSingleton<IPositionRepository, PositionRepository>();
         
         // Генераторы
         services.AddTransient<IVenueNameFakeGenerator, VenueNameFakeGenerator>();

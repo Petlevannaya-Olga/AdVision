@@ -13,8 +13,6 @@ public sealed class CreateVenueTypeCommandHandler(
 {
     public async Task<Result<Guid, Errors>> Handle(CreateVenueTypeCommand command, CancellationToken cancellationToken)
     {
-        var venueTypeId = new VenueTypeId(Guid.NewGuid());
-
         var nameResult = VenueTypeName.Create(command.Dto.Name);
 
         if (nameResult.IsFailure)
@@ -34,9 +32,11 @@ public sealed class CreateVenueTypeCommandHandler(
         if (getResult.Value is not null)
         {
             var errors = VenueTypeErrors.VenueTypeNameConflict(command.Dto.Name).ToErrors();
+
             logger.LogError(
                 "Нельзя добавить тип площадки с названием '{VenueTypeName}', т.к. она уже существует",
                 command.Dto.Name);
+
             return errors;
         }
 
@@ -49,8 +49,8 @@ public sealed class CreateVenueTypeCommandHandler(
             return addResult.Error.ToErrors();
         }
 
-        logger.LogInformation("Создан новый тип площадки с id = {VenueTypeId}", venueTypeId);
+        logger.LogInformation("Создан новый тип площадки с id = {VenueTypeId}", newVenueType.Id.Value);
 
-        return venueTypeId.Value;
+        return newVenueType.Id.Value;
     }
 }
