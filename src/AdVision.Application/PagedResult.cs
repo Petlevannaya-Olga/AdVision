@@ -1,4 +1,4 @@
-namespace AdVision.Infrastructure;
+namespace AdVision.Application;
 
 public sealed record PagedResult<T>(
     IReadOnlyList<T> Items,

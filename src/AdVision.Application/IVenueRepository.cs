@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using AdVision.Domain.Venues;
-using AdVision.Infrastructure;
 using CSharpFunctionalExtensions;
 using Shared;
 

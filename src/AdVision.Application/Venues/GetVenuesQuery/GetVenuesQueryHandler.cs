@@ -1,6 +1,5 @@
 using AdVision.Contracts;
 using AdVision.Domain.Venues;
-using AdVision.Infrastructure;
 using CSharpFunctionalExtensions;
 using Shared;
 using Shared.Abstractions;
