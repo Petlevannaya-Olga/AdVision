@@ -76,6 +76,9 @@ internal static class Program
         services.AddTransient<TariffForm>();
         services.AddTransient<NewTariffForm>();
         
+        // Регистрируем контролы
+        services.AddTransient<VenueTypesFilterUserControl>();
+        
         // Регистрируем уведомления
         services.AddSingleton<INotificationService, NotificationService>();
         

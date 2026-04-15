@@ -74,6 +74,7 @@ partial class MainForm
 		pnlFilters = new Panel();
 		dgvDirectories = new DataGridView();
 		panel4 = new Panel();
+		label12 = new Label();
 		btnPrevPage = new Button();
 		btnNextPage = new Button();
 		btnAdd = new Button();
@@ -110,6 +111,7 @@ partial class MainForm
 		tabControl1.SelectedIndex = 0;
 		tabControl1.Size = new Size(1030, 538);
 		tabControl1.TabIndex = 0;
+		tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
 		// 
 		// tabPage1
 		// 
@@ -470,7 +472,7 @@ partial class MainForm
 		// tableLayoutPanel1
 		// 
 		tableLayoutPanel1.ColumnCount = 2;
-		tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
+		tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
 		tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel1.Controls.Add(panel3, 0, 0);
 		tableLayoutPanel1.Controls.Add(tableLayoutPanel4, 1, 0);
@@ -544,6 +546,7 @@ partial class MainForm
 		btnVenueTypes.TabIndex = 0;
 		btnVenueTypes.Text = "Типы площадок";
 		btnVenueTypes.UseVisualStyleBackColor = true;
+		btnVenueTypes.Click += BtnVenueTypes_Click;
 		// 
 		// tableLayoutPanel4
 		// 
@@ -555,17 +558,16 @@ partial class MainForm
 		tableLayoutPanel4.Location = new Point(303, 3);
 		tableLayoutPanel4.Name = "tableLayoutPanel4";
 		tableLayoutPanel4.RowCount = 2;
-		tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 200F));
-		tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
+		tableLayoutPanel4.RowStyles.Add(new RowStyle());
 		tableLayoutPanel4.Size = new Size(704, 443);
 		tableLayoutPanel4.TabIndex = 1;
 		// 
 		// pnlFilters
 		// 
-		pnlFilters.Dock = DockStyle.Fill;
 		pnlFilters.Location = new Point(3, 3);
 		pnlFilters.Name = "pnlFilters";
-		pnlFilters.Size = new Size(698, 194);
+		pnlFilters.Size = new Size(698, 169);
 		pnlFilters.TabIndex = 1;
 		// 
 		// dgvDirectories
@@ -575,15 +577,16 @@ partial class MainForm
 		dgvDirectories.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		dgvDirectories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		dgvDirectories.Dock = DockStyle.Fill;
-		dgvDirectories.Location = new Point(3, 203);
+		dgvDirectories.Location = new Point(3, 178);
 		dgvDirectories.Name = "dgvDirectories";
 		dgvDirectories.ReadOnly = true;
 		dgvDirectories.RowHeadersWidth = 51;
-		dgvDirectories.Size = new Size(698, 237);
+		dgvDirectories.Size = new Size(698, 262);
 		dgvDirectories.TabIndex = 1;
 		// 
 		// panel4
 		// 
+		panel4.Controls.Add(label12);
 		panel4.Controls.Add(btnPrevPage);
 		panel4.Controls.Add(btnNextPage);
 		panel4.Controls.Add(btnAdd);
@@ -593,8 +596,18 @@ partial class MainForm
 		panel4.Size = new Size(1010, 38);
 		panel4.TabIndex = 1;
 		// 
+		// label12
+		// 
+		label12.AutoSize = true;
+		label12.Location = new Point(303, 7);
+		label12.Name = "label12";
+		label12.Size = new Size(58, 20);
+		label12.TabIndex = 1;
+		label12.Text = "label12";
+		// 
 		// btnPrevPage
 		// 
+		btnPrevPage.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnPrevPage.FlatStyle = FlatStyle.Popup;
 		btnPrevPage.Location = new Point(743, 3);
 		btnPrevPage.Name = "btnPrevPage";
@@ -602,9 +615,11 @@ partial class MainForm
 		btnPrevPage.TabIndex = 0;
 		btnPrevPage.Text = "<";
 		btnPrevPage.UseVisualStyleBackColor = true;
+		btnPrevPage.Click += BtnPrevPage_Click;
 		// 
 		// btnNextPage
 		// 
+		btnNextPage.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnNextPage.FlatStyle = FlatStyle.Popup;
 		btnNextPage.Location = new Point(796, 3);
 		btnNextPage.Name = "btnNextPage";
@@ -612,9 +627,11 @@ partial class MainForm
 		btnNextPage.TabIndex = 0;
 		btnNextPage.Text = ">";
 		btnNextPage.UseVisualStyleBackColor = true;
+		btnNextPage.Click += BtnNextPage_Click;
 		// 
 		// btnAdd
 		// 
+		btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 		btnAdd.FlatStyle = FlatStyle.Popup;
 		btnAdd.Location = new Point(849, 3);
 		btnAdd.Name = "btnAdd";
@@ -622,6 +639,7 @@ partial class MainForm
 		btnAdd.TabIndex = 0;
 		btnAdd.Text = "Добавить";
 		btnAdd.UseVisualStyleBackColor = true;
+		btnAdd.Click += BtnAdd_Click;
 		// 
 		// tabPage3
 		// 
@@ -678,6 +696,7 @@ partial class MainForm
 		tableLayoutPanel4.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)dgvDirectories).EndInit();
 		panel4.ResumeLayout(false);
+		panel4.PerformLayout();
 		ResumeLayout(false);
 	}
 
@@ -734,4 +753,5 @@ partial class MainForm
 	private Button btnPrevPage;
 	private Button btnNextPage;
 	private Button btnAdd;
+	private Label label12;
 }
