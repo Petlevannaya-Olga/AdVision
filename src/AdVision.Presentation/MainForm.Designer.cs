@@ -275,6 +275,7 @@ partial class MainForm
 		chkDescending.TabIndex = 7;
 		chkDescending.Text = "По убыванию";
 		chkDescending.UseVisualStyleBackColor = true;
+		chkDescending.CheckedChanged += ChkDescending_CheckedChanged;
 		// 
 		// nudRatingTo
 		// 
@@ -285,6 +286,7 @@ partial class MainForm
 		nudRatingTo.Size = new Size(113, 27);
 		nudRatingTo.TabIndex = 6;
 		nudRatingTo.Value = new decimal(new int[] { 10, 0, 0, 0 });
+		nudRatingTo.ValueChanged += NudRatingTo_ValueChanged;
 		// 
 		// nudRatingFrom
 		// 
@@ -295,6 +297,7 @@ partial class MainForm
 		nudRatingFrom.Size = new Size(113, 27);
 		nudRatingFrom.TabIndex = 6;
 		nudRatingFrom.Value = new decimal(new int[] { 1, 0, 0, 0 });
+		nudRatingFrom.ValueChanged += NudRatingFrom_ValueChanged;
 		// 
 		// label10
 		// 
@@ -322,6 +325,7 @@ partial class MainForm
 		cbSortOrder.Name = "cbSortOrder";
 		cbSortOrder.Size = new Size(146, 28);
 		cbSortOrder.TabIndex = 4;
+		cbSortOrder.SelectedIndexChanged += CbSortOrder_SelectedIndexChanged;
 		// 
 		// label7
 		// 
@@ -339,6 +343,7 @@ partial class MainForm
 		cbCities.Name = "cbCities";
 		cbCities.Size = new Size(291, 28);
 		cbCities.TabIndex = 2;
+		cbCities.SelectedIndexChanged += CbCities_SelectedIndexChanged;
 		// 
 		// cbDistricts
 		// 
@@ -347,6 +352,7 @@ partial class MainForm
 		cbDistricts.Name = "cbDistricts";
 		cbDistricts.Size = new Size(291, 28);
 		cbDistricts.TabIndex = 2;
+		cbDistricts.SelectedIndexChanged += CbDistricts_SelectedIndexChanged;
 		// 
 		// label5
 		// 
@@ -364,6 +370,7 @@ partial class MainForm
 		cbRegions.Name = "cbRegions";
 		cbRegions.Size = new Size(291, 28);
 		cbRegions.TabIndex = 2;
+		cbRegions.SelectedIndexChanged += CbRegions_SelectedIndexChanged;
 		// 
 		// label4
 		// 
@@ -381,6 +388,7 @@ partial class MainForm
 		cbVenueTypes.Name = "cbVenueTypes";
 		cbVenueTypes.Size = new Size(291, 28);
 		cbVenueTypes.TabIndex = 2;
+		cbVenueTypes.SelectedIndexChanged += CbVenueTypes_SelectedIndexChanged;
 		// 
 		// label3
 		// 
@@ -398,6 +406,7 @@ partial class MainForm
 		txtStreet.Name = "txtStreet";
 		txtStreet.Size = new Size(291, 27);
 		txtStreet.TabIndex = 1;
+		txtStreet.TextChanged += TxtStreet_TextChanged;
 		// 
 		// label8
 		// 
@@ -415,6 +424,7 @@ partial class MainForm
 		txtName.Name = "txtName";
 		txtName.Size = new Size(291, 27);
 		txtName.TabIndex = 1;
+		txtName.TextChanged += TxtName_TextChanged;
 		// 
 		// label6
 		// 
