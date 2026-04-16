@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdVision.Application;
+using AdVision.Application.Discounts.GetAllDiscountsQuery;
 using AdVision.Application.Positions.GetAllPositionsQuery;
 using AdVision.Application.Venues.GetDistinctQuery;
 using AdVision.Application.Venues.GetVenuesQuery;
@@ -29,6 +30,7 @@ public partial class MainForm : Form
     private const string LoadCitiesErrorTitle = "Ошибка загрузки городов";
     private const string UnknownErrorTitle = "Непредвиденная ошибка";
     private const string DefaultLoadErrorMessage = "Не удалось загрузить данные";
+    private const string LoadDiscountsErrorTitle = "Ошибка загрузки скидок";
 
     private const int PageSize = 10;
     private const int DirectoryPageSize = 10;
@@ -38,12 +40,14 @@ public partial class MainForm : Form
     private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
     private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
     private readonly IQueryHandler<IReadOnlyList<PositionDto>, GetAllPositionsQuery> _positionsQueryHandler;
+    private readonly IQueryHandler<IReadOnlyList<DiscountDto>, GetAllDiscountsQuery> _discountsQueryHandler;
     private readonly IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> _venuesQueryHandler;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MainForm> _logger;
 
     private readonly DirectoryListHelper _venueTypesDirectory;
     private readonly DirectoryListHelper _positionsDirectory;
+    private readonly DirectoryListHelper _discountsDirectory;
 
     private bool _isLoading;
 
@@ -55,6 +59,7 @@ public partial class MainForm : Form
     private DirectoryType _currentDirectoryType = DirectoryType.None;
     private VenueTypesFilterUserControl? _venueTypesFilterControl;
     private PositionsFilterUserControl? _positionsFilterControl;
+    private DiscountsFilterUserControl? _discountsFilterControl;
 
     private int TotalPages => _totalCount == 0
         ? 0
@@ -66,6 +71,7 @@ public partial class MainForm : Form
         IQueryHandler<IReadOnlyList<PositionDto>, GetAllPositionsQuery> positionsQueryHandler,
         IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
         IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> venuesQueryHandler,
+        IQueryHandler<IReadOnlyList<DiscountDto>, GetAllDiscountsQuery> discountsQueryHandler,
         IServiceProvider serviceProvider,
         ILogger<MainForm> logger)
     {
@@ -74,11 +80,13 @@ public partial class MainForm : Form
         _positionsQueryHandler = positionsQueryHandler;
         _getDistinctQueryHandler = getDistinctQueryHandler;
         _venuesQueryHandler = venuesQueryHandler;
+        _discountsQueryHandler = discountsQueryHandler;
         _serviceProvider = serviceProvider;
         _logger = logger;
 
         _venueTypesDirectory = new DirectoryListHelper(DirectoryPageSize);
         _positionsDirectory = new DirectoryListHelper(DirectoryPageSize);
+        _discountsDirectory = new DirectoryListHelper(DirectoryPageSize);
 
         InitializeComponent();
 
@@ -664,6 +672,10 @@ public partial class MainForm : Form
             case DirectoryType.Positions:
                 await LoadPositionsToGridAsync();
                 break;
+
+            case DirectoryType.Discounts:
+                await LoadDiscountsToGridAsync();
+                break;
         }
     }
 
@@ -675,6 +687,7 @@ public partial class MainForm : Form
         pnlFilters.Controls.Clear();
 
         var control = _serviceProvider.GetRequiredService<TControl>();
+        pnlFilters.Height = control.Height;
         control.Dock = DockStyle.Fill;
 
         subscribe(control);
@@ -716,6 +729,7 @@ public partial class MainForm : Form
         {
             DirectoryType.VenueTypes => _venueTypesDirectory.CanGoPrevious(),
             DirectoryType.Positions => _positionsDirectory.CanGoPrevious(),
+            DirectoryType.Discounts => _discountsDirectory.CanGoPrevious(),
             _ => false
         };
     }
@@ -726,6 +740,7 @@ public partial class MainForm : Form
         {
             DirectoryType.VenueTypes => _venueTypesDirectory.CanGoNext(),
             DirectoryType.Positions => _positionsDirectory.CanGoNext(),
+            DirectoryType.Discounts => _discountsDirectory.CanGoNext(),
             _ => false
         };
     }
@@ -741,6 +756,10 @@ public partial class MainForm : Form
             case DirectoryType.Positions:
                 _positionsDirectory.GoPrevious();
                 break;
+
+            case DirectoryType.Discounts:
+                _discountsDirectory.GoPrevious();
+                break;
         }
     }
 
@@ -755,6 +774,10 @@ public partial class MainForm : Form
             case DirectoryType.Positions:
                 _positionsDirectory.GoNext();
                 break;
+
+            case DirectoryType.Discounts:
+                _discountsDirectory.GoNext();
+                break;
         }
     }
 
@@ -764,6 +787,7 @@ public partial class MainForm : Form
         {
             DirectoryType.VenueTypes => _venueTypesDirectory.Page,
             DirectoryType.Positions => _positionsDirectory.Page,
+            DirectoryType.Discounts => _discountsDirectory.Page,
             _ => 1
         };
     }
@@ -774,6 +798,7 @@ public partial class MainForm : Form
         {
             DirectoryType.VenueTypes => _venueTypesDirectory.TotalPages,
             DirectoryType.Positions => _positionsDirectory.TotalPages,
+            DirectoryType.Discounts => _discountsDirectory.TotalPages,
             _ => 0
         };
     }
@@ -784,6 +809,7 @@ public partial class MainForm : Form
         {
             DirectoryType.VenueTypes => _venueTypesDirectory.TotalCount,
             DirectoryType.Positions => _positionsDirectory.TotalCount,
+            DirectoryType.Discounts => _discountsDirectory.TotalCount,
             _ => 0
         };
     }
@@ -848,6 +874,12 @@ public partial class MainForm : Form
                 LoadPositionsFilterControl();
                 ConfigurePositionsGrid();
                 await LoadPositionsToGridAsync();
+                break;
+
+            case DirectoryType.Discounts:
+                LoadDiscountsFilterControl();
+                ConfigureDiscountsGrid();
+                await LoadDiscountsToGridAsync();
                 break;
         }
     }
@@ -976,6 +1008,10 @@ public partial class MainForm : Form
             case DirectoryType.Positions:
                 OpenPositionForm();
                 break;
+
+            case DirectoryType.Discounts:
+                OpenDiscountForm();
+                break;
         }
     }
 
@@ -1015,6 +1051,10 @@ public partial class MainForm : Form
 
             case DirectoryType.Positions:
                 _positionsFilterControl?.SetResetEnabled(HasActivePositionFilters());
+                break;
+
+            case DirectoryType.Discounts:
+                _discountsFilterControl?.SetResetEnabled(HasActiveDiscountFilters());
                 break;
         }
     }
@@ -1078,6 +1118,180 @@ public partial class MainForm : Form
         }
     }
 
+    #endregion
+
+    #region Скидки
+
+    private async Task LoadDiscountsToGridAsync()
+    {
+        var result = await _discountsQueryHandler.Handle(
+            new GetAllDiscountsQuery(),
+            _cts.Token);
+
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadDiscountsErrorTitle, result.Error);
+            return;
+        }
+
+        IEnumerable<DiscountDto> discounts = result.Value;
+
+        var nameFilter = _discountsFilterControl?.NameFilter;
+        if (!string.IsNullOrWhiteSpace(nameFilter))
+        {
+            discounts = discounts.Where(x =>
+                x.Name.Contains(nameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var percentFrom = _discountsFilterControl?.PercentFrom;
+        if (percentFrom.HasValue)
+        {
+            discounts = discounts.Where(x => (decimal)x.Percent >= percentFrom.Value);
+        }
+
+        var percentTo = _discountsFilterControl?.PercentTo;
+        if (percentTo.HasValue)
+        {
+            discounts = discounts.Where(x => (decimal)x.Percent <= percentTo.Value);
+        }
+
+        var minTotalFrom = _discountsFilterControl?.MinTotalFrom;
+        if (minTotalFrom.HasValue)
+        {
+            discounts = discounts.Where(x => x.MinTotal >= minTotalFrom.Value);
+        }
+
+        var minTotalTo = _discountsFilterControl?.MinTotalTo;
+        if (minTotalTo.HasValue)
+        {
+            discounts = discounts.Where(x => x.MinTotal <= minTotalTo.Value);
+        }
+
+        var filteredItems = discounts
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        var pagedItems = _discountsDirectory.ApplyPaging(filteredItems);
+
+        dgvDirectories.DataSource = new BindingSource
+        {
+            DataSource = pagedItems
+        };
+
+        UpdateDirectoryPagingState();
+        UpdateDirectoryResetButtonState();
+    }
+
+    private bool HasActiveDiscountFilters()
+    {
+        return !string.IsNullOrWhiteSpace(_discountsFilterControl?.NameFilter) ||
+               _discountsFilterControl?.PercentFrom is not null ||
+               _discountsFilterControl?.PercentTo is not null ||
+               _discountsFilterControl?.MinTotalFrom is not null ||
+               _discountsFilterControl?.MinTotalTo is not null;
+    }
+
+    private void ConfigureDiscountsGrid()
+    {
+        dgvDirectories.AutoGenerateColumns = false;
+        dgvDirectories.Columns.Clear();
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(DiscountDto.Name),
+            HeaderText = @"Название",
+            Name = "colName",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(DiscountDto.Percent),
+            HeaderText = @"Процент",
+            Name = "colPercent"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(DiscountDto.MinTotal),
+            HeaderText = @"Мин. сумма",
+            Name = "colMinTotal"
+        });
+    }
+
+    private void LoadDiscountsFilterControl()
+    {
+        _discountsFilterControl = LoadDirectoryFilterControl<DiscountsFilterUserControl>(
+            control =>
+            {
+                control.ApplyClicked += OnDiscountsFilterApplyClicked;
+                control.ResetClicked += OnDiscountsFilterResetClicked;
+                control.FiltersChanged += OnDiscountsFiltersChanged;
+            },
+            control => control.SetResetEnabled(false));
+    }
+
+    private async void BtnDiscounts_Click(object sender, EventArgs e)
+    {
+        await RunUiActionAsync(
+            () => OpenDirectoryAsync(DirectoryType.Discounts),
+            "Загрузка скидок отменена",
+            "Ошибка загрузки скидок");
+    }
+
+    private async void OnDiscountsFilterApplyClicked()
+    {
+        await RunUiActionAsync(
+            async () =>
+            {
+                _discountsDirectory.ResetPage();
+                await LoadDiscountsToGridAsync();
+            },
+            "Применение фильтра скидок отменено",
+            "Ошибка применения фильтра скидок");
+    }
+
+    private async void OnDiscountsFilterResetClicked()
+    {
+        await RunUiActionAsync(
+            async () =>
+            {
+                _discountsFilterControl?.ResetFilters();
+                _discountsDirectory.ResetPage();
+                await LoadDiscountsToGridAsync();
+            },
+            "Сброс фильтра скидок отменен",
+            "Ошибка сброса фильтра скидок");
+    }
+
+    private void OnDiscountsFiltersChanged()
+    {
+        UpdateDirectoryResetButtonState();
+    }
+    
+    private void OpenDiscountForm()
+    {
+        var form = _serviceProvider.GetRequiredService<DiscountForm>();
+        form.DiscountCreated += OnDiscountCreated;
+        form.ShowDialog();
+        form.DiscountCreated -= OnDiscountCreated;
+    }
+    
+    private async void OnDiscountCreated(string _)
+    {
+        await RunUiActionAsync(
+            async () =>
+            {
+                _discountsFilterControl?.ResetFilters();
+                _discountsDirectory.ResetPage();
+                await LoadDiscountsToGridAsync();
+                UpdateDirectoryResetButtonState();
+            },
+            "Обновление списка скидок отменено",
+            "Ошибка обновления списка скидок");
+    }
+    
+    
     #endregion
 
     private void ShowLoadError(string title, IEnumerable<object>? errors)

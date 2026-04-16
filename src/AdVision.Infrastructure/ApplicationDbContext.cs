@@ -1,3 +1,4 @@
+using AdVision.Domain.Discounts;
 using AdVision.Domain.Positions;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
@@ -15,6 +16,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Tariff> Tariffs { get; set; }
     
     public DbSet<Position> Positions { get; set; }
+    
+    public DbSet<Discount> Discounts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

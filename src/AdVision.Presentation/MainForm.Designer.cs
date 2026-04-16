@@ -516,6 +516,7 @@ partial class MainForm
 		btnDiscounts.TabIndex = 0;
 		btnDiscounts.Text = "Скидки";
 		btnDiscounts.UseVisualStyleBackColor = true;
+		btnDiscounts.Click += BtnDiscounts_Click;
 		// 
 		// btnCustomers
 		// 
@@ -578,7 +579,7 @@ partial class MainForm
 		// 
 		pnlFilters.Location = new Point(3, 3);
 		pnlFilters.Name = "pnlFilters";
-		pnlFilters.Size = new Size(698, 169);
+		pnlFilters.Size = new Size(698, 235);
 		pnlFilters.TabIndex = 1;
 		// 
 		// dgvDirectories
@@ -588,7 +589,7 @@ partial class MainForm
 		dgvDirectories.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		dgvDirectories.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		dgvDirectories.Dock = DockStyle.Fill;
-		dgvDirectories.Location = new Point(3, 178);
+		dgvDirectories.Location = new Point(3, 244);
 		dgvDirectories.Name = "dgvDirectories";
 		dgvDirectories.ReadOnly = true;
 		dgvDirectories.RowHeadersWidth = 51;
