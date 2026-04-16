@@ -70,13 +70,10 @@ partial class MainForm
 		pnlFilters = new Panel();
 		dgvDirectories = new DataGridView();
 		panel4 = new Panel();
-		label12 = new Label();
-		btnPrevPage = new Button();
-		btnNextPage = new Button();
-		btnAdd = new Button();
 		tabPage3 = new TabPage();
 		tabPage4 = new TabPage();
 		tabPage5 = new TabPage();
+		directoriesPagingUserControl = new PagingUserControl();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -540,60 +537,12 @@ partial class MainForm
 		// 
 		// panel4
 		// 
-		panel4.Controls.Add(label12);
-		panel4.Controls.Add(btnPrevPage);
-		panel4.Controls.Add(btnNextPage);
-		panel4.Controls.Add(btnAdd);
+		panel4.Controls.Add(directoriesPagingUserControl);
 		panel4.Dock = DockStyle.Fill;
 		panel4.Location = new Point(3, 492);
 		panel4.Name = "panel4";
 		panel4.Size = new Size(1010, 38);
 		panel4.TabIndex = 1;
-		// 
-		// label12
-		// 
-		label12.AutoSize = true;
-		label12.Location = new Point(303, 7);
-		label12.Name = "label12";
-		label12.Size = new Size(58, 20);
-		label12.TabIndex = 1;
-		label12.Text = "label12";
-		// 
-		// btnPrevPage
-		// 
-		btnPrevPage.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnPrevPage.FlatStyle = FlatStyle.Popup;
-		btnPrevPage.Location = new Point(743, 3);
-		btnPrevPage.Name = "btnPrevPage";
-		btnPrevPage.Size = new Size(47, 29);
-		btnPrevPage.TabIndex = 0;
-		btnPrevPage.Text = "<";
-		btnPrevPage.UseVisualStyleBackColor = true;
-		btnPrevPage.Click += BtnPrevPage_Click;
-		// 
-		// btnNextPage
-		// 
-		btnNextPage.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnNextPage.FlatStyle = FlatStyle.Popup;
-		btnNextPage.Location = new Point(796, 3);
-		btnNextPage.Name = "btnNextPage";
-		btnNextPage.Size = new Size(47, 29);
-		btnNextPage.TabIndex = 0;
-		btnNextPage.Text = ">";
-		btnNextPage.UseVisualStyleBackColor = true;
-		btnNextPage.Click += BtnNextPage_Click;
-		// 
-		// btnAdd
-		// 
-		btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnAdd.FlatStyle = FlatStyle.Popup;
-		btnAdd.Location = new Point(849, 3);
-		btnAdd.Name = "btnAdd";
-		btnAdd.Size = new Size(159, 29);
-		btnAdd.TabIndex = 0;
-		btnAdd.Text = "Добавить";
-		btnAdd.UseVisualStyleBackColor = true;
-		btnAdd.Click += BtnAdd_Click;
 		// 
 		// tabPage3
 		// 
@@ -623,6 +572,14 @@ partial class MainForm
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;
 		// 
+		// directoriesPagingUserControl
+		// 
+		directoriesPagingUserControl.Dock = DockStyle.Fill;
+		directoriesPagingUserControl.Location = new Point(0, 0);
+		directoriesPagingUserControl.Name = "directoriesPagingUserControl";
+		directoriesPagingUserControl.Size = new Size(1010, 38);
+		directoriesPagingUserControl.TabIndex = 0;
+		// 
 		// MainForm
 		// 
 		AutoScaleDimensions = new SizeF(8F, 20F);
@@ -648,7 +605,6 @@ partial class MainForm
 		tableLayoutPanel4.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)dgvDirectories).EndInit();
 		panel4.ResumeLayout(false);
-		panel4.PerformLayout();
 		ResumeLayout(false);
 	}
 
@@ -697,9 +653,6 @@ partial class MainForm
 	private Panel pnlFilters;
 	private TableLayoutPanel tableLayoutPanel4;
 	private Panel panel4;
-	private Button btnPrevPage;
-	private Button btnNextPage;
-	private Button btnAdd;
-	private Label label12;
 	private PagingUserControl venuesPagingUserControl;
+	private PagingUserControl directoriesPagingUserControl;
 }

@@ -104,10 +104,9 @@ public partial class MainForm : Form
         venuesPagingUserControl.NextClicked += GoToNextVenuePage;
         venuesPagingUserControl.AddClicked += CreateVenue;
 
-        // TODO
-        // _directoriesPagingUserControl.PrevClicked += GoToPreviousDirectoryPageUi;
-        // _directoriesPagingUserControl.NextClicked += GoToNextDirectoryPageUi;
-        // _directoriesPagingUserControl.AddClicked += AddDirectoryItem;
+        directoriesPagingUserControl.PrevClicked += GoToPreviousDirectoryPageUi;
+        directoriesPagingUserControl.NextClicked += GoToNextDirectoryPageUi;
+        directoriesPagingUserControl.AddClicked += AddDirectoryItem;
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -830,15 +829,14 @@ public partial class MainForm : Form
 
     private void UpdateDirectoryPagingState()
     {
-        // TODO
-        // _directoriesPagingUserControl.SetState(
-        //     GetCurrentDirectoryTotalCount(),
-        //     GetCurrentDirectoryPage(),
-        //     GetCurrentDirectoryTotalPages(),
-        //     _isLoading);
-        //
-        // _directoriesPagingUserControl.SetAddVisible(true);
-        // _directoriesPagingUserControl.SetAddEnabled(!_isLoading && _currentDirectoryType != DirectoryType.None);
+        directoriesPagingUserControl.SetState(
+            GetCurrentDirectoryTotalCount(),
+            GetCurrentDirectoryPage(),
+            GetCurrentDirectoryTotalPages(),
+            _isLoading);
+        
+        directoriesPagingUserControl.SetAddVisible(true);
+        directoriesPagingUserControl.SetAddEnabled(!_isLoading && _currentDirectoryType != DirectoryType.None);
     }
 
     private async void BtnVenueTypes_Click(object sender, EventArgs e)
