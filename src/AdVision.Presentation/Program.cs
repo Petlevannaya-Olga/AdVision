@@ -77,11 +77,13 @@ internal static class Program
         services.AddTransient<NewTariffForm>();
         services.AddTransient<PositionForm>();
         services.AddTransient<DiscountForm>();
+        services.AddTransient<EmployeeForm>();
         
         // Регистрируем контролы
         services.AddTransient<VenueTypesFilterUserControl>();
         services.AddTransient<PositionsFilterUserControl>();
         services.AddTransient<DiscountsFilterUserControl>();
+        services.AddTransient<EmployeesFilterUserControl>();
         
         // Регистрируем уведомления
         services.AddSingleton<INotificationService, NotificationService>();

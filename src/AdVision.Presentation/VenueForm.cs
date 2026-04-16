@@ -1,4 +1,5 @@
 ﻿using AdVision.Application.Generators;
+using AdVision.Application.Generators.Venues;
 using AdVision.Application.Venues.CreateVenueCommand;
 using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
 using AdVision.Contracts;

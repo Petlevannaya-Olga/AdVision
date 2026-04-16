@@ -101,7 +101,7 @@ partial class MainForm
 		tabControl1.Location = new Point(0, 0);
 		tabControl1.Name = "tabControl1";
 		tabControl1.SelectedIndex = 0;
-		tabControl1.Size = new Size(1030, 572);
+		tabControl1.Size = new Size(1090, 572);
 		tabControl1.TabIndex = 0;
 		tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
 		// 
@@ -399,7 +399,7 @@ partial class MainForm
 		tabPage2.Location = new Point(4, 29);
 		tabPage2.Name = "tabPage2";
 		tabPage2.Padding = new Padding(3);
-		tabPage2.Size = new Size(1022, 539);
+		tabPage2.Size = new Size(1082, 539);
 		tabPage2.TabIndex = 1;
 		tabPage2.Text = "Справочники";
 		tabPage2.UseVisualStyleBackColor = true;
@@ -416,7 +416,7 @@ partial class MainForm
 		tableLayoutPanel3.RowCount = 2;
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
-		tableLayoutPanel3.Size = new Size(1016, 533);
+		tableLayoutPanel3.Size = new Size(1076, 533);
 		tableLayoutPanel3.TabIndex = 1;
 		// 
 		// tableLayoutPanel1
@@ -431,7 +431,7 @@ partial class MainForm
 		tableLayoutPanel1.Name = "tableLayoutPanel1";
 		tableLayoutPanel1.RowCount = 1;
 		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel1.Size = new Size(1010, 483);
+		tableLayoutPanel1.Size = new Size(1070, 483);
 		tableLayoutPanel1.TabIndex = 0;
 		// 
 		// panel3
@@ -477,6 +477,7 @@ partial class MainForm
 		btnEmployees.TabIndex = 0;
 		btnEmployees.Text = "Сотрудники";
 		btnEmployees.UseVisualStyleBackColor = true;
+		btnEmployees.Click += BtnEmployees_Click;
 		// 
 		// btnPositions
 		// 
@@ -512,14 +513,15 @@ partial class MainForm
 		tableLayoutPanel4.RowCount = 2;
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
-		tableLayoutPanel4.Size = new Size(704, 477);
+		tableLayoutPanel4.Size = new Size(764, 477);
 		tableLayoutPanel4.TabIndex = 1;
 		// 
 		// pnlFilters
 		// 
+		pnlFilters.Dock = DockStyle.Fill;
 		pnlFilters.Location = new Point(3, 3);
 		pnlFilters.Name = "pnlFilters";
-		pnlFilters.Size = new Size(698, 235);
+		pnlFilters.Size = new Size(758, 235);
 		pnlFilters.TabIndex = 1;
 		// 
 		// dgvDirectories
@@ -533,7 +535,7 @@ partial class MainForm
 		dgvDirectories.Name = "dgvDirectories";
 		dgvDirectories.ReadOnly = true;
 		dgvDirectories.RowHeadersWidth = 51;
-		dgvDirectories.Size = new Size(698, 262);
+		dgvDirectories.Size = new Size(758, 262);
 		dgvDirectories.TabIndex = 1;
 		// 
 		// panel4
@@ -542,7 +544,7 @@ partial class MainForm
 		panel4.Dock = DockStyle.Fill;
 		panel4.Location = new Point(3, 492);
 		panel4.Name = "panel4";
-		panel4.Size = new Size(1010, 38);
+		panel4.Size = new Size(1070, 38);
 		panel4.TabIndex = 1;
 		// 
 		// directoriesPagingUserControl
@@ -550,7 +552,7 @@ partial class MainForm
 		directoriesPagingUserControl.Dock = DockStyle.Fill;
 		directoriesPagingUserControl.Location = new Point(0, 0);
 		directoriesPagingUserControl.Name = "directoriesPagingUserControl";
-		directoriesPagingUserControl.Size = new Size(1010, 38);
+		directoriesPagingUserControl.Size = new Size(1070, 38);
 		directoriesPagingUserControl.TabIndex = 0;
 		// 
 		// tabPage3
@@ -585,7 +587,7 @@ partial class MainForm
 		// 
 		AutoScaleDimensions = new SizeF(8F, 20F);
 		AutoScaleMode = AutoScaleMode.Font;
-		ClientSize = new Size(1030, 572);
+		ClientSize = new Size(1090, 572);
 		Controls.Add(tabControl1);
 		Name = "MainForm";
 		StartPosition = FormStartPosition.CenterScreen;

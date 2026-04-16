@@ -1,8 +1,8 @@
 using AdVision.Application.Generators;
-using AdVision.Domain.Venues;
+using AdVision.Application.Generators.Venues;
 using AdVision.Domain.VenueTypes;
 
-namespace AdVision.Infrastructure.Generators;
+namespace AdVision.Infrastructure.Generators.Venue;
 
 public class VenueFakeGenerator(
     IVenueNameFakeGenerator nameFakeGenerator,
@@ -11,12 +11,12 @@ public class VenueFakeGenerator(
     IVenueRatingFakeGenerator ratingFakeGenerator,
     IVenueDescriptionFakeGenerator descriptionFakeGenerator) : IVenueFakeGenerator
 {
-    public Venue Generate(string typeName)
+    public Domain.Venues.Venue Generate(string typeName)
     {
         var address = addressFakeGenerator.Generate();
         var name = nameFakeGenerator.Generate(typeName, address.City, address.Street);
 
-        return new Venue(
+        return new Domain.Venues.Venue(
             name: name,
             venueTypeId: new VenueTypeId(Guid.NewGuid()),
             address: address,

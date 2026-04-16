@@ -1,10 +1,12 @@
+using AdVision.Application.Employees.GetAllEmployeesQuery;
+
 namespace AdVision.Presentation;
 
-using AdVision.Application.Discounts.GetAllDiscountsQuery;
-using AdVision.Application.Positions.GetAllPositionsQuery;
-using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
-using AdVision.Contracts;
-using AdVision.Presentation.Helpers;
+using Application.Discounts.GetAllDiscountsQuery;
+using Application.Positions.GetAllPositionsQuery;
+using Application.VenueTypes.GetAllVenueTypesQuery;
+using Contracts;
+using Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
 using CSharpFunctionalExtensions;
@@ -255,6 +257,9 @@ public partial class MainForm
             case DirectoryType.Discounts:
                 await LoadDiscountsToGridAsync();
                 break;
+            case DirectoryType.Employees:
+                await LoadEmployeesToGridAsync();
+                break;
         }
     }
 
@@ -320,6 +325,7 @@ public partial class MainForm
             DirectoryType.VenueTypes => _venueTypesDirectory.CanGoPrevious(),
             DirectoryType.Positions => _positionsDirectory.CanGoPrevious(),
             DirectoryType.Discounts => _discountsDirectory.CanGoPrevious(),
+            DirectoryType.Employees => _employeesDirectory.CanGoPrevious(),
             _ => false
         };
     }
@@ -331,6 +337,7 @@ public partial class MainForm
             DirectoryType.VenueTypes => _venueTypesDirectory.CanGoNext(),
             DirectoryType.Positions => _positionsDirectory.CanGoNext(),
             DirectoryType.Discounts => _discountsDirectory.CanGoNext(),
+            DirectoryType.Employees => _employeesDirectory.CanGoNext(),
             _ => false
         };
     }
@@ -348,6 +355,9 @@ public partial class MainForm
             case DirectoryType.Discounts:
                 _discountsDirectory.GoPrevious();
                 break;
+            case DirectoryType.Employees:
+                _employeesDirectory.GoPrevious();
+                break;
         }
     }
 
@@ -364,6 +374,9 @@ public partial class MainForm
             case DirectoryType.Discounts:
                 _discountsDirectory.GoNext();
                 break;
+            case DirectoryType.Employees:
+                _employeesDirectory.GoNext();
+                break;
         }
     }
 
@@ -374,6 +387,7 @@ public partial class MainForm
             DirectoryType.VenueTypes => _venueTypesDirectory.Page,
             DirectoryType.Positions => _positionsDirectory.Page,
             DirectoryType.Discounts => _discountsDirectory.Page,
+            DirectoryType.Employees => _employeesDirectory.Page,
             _ => 1
         };
     }
@@ -385,6 +399,7 @@ public partial class MainForm
             DirectoryType.VenueTypes => _venueTypesDirectory.TotalPages,
             DirectoryType.Positions => _positionsDirectory.TotalPages,
             DirectoryType.Discounts => _discountsDirectory.TotalPages,
+            DirectoryType.Employees => _employeesDirectory.TotalPages,
             _ => 0
         };
     }
@@ -396,10 +411,11 @@ public partial class MainForm
             DirectoryType.VenueTypes => _venueTypesDirectory.TotalCount,
             DirectoryType.Positions => _positionsDirectory.TotalCount,
             DirectoryType.Discounts => _discountsDirectory.TotalCount,
+            DirectoryType.Employees => _employeesDirectory.TotalCount,
             _ => 0
         };
     }
-
+    
     private void UpdateDirectoryPagingState()
     {
         directoriesPagingUserControl.SetState(
@@ -461,15 +477,23 @@ public partial class MainForm
                 ConfigureVenueTypesGrid();
                 await LoadVenueTypesToGridAsync();
                 break;
+
             case DirectoryType.Positions:
                 LoadPositionsFilterControl();
                 ConfigurePositionsGrid();
                 await LoadPositionsToGridAsync();
                 break;
+
             case DirectoryType.Discounts:
                 LoadDiscountsFilterControl();
                 ConfigureDiscountsGrid();
                 await LoadDiscountsToGridAsync();
+                break;
+
+            case DirectoryType.Employees:
+                await LoadEmployeesFilterControlAsync();
+                ConfigureEmployeesGrid();
+                await LoadEmployeesToGridAsync();
                 break;
         }
     }
@@ -609,6 +633,9 @@ public partial class MainForm
             case DirectoryType.Discounts:
                 OpenDiscountForm();
                 break;
+            case DirectoryType.Employees:
+                OpenEmployeeForm();
+                break;
         }
     }
 
@@ -662,11 +689,17 @@ public partial class MainForm
             case DirectoryType.VenueTypes:
                 _venueTypesFilterControl?.SetResetEnabled(HasActiveVenueTypeFilters());
                 break;
+
             case DirectoryType.Positions:
                 _positionsFilterControl?.SetResetEnabled(HasActivePositionFilters());
                 break;
+
             case DirectoryType.Discounts:
                 _discountsFilterControl?.SetResetEnabled(HasActiveDiscountFilters());
+                break;
+
+            case DirectoryType.Employees:
+                _employeesFilterControl?.SetResetEnabled(HasActiveEmployeeFilters());
                 break;
         }
     }
@@ -727,6 +760,223 @@ public partial class MainForm
             default:
                 throw new ArgumentOutOfRangeException();
         }
+    }
+
+    private void ConfigureEmployeesGrid()
+    {
+        dgvDirectories.AutoGenerateColumns = false;
+        dgvDirectories.Columns.Clear();
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.LastName),
+            HeaderText = @"Фамилия",
+            Name = "colLastName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.FirstName),
+            HeaderText = @"Имя",
+            Name = "colFirstName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.MiddleName),
+            HeaderText = @"Отчество",
+            Name = "colMiddleName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.PhoneNumber),
+            HeaderText = @"Телефон",
+            Name = "colPhone"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.PassportSeries),
+            HeaderText = @"Серия",
+            Name = "colPassportSeries"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.PassportNumber),
+            HeaderText = @"Номер",
+            Name = "colPassportNumber"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(EmployeeDto.Address),
+            HeaderText = @"Адрес",
+            Name = "colAddress",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        });
+    }
+
+    private async Task LoadEmployeesToGridAsync()
+    {
+        var result = await _employeesQueryHandler.Handle(
+            new GetAllEmployeesQuery(),
+            _cts.Token);
+
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadEmployeesErrorTitle, result.Error);
+            return;
+        }
+
+        var filteredItems = ApplyEmployeeFilters(result.Value)
+            .OrderBy(x => x.LastName)
+            .ThenBy(x => x.FirstName)
+            .ThenBy(x => x.MiddleName)
+            .ToList();
+
+        var pagedItems = _employeesDirectory.ApplyPaging(filteredItems);
+
+        dgvDirectories.DataSource = new BindingSource
+        {
+            DataSource = pagedItems
+        };
+
+        UpdateDirectoryPagingState();
+        UpdateDirectoryResetButtonState();
+    }
+
+    private IEnumerable<EmployeeDto> ApplyEmployeeFilters(IEnumerable<EmployeeDto> employees)
+    {
+        var lastNameFilter = _employeesFilterControl?.LastNameFilter;
+        if (!string.IsNullOrWhiteSpace(lastNameFilter))
+        {
+            employees = employees.Where(x =>
+                x.LastName.Contains(lastNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var firstNameFilter = _employeesFilterControl?.FirstNameFilter;
+        if (!string.IsNullOrWhiteSpace(firstNameFilter))
+        {
+            employees = employees.Where(x =>
+                x.FirstName.Contains(firstNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var middleNameFilter = _employeesFilterControl?.MiddleNameFilter;
+        if (!string.IsNullOrWhiteSpace(middleNameFilter))
+        {
+            employees = employees.Where(x =>
+                x.MiddleName.Contains(middleNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var positionIdFilter = _employeesFilterControl?.PositionIdFilter;
+        if (positionIdFilter.HasValue)
+        {
+            employees = employees.Where(x => x.PositionId == positionIdFilter.Value);
+        }
+
+        var phoneFilter = _employeesFilterControl?.PhoneFilter;
+        if (!string.IsNullOrWhiteSpace(phoneFilter))
+        {
+            var normalizedFilter = NormalizePhone(phoneFilter);
+
+            employees = employees.Where(x =>
+                NormalizePhone(x.PhoneNumber).Contains(normalizedFilter));
+        }
+
+        return employees;
+    }
+    
+    private static string NormalizePhone(string phone)
+    {
+        return new string(phone.Where(char.IsDigit).ToArray());
+    }
+
+    private async Task LoadEmployeesFilterControlAsync()
+    {
+        _employeesFilterControl = LoadDirectoryFilterControl<EmployeesFilterUserControl>(
+            control =>
+            {
+                control.ApplyClicked += OnEmployeesFilterApplyClicked;
+                control.ResetClicked += OnEmployeesFilterResetClicked;
+                control.FiltersChanged += OnEmployeesFiltersChanged;
+            },
+            control => control.SetResetEnabled(false));
+
+        var positionsResult = await _positionsQueryHandler.Handle(
+            new GetAllPositionsQuery(),
+            _cts.Token);
+
+        if (positionsResult.IsFailure)
+        {
+            ShowLoadError(LoadPositionsErrorTitle, positionsResult.Error);
+            return;
+        }
+
+        var positions = positionsResult.Value
+            .OrderBy(x => x.Name)
+            .ToList();
+
+        _employeesFilterControl.SetPositions(positions);
+    }
+
+    private async void BtnEmployees_Click(object sender, EventArgs e)
+    {
+        await RunUiActionAsync(
+            () => OpenDirectoryAsync(DirectoryType.Employees),
+            "Загрузка сотрудников отменена",
+            "Ошибка загрузки сотрудников");
+    }
+
+    private async void OnEmployeesFilterApplyClicked()
+    {
+        await ApplyDirectoryFilterAsync(
+            _employeesDirectory,
+            LoadEmployeesToGridAsync,
+            "Применение фильтра сотрудников отменено",
+            "Ошибка применения фильтра сотрудников");
+    }
+
+    private async void OnEmployeesFilterResetClicked()
+    {
+        await ResetDirectoryFilterAsync(
+            () => _employeesFilterControl?.ResetFilters(),
+            _employeesDirectory,
+            LoadEmployeesToGridAsync,
+            "Сброс фильтра сотрудников отменен",
+            "Ошибка сброса фильтра сотрудников");
+    }
+
+    private bool HasActiveEmployeeFilters()
+    {
+        return !string.IsNullOrWhiteSpace(_employeesFilterControl?.LastNameFilter) ||
+               !string.IsNullOrWhiteSpace(_employeesFilterControl?.FirstNameFilter) ||
+               !string.IsNullOrWhiteSpace(_employeesFilterControl?.MiddleNameFilter) ||
+               _employeesFilterControl?.PositionIdFilter is not null;
+    }
+
+    private void OnEmployeesFiltersChanged()
+    {
+        UpdateDirectoryResetButtonState();
+    }
+    
+    private void OpenEmployeeForm()
+    {
+        var form = _serviceProvider.GetRequiredService<EmployeeForm>();
+        form.EmployeeCreated += OnEmployeeCreated;
+        form.ShowDialog();
+        form.EmployeeCreated -= OnEmployeeCreated;
+    }
+
+    private async void OnEmployeeCreated()
+    {
+        await RefreshDirectoryAfterCreateAsync(
+            () => _employeesFilterControl?.ResetFilters(),
+            _employeesDirectory,
+            LoadEmployeesToGridAsync,
+            "Обновление списка сотрудников отменено",
+            "Ошибка обновления списка сотрудников");
     }
 
     #endregion

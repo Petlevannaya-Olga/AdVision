@@ -1,8 +1,9 @@
 using AdVision.Application.Generators;
+using AdVision.Application.Generators.Venues;
 using AdVision.Domain.Venues;
 using Bogus;
 
-namespace AdVision.Infrastructure.Generators;
+namespace AdVision.Infrastructure.Generators.Venue;
 
 public class VenueSizeFakeGenerator : IVenueSizeFakeGenerator
 {

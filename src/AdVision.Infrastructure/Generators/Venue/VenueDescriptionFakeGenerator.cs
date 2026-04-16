@@ -1,9 +1,10 @@
 using AdVision.Application.Generators;
+using AdVision.Application.Generators.Venues;
 using AdVision.Domain.Venues;
 using Bogus;
 using Microsoft.Extensions.Logging;
 
-namespace AdVision.Infrastructure.Generators;
+namespace AdVision.Infrastructure.Generators.Venue;
 
 public class VenueDescriptionFakeGenerator(ILogger<VenueDescriptionFakeGenerator> logger)
     : IVenueDescriptionFakeGenerator

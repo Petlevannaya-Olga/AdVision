@@ -1,6 +1,10 @@
 using AdVision.Application;
 using AdVision.Application.Generators;
+using AdVision.Application.Generators.Employees;
+using AdVision.Application.Generators.Venues;
 using AdVision.Infrastructure.Generators;
+using AdVision.Infrastructure.Generators.Employees;
+using AdVision.Infrastructure.Generators.Venue;
 using AdVision.Infrastructure.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -30,6 +34,7 @@ public static class DependencyInjection
         services.AddSingleton<ITariffRepository, TariffRepository>();
         services.AddSingleton<IPositionRepository, PositionRepository>();
         services.AddSingleton<IDiscountRepository, DiscountRepository>();
+        services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
         
         // Генераторы
         services.AddTransient<IVenueNameFakeGenerator, VenueNameFakeGenerator>();
@@ -38,6 +43,12 @@ public static class DependencyInjection
         services.AddTransient<IVenueDescriptionFakeGenerator, VenueDescriptionFakeGenerator>();
         services.AddTransient<IVenueRatingFakeGenerator, VenueRatingFakeGenerator>();
         services.AddTransient<IVenueFakeGenerator, VenueFakeGenerator>();
+
+        services.AddTransient<IEmployeeAddressFakeGenerator, EmployeeAddressFakeGenerator>();
+        services.AddTransient<IEmployeeFakeGenerator, EmployeeFakeGenerator>();
+        services.AddTransient<IPassportFakeGenerator, PassportFakeGenerator>();
+        services.AddTransient<IPersonNameFakeGenerator, PersonNameFakeGenerator>();
+        services.AddTransient<IPhoneNumberFakeGenerator, PhoneNumberFakeGenerator>();
 
         return services;
     }
