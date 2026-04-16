@@ -60,7 +60,7 @@ public partial class MainForm : Form
     private VenueTypesFilterUserControl? _venueTypesFilterControl;
     private PositionsFilterUserControl? _positionsFilterControl;
     private DiscountsFilterUserControl? _discountsFilterControl;
-
+    
     private int TotalPages => _totalCount == 0
         ? 0
         : (int)Math.Ceiling((double)_totalCount / PageSize);
@@ -90,11 +90,24 @@ public partial class MainForm : Form
 
         InitializeComponent();
 
+        SubscribePagingControls();
         ConfigureVenuesGrid();
         UpdatePagingState();
         UpdateDirectoryPagingState();
 
         venuesDataGridView.CellDoubleClick += VenuesDataGridView_CellDoubleClick;
+    }
+    
+    private void SubscribePagingControls()
+    {
+        venuesPagingUserControl.PrevClicked += GoToPreviousVenuePage;
+        venuesPagingUserControl.NextClicked += GoToNextVenuePage;
+        venuesPagingUserControl.AddClicked += CreateVenue;
+
+        // TODO
+        // _directoriesPagingUserControl.PrevClicked += GoToPreviousDirectoryPageUi;
+        // _directoriesPagingUserControl.NextClicked += GoToNextDirectoryPageUi;
+        // _directoriesPagingUserControl.AddClicked += AddDirectoryItem;
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -121,7 +134,7 @@ public partial class MainForm : Form
 
         _isLoading = true;
         UseWaitCursor = true;
-        UpdatePagingState();
+        UpdateVenuesPagingState();
         UpdateDirectoryPagingState();
 
         try
@@ -133,7 +146,7 @@ public partial class MainForm : Form
         {
             _isLoading = false;
             UseWaitCursor = false;
-            UpdatePagingState();
+            UpdateVenuesPagingState();
             UpdateDirectoryPagingState();
         }
     }
@@ -292,6 +305,7 @@ public partial class MainForm : Form
         };
 
         UpdatePagingState();
+        UpdateVenuesPagingState();
     }
 
     private Expression<Func<Venue, bool>> BuildVenueFilter()
@@ -373,12 +387,12 @@ public partial class MainForm : Form
 
     private void UpdatePagingState()
     {
-        btnPrev.Enabled = !_isLoading && _page > 1;
-        btnNext.Enabled = !_isLoading && _page < TotalPages;
+        //btnPrev.Enabled = !_isLoading && _page > 1;
+        //btnNext.Enabled = !_isLoading && _page < TotalPages;
 
-        label11.Text = _totalCount == 0
-            ? "Количество записей: 0"
-            : $"Количество записей: {_totalCount}, стр. {_page} из {TotalPages}";
+        //label11.Text = _totalCount == 0
+        //    ? "Количество записей: 0"
+        //    : $"Количество записей: {_totalCount}, стр. {_page} из {TotalPages}";
     }
 
     private void ResetVenueFilters()
@@ -816,16 +830,15 @@ public partial class MainForm : Form
 
     private void UpdateDirectoryPagingState()
     {
-        var currentPage = GetCurrentDirectoryPage();
-        var totalPages = GetCurrentDirectoryTotalPages();
-        var totalCount = GetCurrentDirectoryTotalCount();
-
-        btnPrevPage.Enabled = !_isLoading && currentPage > 1;
-        btnNextPage.Enabled = !_isLoading && currentPage < totalPages;
-
-        label12.Text = totalCount == 0
-            ? "Количество записей: 0"
-            : $"Количество записей: {totalCount}, стр. {currentPage} из {totalPages}";
+        // TODO
+        // _directoriesPagingUserControl.SetState(
+        //     GetCurrentDirectoryTotalCount(),
+        //     GetCurrentDirectoryPage(),
+        //     GetCurrentDirectoryTotalPages(),
+        //     _isLoading);
+        //
+        // _directoriesPagingUserControl.SetAddVisible(true);
+        // _directoriesPagingUserControl.SetAddEnabled(!_isLoading && _currentDirectoryType != DirectoryType.None);
     }
 
     private async void BtnVenueTypes_Click(object sender, EventArgs e)
@@ -1313,5 +1326,138 @@ public partial class MainForm : Form
         }
 
         _cts.Dispose();
+    }
+    
+    private void UpdateVenuesPagingState()
+    {
+        venuesPagingUserControl.SetState(_totalCount, _page, TotalPages, _isLoading);
+        venuesPagingUserControl.SetAddVisible(true);
+        venuesPagingUserControl.SetAddEnabled(!_isLoading);
+    }
+    
+   private async void GoToPreviousVenuePage()
+    {
+        if (_isLoading || _page <= 1)
+        {
+            return;
+        }
+
+        await RunUiActionAsync(
+            async () =>
+            {
+                _page--;
+                await LoadVenuesAsync();
+            },
+            "Переход на предыдущую страницу площадок отменен",
+            "Ошибка загрузки предыдущей страницы площадок");
+    }
+
+    private async void GoToNextVenuePage()
+    {
+        if (_isLoading || _page >= TotalPages)
+        {
+            return;
+        }
+
+        await RunUiActionAsync(
+            async () =>
+            {
+                _page++;
+                await LoadVenuesAsync();
+            },
+            "Переход на следующую страницу площадок отменен",
+            "Ошибка загрузки следующей страницы площадок");
+    }
+
+    private void CreateVenue()
+    {
+        var form = _serviceProvider.GetRequiredService<VenueForm>();
+        form.VenueCreated += OnVenueCreated;
+        form.ShowDialog();
+        form.VenueCreated -= OnVenueCreated;
+    }
+    
+    private async void GoToPreviousDirectoryPageUi()
+    {
+        if (_isLoading || !CanGoToPreviousDirectoryPage())
+        {
+            return;
+        }
+
+        await RunUiActionAsync(
+            async () =>
+            {
+                GoToPreviousDirectoryPageInternal();
+                await LoadCurrentDirectoryAsync();
+            },
+            "Переход на предыдущую страницу справочника отменен",
+            "Ошибка загрузки предыдущей страницы справочника");
+    }
+    
+    private void GoToPreviousDirectoryPageInternal()
+    {
+        switch (_currentDirectoryType)
+        {
+            case DirectoryType.VenueTypes:
+                _venueTypesDirectory.GoPrevious();
+                break;
+
+            case DirectoryType.Positions:
+                _positionsDirectory.GoPrevious();
+                break;
+
+            case DirectoryType.Discounts:
+                _discountsDirectory.GoPrevious();
+                break;
+        }
+    }
+
+    private async void GoToNextDirectoryPageUi()
+    {
+        if (_isLoading || !CanGoToNextDirectoryPage())
+        {
+            return;
+        }
+
+        await RunUiActionAsync(
+            async () =>
+            {
+                GoToNextDirectoryPageInternal();
+                await LoadCurrentDirectoryAsync();
+            },
+            "Переход на следующую страницу справочника отменен",
+            "Ошибка загрузки следующей страницы справочника");
+    }
+    
+    private void GoToNextDirectoryPageInternal()
+    {
+        switch (_currentDirectoryType)
+        {
+            case DirectoryType.VenueTypes:
+                _venueTypesDirectory.GoNext();
+                break;
+            case DirectoryType.Positions:
+                _positionsDirectory.GoNext();
+                break;
+            case DirectoryType.Discounts:
+                _discountsDirectory.GoNext();
+                break;
+        }
+    }
+
+    private void AddDirectoryItem()
+    {
+        switch (_currentDirectoryType)
+        {
+            case DirectoryType.VenueTypes:
+                OpenVenueTypeForm();
+                break;
+            case DirectoryType.Positions:
+                OpenPositionForm();
+                break;
+            case DirectoryType.Discounts:
+                OpenDiscountForm();
+                break;
+        }
     }
 }

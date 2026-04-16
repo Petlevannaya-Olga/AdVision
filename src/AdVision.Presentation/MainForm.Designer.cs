@@ -33,11 +33,6 @@ partial class MainForm
 		tabPage1 = new TabPage();
 		tableLayoutPanel2 = new TableLayoutPanel();
 		venuesDataGridView = new DataGridView();
-		panel1 = new Panel();
-		label11 = new Label();
-		btnPrev = new Button();
-		btnNext = new Button();
-		btnCreate = new Button();
 		panel2 = new Panel();
 		btnApply = new Button();
 		btnReset = new Button();
@@ -61,6 +56,7 @@ partial class MainForm
 		label6 = new Label();
 		label2 = new Label();
 		label1 = new Label();
+		venuesPagingUserControl = new PagingUserControl();
 		tabPage2 = new TabPage();
 		tableLayoutPanel3 = new TableLayoutPanel();
 		tableLayoutPanel1 = new TableLayoutPanel();
@@ -85,7 +81,6 @@ partial class MainForm
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)venuesDataGridView).BeginInit();
-		panel1.SuspendLayout();
 		panel2.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).BeginInit();
 		((System.ComponentModel.ISupportInitialize)nudRatingFrom).BeginInit();
@@ -109,7 +104,7 @@ partial class MainForm
 		tabControl1.Location = new Point(0, 0);
 		tabControl1.Name = "tabControl1";
 		tabControl1.SelectedIndex = 0;
-		tabControl1.Size = new Size(1030, 538);
+		tabControl1.Size = new Size(1030, 572);
 		tabControl1.TabIndex = 0;
 		tabControl1.SelectedIndexChanged += TabControl1_SelectedIndexChanged;
 		// 
@@ -119,7 +114,7 @@ partial class MainForm
 		tabPage1.Location = new Point(4, 29);
 		tabPage1.Name = "tabPage1";
 		tabPage1.Padding = new Padding(3);
-		tabPage1.Size = new Size(1022, 505);
+		tabPage1.Size = new Size(1022, 539);
 		tabPage1.TabIndex = 0;
 		tabPage1.Text = "Площадки";
 		tabPage1.UseVisualStyleBackColor = true;
@@ -130,15 +125,15 @@ partial class MainForm
 		tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
 		tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel2.Controls.Add(venuesDataGridView, 1, 0);
-		tableLayoutPanel2.Controls.Add(panel1, 1, 1);
 		tableLayoutPanel2.Controls.Add(panel2, 0, 0);
+		tableLayoutPanel2.Controls.Add(venuesPagingUserControl, 1, 1);
 		tableLayoutPanel2.Dock = DockStyle.Fill;
 		tableLayoutPanel2.Location = new Point(3, 3);
 		tableLayoutPanel2.Name = "tableLayoutPanel2";
 		tableLayoutPanel2.RowCount = 2;
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 35F));
-		tableLayoutPanel2.Size = new Size(1016, 499);
+		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel2.Size = new Size(1016, 533);
 		tableLayoutPanel2.TabIndex = 2;
 		// 
 		// venuesDataGridView
@@ -151,68 +146,8 @@ partial class MainForm
 		venuesDataGridView.Location = new Point(303, 3);
 		venuesDataGridView.Name = "venuesDataGridView";
 		venuesDataGridView.RowHeadersWidth = 51;
-		venuesDataGridView.Size = new Size(710, 458);
+		venuesDataGridView.Size = new Size(710, 474);
 		venuesDataGridView.TabIndex = 0;
-		// 
-		// panel1
-		// 
-		panel1.Controls.Add(label11);
-		panel1.Controls.Add(btnPrev);
-		panel1.Controls.Add(btnNext);
-		panel1.Controls.Add(btnCreate);
-		panel1.Dock = DockStyle.Fill;
-		panel1.Location = new Point(303, 467);
-		panel1.Name = "panel1";
-		panel1.Size = new Size(710, 29);
-		panel1.TabIndex = 2;
-		// 
-		// label11
-		// 
-		label11.AutoSize = true;
-		label11.Location = new Point(3, 4);
-		label11.Name = "label11";
-		label11.Size = new Size(58, 20);
-		label11.TabIndex = 2;
-		label11.Text = "label11";
-		// 
-		// btnPrev
-		// 
-		btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnPrev.BackColor = Color.Transparent;
-		btnPrev.FlatStyle = FlatStyle.Popup;
-		btnPrev.Location = new Point(513, 0);
-		btnPrev.Name = "btnPrev";
-		btnPrev.Size = new Size(44, 29);
-		btnPrev.TabIndex = 1;
-		btnPrev.Text = "<";
-		btnPrev.UseVisualStyleBackColor = false;
-		btnPrev.Click += BtnPrev_Click;
-		// 
-		// btnNext
-		// 
-		btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnNext.BackColor = Color.Transparent;
-		btnNext.FlatStyle = FlatStyle.Popup;
-		btnNext.Location = new Point(563, 0);
-		btnNext.Name = "btnNext";
-		btnNext.Size = new Size(44, 29);
-		btnNext.TabIndex = 1;
-		btnNext.Text = ">";
-		btnNext.UseVisualStyleBackColor = false;
-		btnNext.Click += BtnNext_Click;
-		// 
-		// btnCreate
-		// 
-		btnCreate.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-		btnCreate.BackColor = Color.Transparent;
-		btnCreate.FlatStyle = FlatStyle.Popup;
-		btnCreate.Location = new Point(613, 0);
-		btnCreate.Name = "btnCreate";
-		btnCreate.Size = new Size(94, 29);
-		btnCreate.TabIndex = 1;
-		btnCreate.Text = "Добавить";
-		btnCreate.UseVisualStyleBackColor = false;
-		btnCreate.Click += BtnCreate_Click;
 		// 
 		// panel2
 		// 
@@ -241,7 +176,7 @@ partial class MainForm
 		panel2.Dock = DockStyle.Fill;
 		panel2.Location = new Point(3, 3);
 		panel2.Name = "panel2";
-		panel2.Size = new Size(294, 458);
+		panel2.Size = new Size(294, 474);
 		panel2.TabIndex = 3;
 		// 
 		// btnApply
@@ -453,13 +388,20 @@ partial class MainForm
 		label1.TabIndex = 0;
 		label1.Text = "Название";
 		// 
+		// venuesPagingUserControl
+		// 
+		venuesPagingUserControl.Location = new Point(303, 483);
+		venuesPagingUserControl.Name = "venuesPagingUserControl";
+		venuesPagingUserControl.Size = new Size(710, 47);
+		venuesPagingUserControl.TabIndex = 4;
+		// 
 		// tabPage2
 		// 
 		tabPage2.Controls.Add(tableLayoutPanel3);
 		tabPage2.Location = new Point(4, 29);
 		tabPage2.Name = "tabPage2";
 		tabPage2.Padding = new Padding(3);
-		tabPage2.Size = new Size(1022, 505);
+		tabPage2.Size = new Size(1022, 539);
 		tabPage2.TabIndex = 1;
 		tabPage2.Text = "Справочники";
 		tabPage2.UseVisualStyleBackColor = true;
@@ -476,7 +418,7 @@ partial class MainForm
 		tableLayoutPanel3.RowCount = 2;
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
-		tableLayoutPanel3.Size = new Size(1016, 499);
+		tableLayoutPanel3.Size = new Size(1016, 533);
 		tableLayoutPanel3.TabIndex = 1;
 		// 
 		// tableLayoutPanel1
@@ -491,7 +433,7 @@ partial class MainForm
 		tableLayoutPanel1.Name = "tableLayoutPanel1";
 		tableLayoutPanel1.RowCount = 1;
 		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel1.Size = new Size(1010, 449);
+		tableLayoutPanel1.Size = new Size(1010, 483);
 		tableLayoutPanel1.TabIndex = 0;
 		// 
 		// panel3
@@ -504,7 +446,7 @@ partial class MainForm
 		panel3.Dock = DockStyle.Fill;
 		panel3.Location = new Point(3, 3);
 		panel3.Name = "panel3";
-		panel3.Size = new Size(294, 443);
+		panel3.Size = new Size(294, 477);
 		panel3.TabIndex = 0;
 		// 
 		// btnDiscounts
@@ -572,7 +514,7 @@ partial class MainForm
 		tableLayoutPanel4.RowCount = 2;
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
-		tableLayoutPanel4.Size = new Size(704, 443);
+		tableLayoutPanel4.Size = new Size(704, 477);
 		tableLayoutPanel4.TabIndex = 1;
 		// 
 		// pnlFilters
@@ -603,7 +545,7 @@ partial class MainForm
 		panel4.Controls.Add(btnNextPage);
 		panel4.Controls.Add(btnAdd);
 		panel4.Dock = DockStyle.Fill;
-		panel4.Location = new Point(3, 458);
+		panel4.Location = new Point(3, 492);
 		panel4.Name = "panel4";
 		panel4.Size = new Size(1010, 38);
 		panel4.TabIndex = 1;
@@ -658,7 +600,7 @@ partial class MainForm
 		tabPage3.Location = new Point(4, 29);
 		tabPage3.Name = "tabPage3";
 		tabPage3.Padding = new Padding(3);
-		tabPage3.Size = new Size(1022, 505);
+		tabPage3.Size = new Size(1022, 539);
 		tabPage3.TabIndex = 2;
 		tabPage3.Text = "Договоры";
 		tabPage3.UseVisualStyleBackColor = true;
@@ -667,7 +609,7 @@ partial class MainForm
 		// 
 		tabPage4.Location = new Point(4, 29);
 		tabPage4.Name = "tabPage4";
-		tabPage4.Size = new Size(1022, 505);
+		tabPage4.Size = new Size(1022, 539);
 		tabPage4.TabIndex = 3;
 		tabPage4.Text = "Заказы";
 		tabPage4.UseVisualStyleBackColor = true;
@@ -676,7 +618,7 @@ partial class MainForm
 		// 
 		tabPage5.Location = new Point(4, 29);
 		tabPage5.Name = "tabPage5";
-		tabPage5.Size = new Size(1022, 505);
+		tabPage5.Size = new Size(1022, 539);
 		tabPage5.TabIndex = 4;
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;
@@ -685,7 +627,7 @@ partial class MainForm
 		// 
 		AutoScaleDimensions = new SizeF(8F, 20F);
 		AutoScaleMode = AutoScaleMode.Font;
-		ClientSize = new Size(1030, 538);
+		ClientSize = new Size(1030, 572);
 		Controls.Add(tabControl1);
 		Name = "MainForm";
 		StartPosition = FormStartPosition.CenterScreen;
@@ -695,8 +637,6 @@ partial class MainForm
 		tabPage1.ResumeLayout(false);
 		tableLayoutPanel2.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)venuesDataGridView).EndInit();
-		panel1.ResumeLayout(false);
-		panel1.PerformLayout();
 		panel2.ResumeLayout(false);
 		panel2.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)nudRatingTo).EndInit();
@@ -717,12 +657,8 @@ partial class MainForm
 	private TabControl tabControl1;
 	private TabPage tabPage1;
 	private TabPage tabPage2;
-	private Button btnCreate;
 	private DataGridView venuesDataGridView;
 	private TableLayoutPanel tableLayoutPanel2;
-	private Panel panel1;
-	private Button btnPrev;
-	private Button btnNext;
 	private Panel panel2;
 	private TextBox txtName;
 	private Label label2;
@@ -745,7 +681,6 @@ partial class MainForm
 	private NumericUpDown nudRatingTo;
 	private NumericUpDown nudRatingFrom;
 	private Button btnReset;
-	private Label label11;
 	private CheckBox chkDescending;
 	private TableLayoutPanel tableLayoutPanel3;
 	private TableLayoutPanel tableLayoutPanel1;
@@ -766,4 +701,5 @@ partial class MainForm
 	private Button btnNextPage;
 	private Button btnAdd;
 	private Label label12;
+	private PagingUserControl venuesPagingUserControl;
 }
