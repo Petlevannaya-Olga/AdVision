@@ -70,10 +70,10 @@ partial class MainForm
 		pnlFilters = new Panel();
 		dgvDirectories = new DataGridView();
 		panel4 = new Panel();
+		directoriesPagingUserControl = new PagingUserControl();
 		tabPage3 = new TabPage();
 		tabPage4 = new TabPage();
 		tabPage5 = new TabPage();
-		directoriesPagingUserControl = new PagingUserControl();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -387,6 +387,7 @@ partial class MainForm
 		// 
 		// venuesPagingUserControl
 		// 
+		venuesPagingUserControl.Dock = DockStyle.Fill;
 		venuesPagingUserControl.Location = new Point(303, 483);
 		venuesPagingUserControl.Name = "venuesPagingUserControl";
 		venuesPagingUserControl.Size = new Size(710, 47);
@@ -544,6 +545,14 @@ partial class MainForm
 		panel4.Size = new Size(1010, 38);
 		panel4.TabIndex = 1;
 		// 
+		// directoriesPagingUserControl
+		// 
+		directoriesPagingUserControl.Dock = DockStyle.Fill;
+		directoriesPagingUserControl.Location = new Point(0, 0);
+		directoriesPagingUserControl.Name = "directoriesPagingUserControl";
+		directoriesPagingUserControl.Size = new Size(1010, 38);
+		directoriesPagingUserControl.TabIndex = 0;
+		// 
 		// tabPage3
 		// 
 		tabPage3.Location = new Point(4, 29);
@@ -571,14 +580,6 @@ partial class MainForm
 		tabPage5.TabIndex = 4;
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;
-		// 
-		// directoriesPagingUserControl
-		// 
-		directoriesPagingUserControl.Dock = DockStyle.Fill;
-		directoriesPagingUserControl.Location = new Point(0, 0);
-		directoriesPagingUserControl.Name = "directoriesPagingUserControl";
-		directoriesPagingUserControl.Size = new Size(1010, 38);
-		directoriesPagingUserControl.TabIndex = 0;
 		// 
 		// MainForm
 		// 
