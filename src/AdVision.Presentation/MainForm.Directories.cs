@@ -1,3 +1,4 @@
+using AdVision.Application.Customers.GetAllCustomersQuery;
 using AdVision.Application.Employees.GetAllEmployeesQuery;
 
 namespace AdVision.Presentation;
@@ -260,6 +261,9 @@ public partial class MainForm
             case DirectoryType.Employees:
                 await LoadEmployeesToGridAsync();
                 break;
+            case DirectoryType.Customers:
+                await LoadCustomersToGridAsync();
+                break;
         }
     }
 
@@ -326,6 +330,7 @@ public partial class MainForm
             DirectoryType.Positions => _positionsDirectory.CanGoPrevious(),
             DirectoryType.Discounts => _discountsDirectory.CanGoPrevious(),
             DirectoryType.Employees => _employeesDirectory.CanGoPrevious(),
+            DirectoryType.Customers => _customersDirectory.CanGoPrevious(),
             _ => false
         };
     }
@@ -338,6 +343,7 @@ public partial class MainForm
             DirectoryType.Positions => _positionsDirectory.CanGoNext(),
             DirectoryType.Discounts => _discountsDirectory.CanGoNext(),
             DirectoryType.Employees => _employeesDirectory.CanGoNext(),
+            DirectoryType.Customers => _customersDirectory.CanGoNext(),
             _ => false
         };
     }
@@ -358,6 +364,9 @@ public partial class MainForm
             case DirectoryType.Employees:
                 _employeesDirectory.GoPrevious();
                 break;
+            case DirectoryType.Customers:
+                _customersDirectory.GoPrevious();
+                break;
         }
     }
 
@@ -377,6 +386,9 @@ public partial class MainForm
             case DirectoryType.Employees:
                 _employeesDirectory.GoNext();
                 break;
+            case DirectoryType.Customers:
+                _customersDirectory.GoNext();
+                break;
         }
     }
 
@@ -388,6 +400,7 @@ public partial class MainForm
             DirectoryType.Positions => _positionsDirectory.Page,
             DirectoryType.Discounts => _discountsDirectory.Page,
             DirectoryType.Employees => _employeesDirectory.Page,
+            DirectoryType.Customers => _customersDirectory.Page,
             _ => 1
         };
     }
@@ -400,6 +413,7 @@ public partial class MainForm
             DirectoryType.Positions => _positionsDirectory.TotalPages,
             DirectoryType.Discounts => _discountsDirectory.TotalPages,
             DirectoryType.Employees => _employeesDirectory.TotalPages,
+            DirectoryType.Customers => _customersDirectory.TotalPages,
             _ => 0
         };
     }
@@ -412,10 +426,11 @@ public partial class MainForm
             DirectoryType.Positions => _positionsDirectory.TotalCount,
             DirectoryType.Discounts => _discountsDirectory.TotalCount,
             DirectoryType.Employees => _employeesDirectory.TotalCount,
+            DirectoryType.Customers => _customersDirectory.TotalCount,
             _ => 0
         };
     }
-    
+
     private void UpdateDirectoryPagingState()
     {
         directoriesPagingUserControl.SetState(
@@ -494,6 +509,12 @@ public partial class MainForm
                 await LoadEmployeesFilterControlAsync();
                 ConfigureEmployeesGrid();
                 await LoadEmployeesToGridAsync();
+                break;
+
+            case DirectoryType.Customers:
+                LoadCustomersFilterControl();
+                ConfigureCustomersGrid();
+                await LoadCustomersToGridAsync();
                 break;
         }
     }
@@ -636,6 +657,9 @@ public partial class MainForm
             case DirectoryType.Employees:
                 OpenEmployeeForm();
                 break;
+            case DirectoryType.Customers:
+                OpenCustomerForm();
+                break;
         }
     }
 
@@ -700,6 +724,10 @@ public partial class MainForm
 
             case DirectoryType.Employees:
                 _employeesFilterControl?.SetResetEnabled(HasActiveEmployeeFilters());
+                break;
+
+            case DirectoryType.Customers:
+                _customersFilterControl?.SetResetEnabled(HasActiveCustomerFilters());
                 break;
         }
     }
@@ -887,7 +915,7 @@ public partial class MainForm
 
         return employees;
     }
-    
+
     private static string NormalizePhone(string phone)
     {
         return new string(phone.Where(char.IsDigit).ToArray());
@@ -953,6 +981,7 @@ public partial class MainForm
         return !string.IsNullOrWhiteSpace(_employeesFilterControl?.LastNameFilter) ||
                !string.IsNullOrWhiteSpace(_employeesFilterControl?.FirstNameFilter) ||
                !string.IsNullOrWhiteSpace(_employeesFilterControl?.MiddleNameFilter) ||
+               !string.IsNullOrWhiteSpace(_employeesFilterControl?.PhoneFilter) ||
                _employeesFilterControl?.PositionIdFilter is not null;
     }
 
@@ -960,7 +989,7 @@ public partial class MainForm
     {
         UpdateDirectoryResetButtonState();
     }
-    
+
     private void OpenEmployeeForm()
     {
         var form = _serviceProvider.GetRequiredService<EmployeeForm>();
@@ -979,5 +1008,185 @@ public partial class MainForm
             "Ошибка обновления списка сотрудников");
     }
 
+    private void ConfigureCustomersGrid()
+    {
+        dgvDirectories.AutoGenerateColumns = false;
+        dgvDirectories.Columns.Clear();
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(CustomerDto.LastName),
+            HeaderText = @"Фамилия",
+            Name = "colLastName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(CustomerDto.FirstName),
+            HeaderText = @"Имя",
+            Name = "colFirstName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(CustomerDto.MiddleName),
+            HeaderText = @"Отчество",
+            Name = "colMiddleName"
+        });
+
+        dgvDirectories.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(CustomerDto.PhoneNumber),
+            HeaderText = @"Телефон",
+            Name = "colPhone",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        });
+    }
+
+    private async Task LoadCustomersToGridAsync()
+    {
+        var result = await _customersQueryHandler.Handle(
+            new GetAllCustomersQuery(),
+            _cts.Token);
+
+        if (result.IsFailure)
+        {
+            ShowLoadError(LoadCustomersErrorTitle, result.Error);
+            return;
+        }
+
+        var filteredItems = ApplyCustomerFilters(result.Value)
+            .OrderBy(x => x.LastName)
+            .ThenBy(x => x.FirstName)
+            .ThenBy(x => x.MiddleName)
+            .ToList();
+
+        var pagedItems = _customersDirectory.ApplyPaging(filteredItems);
+
+        dgvDirectories.DataSource = new BindingSource
+        {
+            DataSource = pagedItems
+        };
+
+        UpdateDirectoryPagingState();
+        UpdateDirectoryResetButtonState();
+    }
+
+    private IEnumerable<CustomerDto> ApplyCustomerFilters(IEnumerable<CustomerDto> customers)
+    {
+        var lastNameFilter = _customersFilterControl?.LastNameFilter;
+        if (!string.IsNullOrWhiteSpace(lastNameFilter))
+        {
+            customers = customers.Where(x =>
+                x.LastName.Contains(lastNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var firstNameFilter = _customersFilterControl?.FirstNameFilter;
+        if (!string.IsNullOrWhiteSpace(firstNameFilter))
+        {
+            customers = customers.Where(x =>
+                x.FirstName.Contains(firstNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var middleNameFilter = _customersFilterControl?.MiddleNameFilter;
+        if (!string.IsNullOrWhiteSpace(middleNameFilter))
+        {
+            customers = customers.Where(x =>
+                x.MiddleName.Contains(middleNameFilter, StringComparison.OrdinalIgnoreCase));
+        }
+
+        var phoneFilter = _customersFilterControl?.PhoneFilter;
+        if (!string.IsNullOrWhiteSpace(phoneFilter))
+        {
+            var normalizedFilter = NormalizePhone(phoneFilter);
+
+            customers = customers.Where(x =>
+                NormalizePhone(x.PhoneNumber).Contains(normalizedFilter));
+        }
+
+        return customers;
+    }
+
+    private void LoadCustomersFilterControl()
+    {
+        _customersFilterControl = LoadDirectoryFilterControl<CustomersFilterUserControl>(
+            control =>
+            {
+                control.ApplyClicked += OnCustomersFilterApplyClicked;
+                control.ResetClicked += OnCustomersFilterResetClicked;
+                control.FiltersChanged += OnCustomersFiltersChanged;
+            },
+            control => control.SetResetEnabled(false));
+    }
+
+    private async void BtnCustomers_Click(object sender, EventArgs e)
+    {
+        await RunUiActionAsync(
+            () => OpenDirectoryAsync(DirectoryType.Customers),
+            "Загрузка заказчиков отменена",
+            "Ошибка загрузки заказчиков");
+    }
+
+    private async void OnCustomersFilterApplyClicked()
+    {
+        await ApplyDirectoryFilterAsync(
+            _customersDirectory,
+            LoadCustomersToGridAsync,
+            "Применение фильтра заказчиков отменено",
+            "Ошибка применения фильтра заказчиков");
+    }
+
+    private async void OnCustomersFilterResetClicked()
+    {
+        await ResetDirectoryFilterAsync(
+            () => _customersFilterControl?.ResetFilters(),
+            _customersDirectory,
+            LoadCustomersToGridAsync,
+            "Сброс фильтра заказчиков отменен",
+            "Ошибка сброса фильтра заказчиков");
+    }
+
+    private async void OnCustomerCreated()
+    {
+        await RefreshDirectoryAfterCreateAsync(
+            () => _customersFilterControl?.ResetFilters(),
+            _customersDirectory,
+            LoadCustomersToGridAsync,
+            "Обновление списка заказчиков отменено",
+            "Ошибка обновления списка заказчиков");
+    }
+
+    private async void OnCustomerCreated(string _)
+    {
+        await RefreshDirectoryAfterCreateAsync(
+            () => _customersFilterControl?.ResetFilters(),
+            _customersDirectory,
+            LoadCustomersToGridAsync,
+            "Обновление списка заказчиков отменено",
+            "Ошибка обновления списка заказчиков");
+    }
+
+    private void OpenCustomerForm()
+    {
+        var form = _serviceProvider.GetRequiredService<CustomerForm>();
+        form.CustomerCreated += OnCustomerCreated;
+        form.ShowDialog();
+        form.CustomerCreated -= OnCustomerCreated;
+    }
+
+    private bool HasActiveCustomerFilters()
+    {
+        return !string.IsNullOrWhiteSpace(_customersFilterControl?.LastNameFilter) ||
+               !string.IsNullOrWhiteSpace(_customersFilterControl?.FirstNameFilter) ||
+               !string.IsNullOrWhiteSpace(_customersFilterControl?.FirstNameFilter) ||
+               !string.IsNullOrWhiteSpace(_customersFilterControl?.MiddleNameFilter) ||
+               !string.IsNullOrWhiteSpace(_customersFilterControl?.PhoneFilter);
+    }
+
+    private void OnCustomersFiltersChanged()
+    {
+        UpdateDirectoryResetButtonState();
+    }
+    
     #endregion
 }

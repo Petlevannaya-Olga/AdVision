@@ -1,4 +1,5 @@
 using AdVision.Application.Generators.Employees;
+using AdVision.Domain;
 using AdVision.Domain.Employees;
 using Bogus;
 using Bogus.DataSets;

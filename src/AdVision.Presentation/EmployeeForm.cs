@@ -2,6 +2,7 @@
 using AdVision.Application.Generators.Employees;
 using AdVision.Application.Positions.GetAllPositionsQuery;
 using AdVision.Contracts;
+using AdVision.Domain;
 using AdVision.Domain.Employees;
 using AdVision.Presentation.Notifications;
 using Microsoft.Extensions.DependencyInjection;

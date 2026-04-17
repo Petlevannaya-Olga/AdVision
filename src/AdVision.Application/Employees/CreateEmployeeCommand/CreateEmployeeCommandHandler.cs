@@ -1,4 +1,5 @@
 using AdVision.Application.SharedErrors;
+using AdVision.Domain;
 using AdVision.Domain.Employees;
 using AdVision.Domain.Positions;
 using CSharpFunctionalExtensions;

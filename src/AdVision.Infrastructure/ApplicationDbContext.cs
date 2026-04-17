@@ -1,3 +1,4 @@
+using AdVision.Domain.Customers;
 using AdVision.Domain.Discounts;
 using AdVision.Domain.Employees;
 using AdVision.Domain.Positions;
@@ -21,6 +22,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Discount> Discounts { get; set; }
 
     public DbSet<Employee> Employees { get; set; }
+    
+    public DbSet<Customer> Customers { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

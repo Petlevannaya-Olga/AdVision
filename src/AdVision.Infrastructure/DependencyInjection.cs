@@ -1,8 +1,6 @@
 using AdVision.Application;
-using AdVision.Application.Generators;
 using AdVision.Application.Generators.Employees;
 using AdVision.Application.Generators.Venues;
-using AdVision.Infrastructure.Generators;
 using AdVision.Infrastructure.Generators.Employees;
 using AdVision.Infrastructure.Generators.Venue;
 using AdVision.Infrastructure.Seeding;
@@ -35,6 +33,7 @@ public static class DependencyInjection
         services.AddSingleton<IPositionRepository, PositionRepository>();
         services.AddSingleton<IDiscountRepository, DiscountRepository>();
         services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
+        services.AddSingleton<ICustomerRepository, CustomerRepository>();
         
         // Генераторы
         services.AddTransient<IVenueNameFakeGenerator, VenueNameFakeGenerator>();

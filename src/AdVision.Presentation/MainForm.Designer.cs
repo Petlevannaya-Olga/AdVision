@@ -111,7 +111,7 @@ partial class MainForm
 		tabPage1.Location = new Point(4, 29);
 		tabPage1.Name = "tabPage1";
 		tabPage1.Padding = new Padding(3);
-		tabPage1.Size = new Size(1022, 539);
+		tabPage1.Size = new Size(1082, 539);
 		tabPage1.TabIndex = 0;
 		tabPage1.Text = "Площадки";
 		tabPage1.UseVisualStyleBackColor = true;
@@ -130,7 +130,7 @@ partial class MainForm
 		tableLayoutPanel2.RowCount = 2;
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
-		tableLayoutPanel2.Size = new Size(1016, 533);
+		tableLayoutPanel2.Size = new Size(1076, 533);
 		tableLayoutPanel2.TabIndex = 2;
 		// 
 		// venuesDataGridView
@@ -143,7 +143,7 @@ partial class MainForm
 		venuesDataGridView.Location = new Point(303, 3);
 		venuesDataGridView.Name = "venuesDataGridView";
 		venuesDataGridView.RowHeadersWidth = 51;
-		venuesDataGridView.Size = new Size(710, 474);
+		venuesDataGridView.Size = new Size(770, 474);
 		venuesDataGridView.TabIndex = 0;
 		// 
 		// panel2
@@ -390,7 +390,7 @@ partial class MainForm
 		venuesPagingUserControl.Dock = DockStyle.Fill;
 		venuesPagingUserControl.Location = new Point(303, 483);
 		venuesPagingUserControl.Name = "venuesPagingUserControl";
-		venuesPagingUserControl.Size = new Size(710, 47);
+		venuesPagingUserControl.Size = new Size(770, 47);
 		venuesPagingUserControl.TabIndex = 4;
 		// 
 		// tabPage2
@@ -467,6 +467,7 @@ partial class MainForm
 		btnCustomers.TabIndex = 0;
 		btnCustomers.Text = "Заказчики";
 		btnCustomers.UseVisualStyleBackColor = true;
+		btnCustomers.Click += BtnCustomers_Click;
 		// 
 		// btnEmployees
 		// 
@@ -560,7 +561,7 @@ partial class MainForm
 		tabPage3.Location = new Point(4, 29);
 		tabPage3.Name = "tabPage3";
 		tabPage3.Padding = new Padding(3);
-		tabPage3.Size = new Size(1022, 539);
+		tabPage3.Size = new Size(1082, 539);
 		tabPage3.TabIndex = 2;
 		tabPage3.Text = "Договоры";
 		tabPage3.UseVisualStyleBackColor = true;
@@ -569,7 +570,7 @@ partial class MainForm
 		// 
 		tabPage4.Location = new Point(4, 29);
 		tabPage4.Name = "tabPage4";
-		tabPage4.Size = new Size(1022, 539);
+		tabPage4.Size = new Size(1082, 539);
 		tabPage4.TabIndex = 3;
 		tabPage4.Text = "Заказы";
 		tabPage4.UseVisualStyleBackColor = true;
@@ -578,7 +579,7 @@ partial class MainForm
 		// 
 		tabPage5.Location = new Point(4, 29);
 		tabPage5.Name = "tabPage5";
-		tabPage5.Size = new Size(1022, 539);
+		tabPage5.Size = new Size(1082, 539);
 		tabPage5.TabIndex = 4;
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;

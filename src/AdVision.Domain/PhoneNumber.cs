@@ -1,7 +1,7 @@
 using CSharpFunctionalExtensions;
 using Shared;
 
-namespace AdVision.Domain.Employees;
+namespace AdVision.Domain;
 
 public sealed class PhoneNumber
 {

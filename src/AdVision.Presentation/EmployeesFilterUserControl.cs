@@ -77,7 +77,7 @@ namespace AdVision.Presentation
 
 		private void TxtPhone_TextChanged(object sender, EventArgs e)
 		{
-
+			FiltersChanged?.Invoke();
 		}
 	}
 }
