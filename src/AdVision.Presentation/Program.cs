@@ -79,6 +79,7 @@ internal static class Program
         services.AddTransient<DiscountForm>();
         services.AddTransient<EmployeeForm>();
         services.AddTransient<CustomerForm>();
+        services.AddTransient<CustomerDiscountsForm>();
         
         // Регистрируем контролы
         services.AddTransient<VenueTypesFilterUserControl>();

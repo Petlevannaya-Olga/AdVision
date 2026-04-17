@@ -538,6 +538,7 @@ partial class MainForm
 		dgvDirectories.RowHeadersWidth = 51;
 		dgvDirectories.Size = new Size(758, 262);
 		dgvDirectories.TabIndex = 1;
+		dgvDirectories.CellDoubleClick += DgvDirectories_CellDoubleClick;
 		// 
 		// panel4
 		// 

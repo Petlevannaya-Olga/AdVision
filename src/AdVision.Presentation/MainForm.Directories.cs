@@ -1,5 +1,6 @@
 using AdVision.Application.Customers.GetAllCustomersQuery;
 using AdVision.Application.Employees.GetAllEmployeesQuery;
+using Microsoft.Extensions.Logging;
 
 namespace AdVision.Presentation;
 
@@ -275,6 +276,7 @@ public partial class MainForm
         pnlFilters.Controls.Clear();
 
         var control = _serviceProvider.GetRequiredService<TControl>();
+        pnlFilters.Height = control.Height;
         control.Dock = DockStyle.Fill;
 
         subscribe(control);
@@ -1187,6 +1189,36 @@ public partial class MainForm
     {
         UpdateDirectoryResetButtonState();
     }
-    
+
+    private void DgvDirectories_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0)
+        {
+            return;
+        }
+
+        if (_currentDirectoryType != DirectoryType.Customers)
+        {
+            return;
+        }
+
+        var row = dgvDirectories.Rows[e.RowIndex];
+
+        if (row.DataBoundItem is not CustomerDto customer)
+        {
+            _logger.LogWarning("Не удалось получить CustomerDto из строки DataGridView");
+            return;
+        }
+
+        OpenCustomerDiscountsForm(customer);
+    }
+
+    private void OpenCustomerDiscountsForm(CustomerDto customer)
+    {
+        var form = _serviceProvider.GetRequiredService<CustomerDiscountsForm>();
+        form.LoadCustomer(customer);
+        form.ShowDialog();
+    }
+
     #endregion
 }
