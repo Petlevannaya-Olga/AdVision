@@ -1,6 +1,6 @@
-﻿using System.Linq.Expressions;
-using AdVision.Application.Tariffs.GetTariffsByVenueIdQuery;
+﻿using AdVision.Application.Tariffs.GetTariffsByVenueIdQuery;
 using AdVision.Contracts;
+using AdVision.Domain;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using AdVision.Presentation.Notifications;
@@ -8,6 +8,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 using Shared.Extensions;
+using System.Linq.Expressions;
 
 namespace AdVision.Presentation
 {
@@ -272,37 +273,47 @@ namespace AdVision.Presentation
             _cts.Dispose();
         }
 
-        private Expression<Func<Tariff, bool>> BuildFilter()
-        {
-            Expression<Func<Tariff, bool>> filter = x => true;
+		private Expression<Func<Tariff, bool>> BuildFilter()
+		{
+			Expression<Func<Tariff, bool>> filter = x => true;
 
-            var dateFrom = DateOnly.FromDateTime(dtpDateFrom.Value);
-            var dateTo = DateOnly.FromDateTime(dtpDateTo.Value);
+			var dateFrom = DateOnly.FromDateTime(dtpDateFrom.Value);
+			var dateTo = DateOnly.FromDateTime(dtpDateTo.Value);
 
-            var hasPriceFrom = decimal.TryParse(txtPriceFrom.Text.Trim(), out var priceFrom);
-            var hasPriceTo = decimal.TryParse(txtPriceTo.Text.Trim(), out var priceTo);
+			var hasPriceFrom = decimal.TryParse(txtPriceFrom.Text.Trim(), out var priceFrom);
+			var hasPriceTo = decimal.TryParse(txtPriceTo.Text.Trim(), out var priceTo);
 
-            if (dateFrom <= dateTo)
-            {
-                filter = filter.And(x =>
-                    x.Interval.StartDate <= dateTo &&
-                    x.Interval.EndDate >= dateFrom);
-            }
+			if (dateFrom <= dateTo)
+			{
+				filter = filter.And(x =>
+					x.Interval.StartDate <= dateTo &&
+					x.Interval.EndDate >= dateFrom);
+			}
 
-            if (hasPriceFrom)
-            {
-                filter = filter.And(x => x.Price.Value >= priceFrom);
-            }
+			if (hasPriceFrom)
+			{
+				var minPriceResult = Money.Create(priceFrom);
+				if (minPriceResult.IsSuccess)
+				{
+					var minPrice = minPriceResult.Value;
+					filter = filter.And(x => x.Price >= minPrice);
+				}
+			}
 
-            if (hasPriceTo)
-            {
-                filter = filter.And(x => x.Price.Value <= priceTo);
-            }
+			if (hasPriceTo)
+			{
+				var maxPriceResult = Money.Create(priceTo);
+				if (maxPriceResult.IsSuccess)
+				{
+					var maxPrice = maxPriceResult.Value;
+					filter = filter.And(x => x.Price <= maxPrice);
+				}
+			}
 
-            return filter;
-        }
+			return filter;
+		}
 
-        private async void BtnApply_Click(object sender, EventArgs e)
+		private async void BtnApply_Click(object sender, EventArgs e)
         {
             try
             {

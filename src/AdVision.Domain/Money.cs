@@ -14,6 +14,11 @@ public sealed class Money
     {
         Value = value;
     }
+    
+    public static bool operator <(Money left, Money right) => left.Value < right.Value;
+    public static bool operator <=(Money left, Money right) => left.Value <= right.Value;
+    public static bool operator >(Money left, Money right) => left.Value > right.Value;
+    public static bool operator >=(Money left, Money right) => left.Value >= right.Value;
 
     public static Result<Money, Error> Create(decimal value)
     {
