@@ -17,4 +17,10 @@ public interface ITariffRepository
     Task<Result<TariffId, Error>> AddAsync(
         Tariff tariff,
         CancellationToken cancellationToken = default);
+    
+    Task<Result<Tariff?, Error>> GetByAsync(
+        Expression<Func<Tariff, bool>> expression,
+        CancellationToken cancellationToken);
+    
+    Task<Result<IReadOnlyList<Tariff>, Error>> GetAllAsync(CancellationToken cancellationToken);
 }

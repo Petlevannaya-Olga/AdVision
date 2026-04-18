@@ -1,3 +1,3 @@
 namespace AdVision.Contracts;
 
-public sealed record CreateDiscountDto(string Name, double Percent, decimal MinTotal);
+public sealed record CreateDiscountDto(string Name, decimal Percent, decimal MinTotal);

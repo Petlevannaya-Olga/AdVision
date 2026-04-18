@@ -5,5 +5,5 @@ public record CustomerDiscountDetailsDto(
     Guid CustomerId,
     Guid DiscountId,
     string DiscountName,
-    double Percent,
+    decimal Percent,
     decimal MinTotal);

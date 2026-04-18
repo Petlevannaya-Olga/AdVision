@@ -26,8 +26,11 @@ public sealed class Order
     /// Идентификатор договора
     /// </summary>
     public ContractId ContractId { get; private set; }
-    
-    public Contract Contract { get; private set; }
+
+    /// <summary>
+    /// Навигационное свойство
+    /// </summary>
+    public Contract Contract { get; private set; } = null!;
 
     /// <summary>
     /// Позиции заказа

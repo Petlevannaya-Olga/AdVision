@@ -108,4 +108,51 @@ public class TariffRepository(ApplicationDbContext dbContext, ILogger<VenueRepos
 
         return tariff.Id;
     }
+    
+    public async Task<Result<Tariff?, Error>> GetByAsync(
+        Expression<Func<Tariff, bool>> expression,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await dbContext
+                .Tariffs
+                .FirstOrDefaultAsync(expression, cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения тарифа была отменена");
+            return CommonErrors.OperationCancelled("get.tariff.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении тарифа");
+            return CommonErrors.Db(
+                "get.tariff.from.db.exception",
+                "Ошибка при получении тарифа");
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<Tariff>, Error>> GetAllAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            return await dbContext
+                .Tariffs
+                .ToListAsync(cancellationToken);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения всех тарифов была отменена");
+            return CommonErrors.OperationCancelled("get.tariffs.operation.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении всех тарифов");
+            return CommonErrors.Db(
+                "get.tariffs.from.db.exception",
+                "Ошибка при получении всех тарифов");
+        }
+    }
 }

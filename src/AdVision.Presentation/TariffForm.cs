@@ -279,8 +279,8 @@ namespace AdVision.Presentation
             var dateFrom = DateOnly.FromDateTime(dtpDateFrom.Value);
             var dateTo = DateOnly.FromDateTime(dtpDateTo.Value);
 
-            var hasPriceFrom = double.TryParse(txtPriceFrom.Text.Trim(), out var priceFrom);
-            var hasPriceTo = double.TryParse(txtPriceTo.Text.Trim(), out var priceTo);
+            var hasPriceFrom = decimal.TryParse(txtPriceFrom.Text.Trim(), out var priceFrom);
+            var hasPriceTo = decimal.TryParse(txtPriceTo.Text.Trim(), out var priceTo);
 
             if (dateFrom <= dateTo)
             {
@@ -291,12 +291,12 @@ namespace AdVision.Presentation
 
             if (hasPriceFrom)
             {
-                filter = filter.And(x => x.Price >= priceFrom);
+                filter = filter.And(x => x.Price.Value >= priceFrom);
             }
 
             if (hasPriceTo)
             {
-                filter = filter.And(x => x.Price <= priceTo);
+                filter = filter.And(x => x.Price.Value <= priceTo);
             }
 
             return filter;

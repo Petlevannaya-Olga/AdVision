@@ -137,9 +137,9 @@ namespace AdVision.Presentation
             }
         }
 
-        private bool TryGetPrice(out double price)
+        private bool TryGetPrice(out decimal price)
         {
-            return double.TryParse(txtPrice.Text.Trim(), out price);
+            return decimal.TryParse(txtPrice.Text.Trim(), out price);
         }
 
         private bool HasValidDateRange()

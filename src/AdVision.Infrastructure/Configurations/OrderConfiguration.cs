@@ -66,7 +66,7 @@ public sealed class OrderConfiguration : IEntityTypeConfiguration<Order>
             .HasIndex(x => new { x.ContractId, x.Status });
 
         builder
-            .HasOne<Contract>()
+            .HasOne(x => x.Contract)
             .WithMany()
             .HasForeignKey(x => x.ContractId)
             .OnDelete(DeleteBehavior.Restrict);

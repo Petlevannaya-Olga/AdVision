@@ -5,5 +5,5 @@ public sealed record TariffDto(
     Guid VenueId,
     DateOnly StartDate,
     DateOnly EndDate,
-    double Price
+    decimal Price
 );

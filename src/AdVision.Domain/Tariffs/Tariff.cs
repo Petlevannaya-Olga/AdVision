@@ -9,8 +9,8 @@ public sealed class Tariff
     /// <summary>
     /// Минимальная стоимость размещения в день
     /// </summary>
-    public const double MIN_PRICE = 500;
-    
+    public static readonly Money MIN_PRICE = Money.Create(500).Value;
+
     /// <summary>
     /// Уникальный идентификатор тарифа
     /// </summary>
@@ -34,15 +34,9 @@ public sealed class Tariff
     /// <summary>
     /// Стоимость размещения за сутки
     /// </summary>
-    public double Price { get; private set; }
+    public Money Price { get; private set; }
 
-    /// <summary>
-    /// Приватный конструктор
-    /// </summary>
-    /// <param name="venueId">Идентификатор площадки</param>
-    /// <param name="interval">Интервал размещения</param>
-    /// <param name="price">Стоимость размещения за сутки</param>
-    private Tariff(VenueId venueId, DateInterval interval, double price)
+    private Tariff(VenueId venueId, DateInterval interval, Money price)
     {
         Id = new TariffId(Guid.NewGuid());
         VenueId = venueId;
@@ -50,21 +44,27 @@ public sealed class Tariff
         Price = price;
     }
 
-    /// <summary>
-    /// Фабричный метод
-    /// </summary>
-    /// <param name="venueId">Идентификатор площадки</param>
-    /// <param name="interval">Интервал размещения</param>
-    /// <param name="price">Стоимость размещения за сутки</param>
-    /// <returns>Новый тариф</returns>
-    public static Result<Tariff, Error> Create(VenueId venueId, DateInterval interval, double price)
+    public static Result<Tariff, Error> Create(
+        VenueId venueId,
+        DateInterval interval,
+        decimal price)
     {
-        if (price <= MIN_PRICE)
+        var priceResult = Money.Create(price);
+
+        if (priceResult.IsFailure)
         {
-            CommonErrors.ValueIsLessThanMin(nameof(price), price, MIN_PRICE);
+            return priceResult.Error;
         }
-        
-        return new Tariff(venueId, interval, price);
+
+        if (priceResult.Value.Value < MIN_PRICE.Value)
+        {
+            return CommonErrors.ValueIsLessThanMin(
+                nameof(price),
+                (double)price,
+                (double)MIN_PRICE.Value);
+        }
+
+        return new Tariff(venueId, interval, priceResult.Value);
     }
 
     // EF Core

@@ -85,7 +85,7 @@ public partial class DiscountForm : Form
             var command = new CreateDiscountCommand(
                 new CreateDiscountDto(
                     name,
-                    (double)percent,
+                    percent,
                     minTotal));
 
             var result = await _commandHandler.Handle(command, _ct.Token);

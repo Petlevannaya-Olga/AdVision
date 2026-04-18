@@ -8,23 +8,23 @@ public sealed class DiscountPercent
     /// <summary>
     /// Минимальное значение
     /// </summary>
-    public const double MIN_VALUE = 1;
+    public const decimal MIN_VALUE = 1;
     
     /// <summary>
     /// Максимальное значение
     /// </summary>
-    public const double MAX_VALUE = 100;
+    public const decimal MAX_VALUE = 100;
 
     /// <summary>
     /// Значение
     /// </summary>
-    public double Value { get; private set; }
+    public decimal Value { get; private set; }
 
     /// <summary>
     /// Приватный конструктор
     /// </summary>
     /// <param name="value">Значение</param>
-    private DiscountPercent(double value)
+    private DiscountPercent(decimal value)
     {
         Value = value;
     }
@@ -34,7 +34,7 @@ public sealed class DiscountPercent
     /// </summary>
     /// <param name="value">Значение</param>
     /// <returns>Новый процент скидки</returns>
-    public static Result<DiscountPercent, Error> Create(double value)
+    public static Result<DiscountPercent, Error> Create(decimal value)
     {
         if (value is < MIN_VALUE or > MAX_VALUE)
         {

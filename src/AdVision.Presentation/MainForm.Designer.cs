@@ -106,6 +106,12 @@ partial class MainForm
 		contractsPagingUserControl = new PagingUserControl();
 		tabPage4 = new TabPage();
 		tabPage5 = new TabPage();
+		tableLayoutPanel6 = new TableLayoutPanel();
+		tableLayoutPanel7 = new TableLayoutPanel();
+		dataGridView1 = new DataGridView();
+		dataGridView2 = new DataGridView();
+		pagingUserControl2 = new PagingUserControl();
+		panel5 = new Panel();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -124,6 +130,11 @@ partial class MainForm
 		tableLayoutPanel5.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)dgvContracts).BeginInit();
 		panel1.SuspendLayout();
+		tabPage4.SuspendLayout();
+		tableLayoutPanel6.SuspendLayout();
+		tableLayoutPanel7.SuspendLayout();
+		((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+		((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -940,6 +951,7 @@ partial class MainForm
 		// 
 		// tabPage4
 		// 
+		tabPage4.Controls.Add(tableLayoutPanel6);
 		tabPage4.Location = new Point(4, 29);
 		tabPage4.Name = "tabPage4";
 		tabPage4.Size = new Size(1082, 539);
@@ -955,6 +967,82 @@ partial class MainForm
 		tabPage5.TabIndex = 4;
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;
+		// 
+		// tableLayoutPanel6
+		// 
+		tableLayoutPanel6.ColumnCount = 2;
+		tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
+		tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel6.Controls.Add(tableLayoutPanel7, 1, 0);
+		tableLayoutPanel6.Controls.Add(pagingUserControl2, 1, 1);
+		tableLayoutPanel6.Controls.Add(panel5, 0, 0);
+		tableLayoutPanel6.Dock = DockStyle.Fill;
+		tableLayoutPanel6.Location = new Point(0, 0);
+		tableLayoutPanel6.Name = "tableLayoutPanel6";
+		tableLayoutPanel6.RowCount = 2;
+		tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel6.Size = new Size(1082, 539);
+		tableLayoutPanel6.TabIndex = 0;
+		// 
+		// tableLayoutPanel7
+		// 
+		tableLayoutPanel7.ColumnCount = 1;
+		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
+		tableLayoutPanel7.Controls.Add(dataGridView1, 0, 0);
+		tableLayoutPanel7.Controls.Add(dataGridView2, 0, 1);
+		tableLayoutPanel7.Dock = DockStyle.Fill;
+		tableLayoutPanel7.Location = new Point(303, 3);
+		tableLayoutPanel7.Name = "tableLayoutPanel7";
+		tableLayoutPanel7.RowCount = 2;
+		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+		tableLayoutPanel7.Size = new Size(776, 480);
+		tableLayoutPanel7.TabIndex = 0;
+		// 
+		// dataGridView1
+		// 
+		dataGridView1.AllowUserToAddRows = false;
+		dataGridView1.AllowUserToDeleteRows = false;
+		dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dataGridView1.Dock = DockStyle.Fill;
+		dataGridView1.Location = new Point(3, 3);
+		dataGridView1.Name = "dataGridView1";
+		dataGridView1.ReadOnly = true;
+		dataGridView1.RowHeadersWidth = 51;
+		dataGridView1.Size = new Size(770, 234);
+		dataGridView1.TabIndex = 0;
+		// 
+		// dataGridView2
+		// 
+		dataGridView2.AllowUserToAddRows = false;
+		dataGridView2.AllowUserToDeleteRows = false;
+		dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dataGridView2.Dock = DockStyle.Fill;
+		dataGridView2.Location = new Point(3, 243);
+		dataGridView2.Name = "dataGridView2";
+		dataGridView2.ReadOnly = true;
+		dataGridView2.RowHeadersWidth = 51;
+		dataGridView2.Size = new Size(770, 234);
+		dataGridView2.TabIndex = 1;
+		// 
+		// pagingUserControl2
+		// 
+		pagingUserControl2.Location = new Point(303, 489);
+		pagingUserControl2.Name = "pagingUserControl2";
+		pagingUserControl2.Size = new Size(776, 47);
+		pagingUserControl2.TabIndex = 1;
+		// 
+		// panel5
+		// 
+		panel5.Dock = DockStyle.Fill;
+		panel5.Location = new Point(3, 3);
+		panel5.Name = "panel5";
+		panel5.Size = new Size(294, 480);
+		panel5.TabIndex = 2;
 		// 
 		// MainForm
 		// 
@@ -986,6 +1074,11 @@ partial class MainForm
 		((System.ComponentModel.ISupportInitialize)dgvContracts).EndInit();
 		panel1.ResumeLayout(false);
 		panel1.PerformLayout();
+		tabPage4.ResumeLayout(false);
+		tableLayoutPanel6.ResumeLayout(false);
+		tableLayoutPanel7.ResumeLayout(false);
+		((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+		((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
 		ResumeLayout(false);
 	}
 
@@ -1069,4 +1162,10 @@ partial class MainForm
 	private DateTimePicker dtpStartDateTo;
 	private DateTimePicker dtpSignedDateFrom;
 	private DateTimePicker dtpEndDateFrom;
+	private TableLayoutPanel tableLayoutPanel6;
+	private TableLayoutPanel tableLayoutPanel7;
+	private DataGridView dataGridView1;
+	private DataGridView dataGridView2;
+	private PagingUserControl pagingUserControl2;
+	private Panel panel5;
 }

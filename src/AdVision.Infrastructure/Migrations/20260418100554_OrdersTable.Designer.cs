@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260418083140_OrdersTable")]
+    [Migration("20260418100554_OrdersTable")]
     partial class OrdersTable
     {
         /// <inheritdoc />
@@ -555,11 +555,13 @@ namespace AdVision.Infrastructure.Migrations
 
             modelBuilder.Entity("AdVision.Domain.Orders.Order", b =>
                 {
-                    b.HasOne("AdVision.Domain.Contracts.Contract", null)
+                    b.HasOne("AdVision.Domain.Contracts.Contract", "Contract")
                         .WithMany()
                         .HasForeignKey("ContractId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("Contract");
                 });
 
             modelBuilder.Entity("AdVision.Domain.Orders.OrderItem", b =>

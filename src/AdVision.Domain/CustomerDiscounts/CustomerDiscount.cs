@@ -9,6 +9,10 @@ public sealed class CustomerDiscount
 
     public CustomerId CustomerId { get; private set; }
     public DiscountId DiscountId { get; private set; }
+    
+    public Discount Discount { get; private set; } = null!;
+    
+    public Customer Customer { get; private set; } = null!;
 
     public CustomerDiscount(CustomerId customerId, DiscountId discountId)
     {

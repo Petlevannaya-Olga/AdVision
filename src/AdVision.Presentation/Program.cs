@@ -41,14 +41,14 @@ internal static class Program
             // Собираем ServiceProvider
             var serviceProvider = services.BuildServiceProvider();
             
-            // Сидирование
-            await serviceProvider.RunSeeders();
-
             using (var scope = serviceProvider.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await db.Database.MigrateAsync();
             }
+            
+            // Сидирование
+            await serviceProvider.RunSeeders();
             
             ApplicationConfiguration.Initialize();
 

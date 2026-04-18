@@ -30,7 +30,7 @@ public sealed class GetTariffsByVenueIdQueryHandler(
                 x.VenueId.Value,
                 x.Interval.StartDate,
                 x.Interval.EndDate,
-                x.Price))
+                x.Price.Value))
             .ToList();
     }
 }

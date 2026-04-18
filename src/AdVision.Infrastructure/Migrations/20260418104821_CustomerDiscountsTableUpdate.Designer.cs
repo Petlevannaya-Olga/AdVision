@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AdVision.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418104821_CustomerDiscountsTableUpdate")]
+    partial class CustomerDiscountsTableUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -128,8 +131,8 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("name");
 
-                    b.Property<decimal>("Percent")
-                        .HasColumnType("TEXT")
+                    b.Property<double>("Percent")
+                        .HasColumnType("REAL")
                         .HasColumnName("percent");
 
                     b.HasKey("Id");
@@ -282,24 +285,37 @@ namespace AdVision.Infrastructure.Migrations
                         .HasColumnType("TEXT")
                         .HasColumnName("id");
 
-                    b.Property<decimal>("Price")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("TEXT")
+                    b.Property<double>("Price")
+                        .HasColumnType("REAL")
                         .HasColumnName("price");
 
                     b.Property<Guid>("VenueId")
                         .HasColumnType("TEXT")
                         .HasColumnName("venue_id");
 
-                    b.HasKey("Id");
+                    b.ComplexProperty(typeof(Dictionary<string, object>), "Interval", "AdVision.Domain.Tariffs.Tariff.Interval#DateInterval", b1 =>
+                        {
+                            b1.IsRequired();
 
-                    b.HasIndex("Price");
+                            b1.Property<DateOnly>("EndDate")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("end_date");
+
+                            b1.Property<DateOnly>("StartDate")
+                                .HasColumnType("TEXT")
+                                .HasColumnName("start_date");
+                        });
+
+                    b.HasKey("Id");
 
                     b.HasIndex("VenueId");
 
-                    b.HasIndex("VenueId", "Price");
+                    b.ToTable("tariffs", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Tariff_DateInterval", "\"start_date\" <= \"end_date\"");
 
-                    b.ToTable("tariffs", (string)null);
+                            t.HasCheckConstraint("CK_Tariff_Price", "\"price\" >= 500");
+                        });
                 });
 
             modelBuilder.Entity("AdVision.Domain.VenueTypes.VenueType", b =>
@@ -596,37 +612,7 @@ namespace AdVision.Infrastructure.Migrations
                     b.HasOne("AdVision.Domain.Venues.Venue", "Venue")
                         .WithMany()
                         .HasForeignKey("VenueId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.OwnsOne("AdVision.Domain.DateInterval", "Interval", b1 =>
-                        {
-                            b1.Property<Guid>("TariffId")
-                                .HasColumnType("TEXT");
-
-                            b1.Property<DateOnly>("EndDate")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("end_date");
-
-                            b1.Property<DateOnly>("StartDate")
-                                .HasColumnType("TEXT")
-                                .HasColumnName("start_date");
-
-                            b1.HasKey("TariffId");
-
-                            b1.HasIndex("EndDate");
-
-                            b1.HasIndex("StartDate");
-
-                            b1.HasIndex("StartDate", "EndDate");
-
-                            b1.ToTable("tariffs");
-
-                            b1.WithOwner()
-                                .HasForeignKey("TariffId");
-                        });
-
-                    b.Navigation("Interval")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Venue");

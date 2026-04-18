@@ -1,3 +1,4 @@
+using AdVision.Domain;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using Microsoft.EntityFrameworkCore;
@@ -9,56 +10,67 @@ public sealed class TariffConfiguration : IEntityTypeConfiguration<Tariff>
 {
     public void Configure(EntityTypeBuilder<Tariff> builder)
     {
-        builder.ToTable("tariffs", table =>
-        {
-            table.HasCheckConstraint(
-                "CK_Tariff_Price",
-                "\"price\" >= 500");
-
-            table.HasCheckConstraint(
-                "CK_Tariff_DateInterval",
-                "\"start_date\" <= \"end_date\"");
-        });
+        builder.ToTable("tariffs");
 
         builder.HasKey(x => x.Id);
 
-        builder.Property(x => x.Id)
+        builder
+            .Property(x => x.Id)
             .HasColumnName("id")
             .HasConversion(
                 id => id.Value,
-                value => new TariffId(value));
+                value => new TariffId(value)
+            );
 
-        builder.Property(x => x.VenueId)
+        builder
+            .Property(x => x.VenueId)
             .HasColumnName("venue_id")
             .HasConversion(
                 id => id.Value,
-                value => new VenueId(value))
+                value => new VenueId(value)
+            )
             .IsRequired();
 
-        builder.ComplexProperty(x => x.Interval, intervalBuilder =>
+        builder
+            .Property(x => x.Price)
+            .HasColumnName("price")
+            .HasConversion(
+                money => money.Value,
+                value => Money.Create(value).Value
+            )
+            .HasPrecision(18, 2)
+            .IsRequired();
+
+        builder.OwnsOne(x => x.Interval, intervalBuilder =>
         {
-            intervalBuilder.Property(x => x.StartDate)
+            intervalBuilder
+                .Property(x => x.StartDate)
                 .HasColumnName("start_date")
                 .IsRequired();
 
-            intervalBuilder.Property(x => x.EndDate)
+            intervalBuilder
+                .Property(x => x.EndDate)
                 .HasColumnName("end_date")
                 .IsRequired();
+
+            intervalBuilder.HasIndex(x => x.StartDate);
+            intervalBuilder.HasIndex(x => x.EndDate);
+            intervalBuilder.HasIndex(x => new { x.StartDate, x.EndDate });
         });
 
-        builder.Property(x => x.Price)
-            .HasColumnName("price")
-            .IsRequired();
+        builder
+            .HasIndex(x => x.VenueId);
 
-        builder.HasIndex(x => x.VenueId);
+        builder
+            .HasIndex(x => x.Price);
 
-        // builder.HasIndex("venue_id", "start_date", "end_date")
-        //     .IsUnique();
+        builder
+            .HasIndex(x => new { x.VenueId, x.Price });
 
-        builder.HasOne(x => x.Venue)
+        builder
+            .HasOne(x => x.Venue)
             .WithMany()
             .HasForeignKey(x => x.VenueId)
-            .OnDelete(DeleteBehavior.Cascade)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

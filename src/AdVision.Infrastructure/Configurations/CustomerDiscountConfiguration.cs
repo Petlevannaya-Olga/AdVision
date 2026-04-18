@@ -41,16 +41,16 @@ public sealed class CustomerDiscountConfiguration : IEntityTypeConfiguration<Cus
             .IsRequired();
 
         builder
-            .HasOne<Customer>()
-            .WithMany()
-            .HasForeignKey(x => x.CustomerId)
-            .OnDelete(DeleteBehavior.Cascade);
-
-        builder
-            .HasOne<Discount>()
+            .HasOne(x => x.Discount)
             .WithMany()
             .HasForeignKey(x => x.DiscountId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.Restrict);
+        
+        builder
+            .HasOne(x => x.Customer)
+            .WithMany()
+            .HasForeignKey(x => x.CustomerId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder
             .HasIndex(x => new { x.CustomerId, x.DiscountId })

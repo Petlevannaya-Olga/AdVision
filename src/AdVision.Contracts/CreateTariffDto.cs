@@ -4,5 +4,5 @@ public sealed record CreateTariffDto(
     Guid VenueId,
     DateOnly StartDate,
     DateOnly EndDate,
-    double Price
+    decimal Price
 );
