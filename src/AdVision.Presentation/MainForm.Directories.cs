@@ -469,19 +469,6 @@ public partial class MainForm
             "Ошибка загрузки скидок");
     }
 
-    private async void TabControl1_SelectedIndexChanged(object sender, EventArgs e)
-    {
-        if (tabControl1.SelectedTab == tabPage2 && !_directoriesTabInitialized)
-        {
-            _directoriesTabInitialized = true;
-
-            await RunUiActionAsync(
-                () => OpenDirectoryAsync(DirectoryType.VenueTypes),
-                "Загрузка типов площадок отменена",
-                "Ошибка загрузки типов площадок");
-        }
-    }
-
     private async Task OpenDirectoryAsync(DirectoryType directoryType)
     {
         _currentDirectoryType = directoryType;

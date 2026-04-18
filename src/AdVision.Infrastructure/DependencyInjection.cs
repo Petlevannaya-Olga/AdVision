@@ -35,6 +35,7 @@ public static class DependencyInjection
         services.AddSingleton<IEmployeeRepository, EmployeeRepository>();
         services.AddSingleton<ICustomerRepository, CustomerRepository>();
         services.AddSingleton<ICustomerDiscountRepository, CustomerDiscountRepository>();
+        services.AddSingleton<IContractRepository, ContractRepository>();
         
         // Генераторы
         services.AddTransient<IVenueNameFakeGenerator, VenueNameFakeGenerator>();

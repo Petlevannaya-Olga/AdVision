@@ -72,6 +72,38 @@ partial class MainForm
 		panel4 = new Panel();
 		directoriesPagingUserControl = new PagingUserControl();
 		tabPage3 = new TabPage();
+		tableLayoutPanel5 = new TableLayoutPanel();
+		dgvContracts = new DataGridView();
+		panel1 = new Panel();
+		label24 = new Label();
+		label22 = new Label();
+		label20 = new Label();
+		dtpSignedDateTo = new DateTimePicker();
+		label23 = new Label();
+		dtpEndDateTo = new DateTimePicker();
+		label21 = new Label();
+		dtpStartDateTo = new DateTimePicker();
+		label19 = new Label();
+		btnContractsApply = new Button();
+		btnContractsReset = new Button();
+		cbDesc = new CheckBox();
+		cbOrder = new ComboBox();
+		label18 = new Label();
+		label17 = new Label();
+		dtpSignedDateFrom = new DateTimePicker();
+		label16 = new Label();
+		dtpEndDateFrom = new DateTimePicker();
+		label15 = new Label();
+		dtpStartDateFrom = new DateTimePicker();
+		label14 = new Label();
+		cbCustomer = new ComboBox();
+		label13 = new Label();
+		cbStatuses = new ComboBox();
+		cbEmployee = new ComboBox();
+		label12 = new Label();
+		txtContractNumber = new TextBox();
+		label11 = new Label();
+		contractsPagingUserControl = new PagingUserControl();
 		tabPage4 = new TabPage();
 		tabPage5 = new TabPage();
 		tabControl1.SuspendLayout();
@@ -88,6 +120,10 @@ partial class MainForm
 		tableLayoutPanel4.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)dgvDirectories).BeginInit();
 		panel4.SuspendLayout();
+		tabPage3.SuspendLayout();
+		tableLayoutPanel5.SuspendLayout();
+		((System.ComponentModel.ISupportInitialize)dgvContracts).BeginInit();
+		panel1.SuspendLayout();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -559,6 +595,7 @@ partial class MainForm
 		// 
 		// tabPage3
 		// 
+		tabPage3.Controls.Add(tableLayoutPanel5);
 		tabPage3.Location = new Point(4, 29);
 		tabPage3.Name = "tabPage3";
 		tabPage3.Padding = new Padding(3);
@@ -566,6 +603,340 @@ partial class MainForm
 		tabPage3.TabIndex = 2;
 		tabPage3.Text = "Договоры";
 		tabPage3.UseVisualStyleBackColor = true;
+		// 
+		// tableLayoutPanel5
+		// 
+		tableLayoutPanel5.ColumnCount = 2;
+		tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
+		tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+		tableLayoutPanel5.Controls.Add(dgvContracts, 1, 0);
+		tableLayoutPanel5.Controls.Add(panel1, 0, 0);
+		tableLayoutPanel5.Controls.Add(contractsPagingUserControl, 1, 1);
+		tableLayoutPanel5.Dock = DockStyle.Fill;
+		tableLayoutPanel5.Location = new Point(3, 3);
+		tableLayoutPanel5.Name = "tableLayoutPanel5";
+		tableLayoutPanel5.RowCount = 2;
+		tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+		tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel5.Size = new Size(1076, 533);
+		tableLayoutPanel5.TabIndex = 0;
+		// 
+		// dgvContracts
+		// 
+		dgvContracts.AllowUserToAddRows = false;
+		dgvContracts.AllowUserToDeleteRows = false;
+		dgvContracts.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dgvContracts.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dgvContracts.Dock = DockStyle.Fill;
+		dgvContracts.Location = new Point(303, 3);
+		dgvContracts.Name = "dgvContracts";
+		dgvContracts.ReadOnly = true;
+		dgvContracts.RowHeadersWidth = 51;
+		dgvContracts.Size = new Size(770, 474);
+		dgvContracts.TabIndex = 1;
+		// 
+		// panel1
+		// 
+		panel1.Controls.Add(label24);
+		panel1.Controls.Add(label22);
+		panel1.Controls.Add(label20);
+		panel1.Controls.Add(dtpSignedDateTo);
+		panel1.Controls.Add(label23);
+		panel1.Controls.Add(dtpEndDateTo);
+		panel1.Controls.Add(label21);
+		panel1.Controls.Add(dtpStartDateTo);
+		panel1.Controls.Add(label19);
+		panel1.Controls.Add(btnContractsApply);
+		panel1.Controls.Add(btnContractsReset);
+		panel1.Controls.Add(cbDesc);
+		panel1.Controls.Add(cbOrder);
+		panel1.Controls.Add(label18);
+		panel1.Controls.Add(label17);
+		panel1.Controls.Add(dtpSignedDateFrom);
+		panel1.Controls.Add(label16);
+		panel1.Controls.Add(dtpEndDateFrom);
+		panel1.Controls.Add(label15);
+		panel1.Controls.Add(dtpStartDateFrom);
+		panel1.Controls.Add(label14);
+		panel1.Controls.Add(cbCustomer);
+		panel1.Controls.Add(label13);
+		panel1.Controls.Add(cbStatuses);
+		panel1.Controls.Add(cbEmployee);
+		panel1.Controls.Add(label12);
+		panel1.Controls.Add(txtContractNumber);
+		panel1.Controls.Add(label11);
+		panel1.Dock = DockStyle.Fill;
+		panel1.Location = new Point(3, 3);
+		panel1.Name = "panel1";
+		panel1.Size = new Size(294, 474);
+		panel1.TabIndex = 2;
+		// 
+		// label24
+		// 
+		label24.AutoSize = true;
+		label24.Location = new Point(146, 300);
+		label24.Name = "label24";
+		label24.Size = new Size(26, 20);
+		label24.TabIndex = 15;
+		label24.Text = "до";
+		// 
+		// label22
+		// 
+		label22.AutoSize = true;
+		label22.Location = new Point(146, 246);
+		label22.Name = "label22";
+		label22.Size = new Size(26, 20);
+		label22.TabIndex = 15;
+		label22.Text = "до";
+		// 
+		// label20
+		// 
+		label20.AutoSize = true;
+		label20.Location = new Point(146, 192);
+		label20.Name = "label20";
+		label20.Size = new Size(26, 20);
+		label20.TabIndex = 15;
+		label20.Text = "до";
+		// 
+		// dtpSignedDateTo
+		// 
+		dtpSignedDateTo.Format = DateTimePickerFormat.Short;
+		dtpSignedDateTo.Location = new Point(173, 296);
+		dtpSignedDateTo.Name = "dtpSignedDateTo";
+		dtpSignedDateTo.Size = new Size(118, 27);
+		dtpSignedDateTo.TabIndex = 14;
+		dtpSignedDateTo.ValueChanged += DtpSignedDateTo_ValueChanged;
+		// 
+		// label23
+		// 
+		label23.AutoSize = true;
+		label23.Location = new Point(3, 300);
+		label23.Name = "label23";
+		label23.Size = new Size(24, 20);
+		label23.TabIndex = 13;
+		label23.Text = "от";
+		// 
+		// dtpEndDateTo
+		// 
+		dtpEndDateTo.Format = DateTimePickerFormat.Short;
+		dtpEndDateTo.Location = new Point(173, 242);
+		dtpEndDateTo.Name = "dtpEndDateTo";
+		dtpEndDateTo.Size = new Size(118, 27);
+		dtpEndDateTo.TabIndex = 14;
+		dtpEndDateTo.ValueChanged += DtpEndDateTo_ValueChanged;
+		// 
+		// label21
+		// 
+		label21.AutoSize = true;
+		label21.Location = new Point(3, 246);
+		label21.Name = "label21";
+		label21.Size = new Size(24, 20);
+		label21.TabIndex = 13;
+		label21.Text = "от";
+		// 
+		// dtpStartDateTo
+		// 
+		dtpStartDateTo.Format = DateTimePickerFormat.Short;
+		dtpStartDateTo.Location = new Point(173, 188);
+		dtpStartDateTo.Name = "dtpStartDateTo";
+		dtpStartDateTo.Size = new Size(118, 27);
+		dtpStartDateTo.TabIndex = 14;
+		dtpStartDateTo.ValueChanged += DtpStartDateTo_ValueChanged;
+		// 
+		// label19
+		// 
+		label19.AutoSize = true;
+		label19.Location = new Point(3, 192);
+		label19.Name = "label19";
+		label19.Size = new Size(24, 20);
+		label19.TabIndex = 13;
+		label19.Text = "от";
+		// 
+		// btnContractsApply
+		// 
+		btnContractsApply.FlatStyle = FlatStyle.Popup;
+		btnContractsApply.Location = new Point(149, 442);
+		btnContractsApply.Name = "btnContractsApply";
+		btnContractsApply.Size = new Size(145, 29);
+		btnContractsApply.TabIndex = 9;
+		btnContractsApply.Text = "Применить";
+		btnContractsApply.UseVisualStyleBackColor = true;
+		btnContractsApply.Click += BtnContractsApply_Click;
+		// 
+		// btnContractsReset
+		// 
+		btnContractsReset.FlatStyle = FlatStyle.Popup;
+		btnContractsReset.Location = new Point(0, 442);
+		btnContractsReset.Name = "btnContractsReset";
+		btnContractsReset.Size = new Size(146, 29);
+		btnContractsReset.TabIndex = 10;
+		btnContractsReset.Text = "Сбросить";
+		btnContractsReset.UseVisualStyleBackColor = true;
+		btnContractsReset.Click += BtnContractsReset_Click;
+		// 
+		// cbDesc
+		// 
+		cbDesc.AutoSize = true;
+		cbDesc.Location = new Point(152, 406);
+		cbDesc.Name = "cbDesc";
+		cbDesc.Size = new Size(128, 24);
+		cbDesc.TabIndex = 12;
+		cbDesc.Text = "По убыванию";
+		cbDesc.UseVisualStyleBackColor = true;
+		cbDesc.CheckedChanged += CbDesc_CheckedChanged;
+		// 
+		// cbOrder
+		// 
+		cbOrder.FormattingEnabled = true;
+		cbOrder.Items.AddRange(new object[] { "Название", "Тип", "Регион", "Район", "Город", "Улица", "Широта", "Долгота", "Ширина", "Высота" });
+		cbOrder.Location = new Point(3, 404);
+		cbOrder.Name = "cbOrder";
+		cbOrder.Size = new Size(146, 28);
+		cbOrder.TabIndex = 11;
+		cbOrder.SelectedIndexChanged += CbOrder_SelectedIndexChanged;
+		// 
+		// label18
+		// 
+		label18.AutoSize = true;
+		label18.Location = new Point(3, 381);
+		label18.Name = "label18";
+		label18.Size = new Size(121, 20);
+		label18.TabIndex = 8;
+		label18.Text = "Сортировать по";
+		// 
+		// label17
+		// 
+		label17.AutoSize = true;
+		label17.Location = new Point(3, 326);
+		label17.Name = "label17";
+		label17.Size = new Size(52, 20);
+		label17.TabIndex = 6;
+		label17.Text = "Статус";
+		// 
+		// dtpSignedDateFrom
+		// 
+		dtpSignedDateFrom.Format = DateTimePickerFormat.Short;
+		dtpSignedDateFrom.Location = new Point(28, 296);
+		dtpSignedDateFrom.Name = "dtpSignedDateFrom";
+		dtpSignedDateFrom.Size = new Size(116, 27);
+		dtpSignedDateFrom.TabIndex = 5;
+		dtpSignedDateFrom.ValueChanged += DtpSignedDateFrom_ValueChanged;
+		// 
+		// label16
+		// 
+		label16.AutoSize = true;
+		label16.Location = new Point(3, 272);
+		label16.Name = "label16";
+		label16.Size = new Size(130, 20);
+		label16.TabIndex = 4;
+		label16.Text = "Дата подписания";
+		// 
+		// dtpEndDateFrom
+		// 
+		dtpEndDateFrom.Format = DateTimePickerFormat.Short;
+		dtpEndDateFrom.Location = new Point(28, 242);
+		dtpEndDateFrom.Name = "dtpEndDateFrom";
+		dtpEndDateFrom.Size = new Size(116, 27);
+		dtpEndDateFrom.TabIndex = 5;
+		dtpEndDateFrom.ValueChanged += DtpEndDateFrom_ValueChanged;
+		// 
+		// label15
+		// 
+		label15.AutoSize = true;
+		label15.Location = new Point(3, 218);
+		label15.Name = "label15";
+		label15.Size = new Size(121, 20);
+		label15.TabIndex = 4;
+		label15.Text = "Дата окончания";
+		// 
+		// dtpStartDateFrom
+		// 
+		dtpStartDateFrom.Format = DateTimePickerFormat.Short;
+		dtpStartDateFrom.Location = new Point(28, 188);
+		dtpStartDateFrom.Name = "dtpStartDateFrom";
+		dtpStartDateFrom.Size = new Size(116, 27);
+		dtpStartDateFrom.TabIndex = 5;
+		dtpStartDateFrom.ValueChanged += DtpStartDateFrom_ValueChanged;
+		// 
+		// label14
+		// 
+		label14.AutoSize = true;
+		label14.Location = new Point(3, 163);
+		label14.Name = "label14";
+		label14.Size = new Size(94, 20);
+		label14.TabIndex = 4;
+		label14.Text = "Дата начала";
+		// 
+		// cbCustomer
+		// 
+		cbCustomer.FormattingEnabled = true;
+		cbCustomer.Location = new Point(3, 132);
+		cbCustomer.Name = "cbCustomer";
+		cbCustomer.Size = new Size(288, 28);
+		cbCustomer.TabIndex = 3;
+		cbCustomer.SelectedIndexChanged += CbCustomer_SelectedIndexChanged;
+		// 
+		// label13
+		// 
+		label13.AutoSize = true;
+		label13.Location = new Point(3, 109);
+		label13.Name = "label13";
+		label13.Size = new Size(71, 20);
+		label13.TabIndex = 2;
+		label13.Text = "Заказчик";
+		// 
+		// cbStatuses
+		// 
+		cbStatuses.FormattingEnabled = true;
+		cbStatuses.Location = new Point(3, 349);
+		cbStatuses.Name = "cbStatuses";
+		cbStatuses.Size = new Size(288, 28);
+		cbStatuses.TabIndex = 3;
+		cbStatuses.SelectedIndexChanged += CbStatuses_SelectedIndexChanged;
+		// 
+		// cbEmployee
+		// 
+		cbEmployee.FormattingEnabled = true;
+		cbEmployee.Location = new Point(3, 77);
+		cbEmployee.Name = "cbEmployee";
+		cbEmployee.Size = new Size(288, 28);
+		cbEmployee.TabIndex = 3;
+		cbEmployee.SelectedIndexChanged += CbEmployee_SelectedIndexChanged;
+		// 
+		// label12
+		// 
+		label12.AutoSize = true;
+		label12.Location = new Point(3, 54);
+		label12.Name = "label12";
+		label12.Size = new Size(101, 20);
+		label12.TabIndex = 2;
+		label12.Text = "Исполнитель";
+		// 
+		// txtContractNumber
+		// 
+		txtContractNumber.BorderStyle = BorderStyle.FixedSingle;
+		txtContractNumber.Location = new Point(3, 23);
+		txtContractNumber.Name = "txtContractNumber";
+		txtContractNumber.Size = new Size(288, 27);
+		txtContractNumber.TabIndex = 1;
+		txtContractNumber.TextChanged += TxtContractNumber_TextChanged;
+		// 
+		// label11
+		// 
+		label11.AutoSize = true;
+		label11.Location = new Point(3, 0);
+		label11.Name = "label11";
+		label11.Size = new Size(127, 20);
+		label11.TabIndex = 0;
+		label11.Text = "Номер договора";
+		// 
+		// contractsPagingUserControl
+		// 
+		contractsPagingUserControl.Dock = DockStyle.Fill;
+		contractsPagingUserControl.Location = new Point(303, 483);
+		contractsPagingUserControl.Name = "contractsPagingUserControl";
+		contractsPagingUserControl.Size = new Size(770, 47);
+		contractsPagingUserControl.TabIndex = 3;
 		// 
 		// tabPage4
 		// 
@@ -610,6 +981,11 @@ partial class MainForm
 		tableLayoutPanel4.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)dgvDirectories).EndInit();
 		panel4.ResumeLayout(false);
+		tabPage3.ResumeLayout(false);
+		tableLayoutPanel5.ResumeLayout(false);
+		((System.ComponentModel.ISupportInitialize)dgvContracts).EndInit();
+		panel1.ResumeLayout(false);
+		panel1.PerformLayout();
 		ResumeLayout(false);
 	}
 
@@ -660,4 +1036,37 @@ partial class MainForm
 	private Panel panel4;
 	private PagingUserControl venuesPagingUserControl;
 	private PagingUserControl directoriesPagingUserControl;
+	private TableLayoutPanel tableLayoutPanel5;
+	private DataGridView dgvContracts;
+	private Panel panel1;
+	private Button btnContractsApply;
+	private Button btnContractsReset;
+	private CheckBox cbDesc;
+	private ComboBox cbOrder;
+	private Label label18;
+	private Label label17;
+	private Label label16;
+	private Label label15;
+	private DateTimePicker dtpStartDateFrom;
+	private Label label14;
+	private ComboBox cbCustomer;
+	private Label label13;
+	private ComboBox cbStatuses;
+	private ComboBox cbEmployee;
+	private Label label12;
+	private TextBox txtContractNumber;
+	private Label label11;
+	private PagingUserControl pagingUserControl1;
+	private PagingUserControl contractsPagingUserControl;
+	private Label label19;
+	private Label label24;
+	private Label label22;
+	private Label label20;
+	private DateTimePicker dtpSignedDateTo;
+	private Label label23;
+	private DateTimePicker dtpEndDateTo;
+	private Label label21;
+	private DateTimePicker dtpStartDateTo;
+	private DateTimePicker dtpSignedDateFrom;
+	private DateTimePicker dtpEndDateFrom;
 }

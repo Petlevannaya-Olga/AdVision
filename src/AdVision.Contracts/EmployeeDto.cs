@@ -9,4 +9,7 @@ public record EmployeeDto(
     string PassportSeries,
     string PassportNumber,
     string PhoneNumber,
-    Guid PositionId);
+    Guid PositionId)
+{
+    public string FullName => $"{LastName} {FirstName} {MiddleName}";
+}

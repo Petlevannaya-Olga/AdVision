@@ -5,4 +5,7 @@ public record CustomerDto(
     string LastName,
     string FirstName,
     string MiddleName,
-    string PhoneNumber);
+    string PhoneNumber)
+{
+    public string FullName => $"{LastName} {FirstName} {MiddleName}";
+}

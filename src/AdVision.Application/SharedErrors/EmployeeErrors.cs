@@ -11,4 +11,8 @@ public static class EmployeeErrors
     public static Error PassportConflict(string passportSeries, string passportNumber) => CommonErrors.Conflict(
         "employee.passport.conflict",
         $"Сотрудник с паспортом '{passportSeries} {passportNumber}' уже существует");
+    
+    public static Error NotFound(Guid employeeId) => CommonErrors.NotFound(
+        "employee.not.found",
+        $"Сотрудник с id '{employeeId}' не найден");
 }

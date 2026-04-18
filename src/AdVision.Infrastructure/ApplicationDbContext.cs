@@ -1,3 +1,4 @@
+using AdVision.Domain.Contracts;
 using AdVision.Domain.CustomerDiscounts;
 using AdVision.Domain.Customers;
 using AdVision.Domain.Discounts;
@@ -27,6 +28,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Customer> Customers { get; set; }
     
     public DbSet<CustomerDiscount> CustomerDiscounts { get; set; }
+    
+    public DbSet<Contract> Contracts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
