@@ -48,39 +48,36 @@
 			btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnPrev.BackColor = Color.Transparent;
 			btnPrev.FlatStyle = FlatStyle.Popup;
-			btnPrev.Location = new Point(276, 9);
+			btnPrev.Location = new Point(276, 5);
 			btnPrev.Name = "btnPrev";
 			btnPrev.Size = new Size(44, 29);
-			btnPrev.TabIndex = 7;
+			btnPrev.TabIndex = 10;
 			btnPrev.Text = "<";
 			btnPrev.UseVisualStyleBackColor = false;
-			btnPrev.Click += BtnPrev_Click;
 			// 
 			// btnNext
 			// 
 			btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnNext.BackColor = Color.Transparent;
 			btnNext.FlatStyle = FlatStyle.Popup;
-			btnNext.Location = new Point(326, 9);
+			btnNext.Location = new Point(326, 5);
 			btnNext.Name = "btnNext";
 			btnNext.Size = new Size(44, 29);
-			btnNext.TabIndex = 8;
+			btnNext.TabIndex = 11;
 			btnNext.Text = ">";
 			btnNext.UseVisualStyleBackColor = false;
-			btnNext.Click += BtnNext_Click;
 			// 
 			// btnAdd
 			// 
 			btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnAdd.BackColor = Color.Transparent;
 			btnAdd.FlatStyle = FlatStyle.Popup;
-			btnAdd.Location = new Point(376, 9);
+			btnAdd.Location = new Point(376, 5);
 			btnAdd.Name = "btnAdd";
 			btnAdd.Size = new Size(94, 29);
-			btnAdd.TabIndex = 9;
+			btnAdd.TabIndex = 12;
 			btnAdd.Text = "Добавить";
 			btnAdd.UseVisualStyleBackColor = false;
-			btnAdd.Click += BtnAdd_Click;
 			// 
 			// PagingUserControl
 			// 
@@ -91,7 +88,7 @@
 			Controls.Add(btnAdd);
 			Controls.Add(lblPaging);
 			Name = "PagingUserControl";
-			Size = new Size(483, 47);
+			Size = new Size(483, 40);
 			ResumeLayout(false);
 			PerformLayout();
 		}
