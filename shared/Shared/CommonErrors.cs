@@ -27,7 +27,7 @@ public static class CommonErrors
     
     public static Error ValueIsLessThanMin(string propertyName, double value, double min)
         => new(
-            $"{propertyName.ToLowerInvariant()}.length.is.greater.than.max",
+            $"{propertyName.ToLowerInvariant()}.length.is.greater.than.min",
             $"Значение {value} не должно быть меньше {min} для {propertyName}",
             ErrorType.VALIDATION,
             propertyName);

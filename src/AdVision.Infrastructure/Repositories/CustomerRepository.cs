@@ -1,14 +1,14 @@
-using AdVision.Application;
+using System.Linq.Expressions;
+using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
 using AdVision.Domain.Customers;
-using System.Linq.Expressions;
 using CSharpFunctionalExtensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class CustomerRepository(
     ApplicationDbContext dbContext,

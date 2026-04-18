@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using AdVision.Application;
+using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
 using AdVision.Domain.CustomerDiscounts;
 using AdVision.Domain.Customers;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class CustomerDiscountRepository(
     ApplicationDbContext dbContext,

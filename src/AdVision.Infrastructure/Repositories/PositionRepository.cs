@@ -1,15 +1,14 @@
-using System.Diagnostics.CodeAnalysis;
-using AdVision.Application;
-using AdVision.Domain.Positions;
 using System.Linq.Expressions;
+using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
+using AdVision.Domain.Positions;
 using CSharpFunctionalExtensions;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class PositionRepository(
     ApplicationDbContext dbContext,

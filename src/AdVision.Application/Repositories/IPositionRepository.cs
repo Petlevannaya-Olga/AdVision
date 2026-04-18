@@ -3,7 +3,7 @@ using AdVision.Domain.Positions;
 using CSharpFunctionalExtensions;
 using Shared;
 
-namespace AdVision.Application;
+namespace AdVision.Application.Repositories;
 
 public interface IPositionRepository
 {

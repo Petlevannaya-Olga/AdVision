@@ -1,5 +1,5 @@
 using System.Linq.Expressions;
-using AdVision.Application;
+using AdVision.Application.Repositories;
 using AdVision.Domain.Tariffs;
 using AdVision.Domain.Venues;
 using CSharpFunctionalExtensions;
@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class TariffRepository(ApplicationDbContext dbContext, ILogger<VenueRepository> logger) : ITariffRepository
 {

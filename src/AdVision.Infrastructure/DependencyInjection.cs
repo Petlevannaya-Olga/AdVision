@@ -1,8 +1,10 @@
 using AdVision.Application;
 using AdVision.Application.Generators.Employees;
 using AdVision.Application.Generators.Venues;
+using AdVision.Application.Repositories;
 using AdVision.Infrastructure.Generators.Employees;
 using AdVision.Infrastructure.Generators.Venue;
+using AdVision.Infrastructure.Repositories;
 using AdVision.Infrastructure.Seeding;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

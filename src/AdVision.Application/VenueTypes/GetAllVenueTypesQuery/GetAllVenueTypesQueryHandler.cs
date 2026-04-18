@@ -1,3 +1,4 @@
+using AdVision.Application.Repositories;
 using AdVision.Contracts;
 using CSharpFunctionalExtensions;
 using Shared;

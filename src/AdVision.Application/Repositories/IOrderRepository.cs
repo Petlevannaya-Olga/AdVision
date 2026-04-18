@@ -1,0 +1,37 @@
+using System.Linq.Expressions;
+using AdVision.Contracts;
+using AdVision.Domain.Contracts;
+using AdVision.Domain.Orders;
+using CSharpFunctionalExtensions;
+using Shared;
+
+namespace AdVision.Application.Repositories;
+
+public interface IOrderRepository
+{
+    Task<Result<Guid, Error>> AddAsync(Order order, CancellationToken cancellationToken);
+
+    Task<Result<Order?, Error>> GetByAsync(
+        Expression<Func<Order, bool>> expression,
+        CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyList<Order>, Error>> GetAllAsync(CancellationToken cancellationToken);
+
+    Task<Result<PagedResult<Order>, Error>> GetPagedAsync(
+        int page,
+        int pageSize,
+        Guid? orderId,
+        ContractId? contractId,
+        OrderStatus? status,
+        decimal? totalAmountFrom,
+        decimal? totalAmountTo,
+        DateOnly startDateFrom,
+        DateOnly startDateTo,
+        DateOnly endDateFrom,
+        DateOnly endDateTo,
+        string? orderBy,
+        bool descending,
+        CancellationToken cancellationToken);
+    
+    Task<Result<OrderFilterBoundsDto?, Error>> GetFilterBoundsAsync(CancellationToken cancellationToken);
+}

@@ -3,7 +3,7 @@ using AdVision.Domain.Employees;
 using CSharpFunctionalExtensions;
 using Shared;
 
-namespace AdVision.Application;
+namespace AdVision.Application.Repositories;
 
 public interface IEmployeeRepository
 {

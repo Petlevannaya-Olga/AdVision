@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdVision.Application;
+using AdVision.Application.Repositories;
 using AdVision.Domain.Venues;
 using CSharpFunctionalExtensions;
 using Microsoft.Data.Sqlite;
@@ -7,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueRepository> logger) : IVenueRepository
 {

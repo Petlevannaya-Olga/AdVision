@@ -4,7 +4,7 @@ using AdVision.Domain.Customers;
 using CSharpFunctionalExtensions;
 using Shared;
 
-namespace AdVision.Application;
+namespace AdVision.Application.Repositories;
 
 public interface ICustomerDiscountRepository
 {

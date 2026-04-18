@@ -4,7 +4,7 @@ using AdVision.Domain.Venues;
 using CSharpFunctionalExtensions;
 using Shared;
 
-namespace AdVision.Application;
+namespace AdVision.Application.Repositories;
 
 public interface ITariffRepository
 {

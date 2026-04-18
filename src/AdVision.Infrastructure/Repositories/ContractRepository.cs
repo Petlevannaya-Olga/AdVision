@@ -1,5 +1,6 @@
 using System.Linq.Expressions;
 using AdVision.Application;
+using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
 using AdVision.Contracts;
 using AdVision.Domain.Contracts;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Shared;
 
-namespace AdVision.Infrastructure;
+namespace AdVision.Infrastructure.Repositories;
 
 public class ContractRepository(
     ApplicationDbContext dbContext,
