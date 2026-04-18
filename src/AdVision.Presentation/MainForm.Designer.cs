@@ -434,6 +434,7 @@ partial class MainForm
 		// 
 		// venuesPagingUserControl
 		// 
+		venuesPagingUserControl.Dock = DockStyle.Fill;
 		venuesPagingUserControl.Location = new Point(303, 483);
 		venuesPagingUserControl.Name = "venuesPagingUserControl";
 		venuesPagingUserControl.Size = new Size(770, 47);

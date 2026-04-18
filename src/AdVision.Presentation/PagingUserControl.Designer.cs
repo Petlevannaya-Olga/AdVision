@@ -29,11 +29,11 @@
 		private void InitializeComponent()
 		{
 			tableLayoutPanel1 = new TableLayoutPanel();
-			lblPaging = new Label();
 			btnNext = new Button();
 			btnPrev = new Button();
-			btnAdd = new Button();
 			panel1 = new Panel();
+			lblPaging = new Label();
+			btnAdd = new Button();
 			tableLayoutPanel1.SuspendLayout();
 			panel1.SuspendLayout();
 			SuspendLayout();
@@ -50,21 +50,13 @@
 			tableLayoutPanel1.Controls.Add(btnPrev, 2, 0);
 			tableLayoutPanel1.Controls.Add(panel1, 0, 0);
 			tableLayoutPanel1.Controls.Add(btnAdd, 4, 0);
+			tableLayoutPanel1.Dock = DockStyle.Fill;
 			tableLayoutPanel1.Location = new Point(0, 0);
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
 			tableLayoutPanel1.RowCount = 1;
 			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 			tableLayoutPanel1.Size = new Size(754, 38);
 			tableLayoutPanel1.TabIndex = 0;
-			// 
-			// lblPaging
-			// 
-			lblPaging.AutoSize = true;
-			lblPaging.Location = new Point(3, 7);
-			lblPaging.Name = "lblPaging";
-			lblPaging.Size = new Size(58, 20);
-			lblPaging.TabIndex = 13;
-			lblPaging.Text = "label11";
 			// 
 			// btnNext
 			// 
@@ -92,6 +84,24 @@
 			btnPrev.UseVisualStyleBackColor = false;
 			btnPrev.Click += BtnPrev_Click;
 			// 
+			// panel1
+			// 
+			panel1.Controls.Add(lblPaging);
+			panel1.Dock = DockStyle.Fill;
+			panel1.Location = new Point(3, 3);
+			panel1.Name = "panel1";
+			panel1.Size = new Size(448, 32);
+			panel1.TabIndex = 17;
+			// 
+			// lblPaging
+			// 
+			lblPaging.AutoSize = true;
+			lblPaging.Location = new Point(3, 7);
+			lblPaging.Name = "lblPaging";
+			lblPaging.Size = new Size(58, 20);
+			lblPaging.TabIndex = 13;
+			lblPaging.Text = "label11";
+			// 
 			// btnAdd
 			// 
 			btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -104,15 +114,6 @@
 			btnAdd.Text = "Добавить";
 			btnAdd.UseVisualStyleBackColor = false;
 			btnAdd.Click += BtnAdd_Click;
-			// 
-			// panel1
-			// 
-			panel1.Controls.Add(lblPaging);
-			panel1.Dock = DockStyle.Fill;
-			panel1.Location = new Point(3, 3);
-			panel1.Name = "panel1";
-			panel1.Size = new Size(448, 32);
-			panel1.TabIndex = 17;
 			// 
 			// PagingUserControl
 			// 
