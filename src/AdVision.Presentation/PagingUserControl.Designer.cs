@@ -48,7 +48,7 @@
 			btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnPrev.BackColor = Color.Transparent;
 			btnPrev.FlatStyle = FlatStyle.Popup;
-			btnPrev.Location = new Point(493, 9);
+			btnPrev.Location = new Point(276, 9);
 			btnPrev.Name = "btnPrev";
 			btnPrev.Size = new Size(44, 29);
 			btnPrev.TabIndex = 7;
@@ -61,7 +61,7 @@
 			btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnNext.BackColor = Color.Transparent;
 			btnNext.FlatStyle = FlatStyle.Popup;
-			btnNext.Location = new Point(543, 9);
+			btnNext.Location = new Point(326, 9);
 			btnNext.Name = "btnNext";
 			btnNext.Size = new Size(44, 29);
 			btnNext.TabIndex = 8;
@@ -74,7 +74,7 @@
 			btnAdd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnAdd.BackColor = Color.Transparent;
 			btnAdd.FlatStyle = FlatStyle.Popup;
-			btnAdd.Location = new Point(593, 9);
+			btnAdd.Location = new Point(376, 9);
 			btnAdd.Name = "btnAdd";
 			btnAdd.Size = new Size(94, 29);
 			btnAdd.TabIndex = 9;
@@ -91,7 +91,7 @@
 			Controls.Add(btnAdd);
 			Controls.Add(lblPaging);
 			Name = "PagingUserControl";
-			Size = new Size(700, 47);
+			Size = new Size(483, 47);
 			ResumeLayout(false);
 			PerformLayout();
 		}

@@ -105,13 +105,13 @@ partial class MainForm
 		label11 = new Label();
 		contractsPagingUserControl = new PagingUserControl();
 		tabPage4 = new TabPage();
-		tabPage5 = new TabPage();
 		tableLayoutPanel6 = new TableLayoutPanel();
 		tableLayoutPanel7 = new TableLayoutPanel();
 		dataGridView1 = new DataGridView();
 		dataGridView2 = new DataGridView();
 		pagingUserControl2 = new PagingUserControl();
 		panel5 = new Panel();
+		tabPage5 = new TabPage();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -434,7 +434,6 @@ partial class MainForm
 		// 
 		// venuesPagingUserControl
 		// 
-		venuesPagingUserControl.Dock = DockStyle.Fill;
 		venuesPagingUserControl.Location = new Point(303, 483);
 		venuesPagingUserControl.Name = "venuesPagingUserControl";
 		venuesPagingUserControl.Size = new Size(770, 47);
@@ -959,15 +958,6 @@ partial class MainForm
 		tabPage4.Text = "Заказы";
 		tabPage4.UseVisualStyleBackColor = true;
 		// 
-		// tabPage5
-		// 
-		tabPage5.Location = new Point(4, 29);
-		tabPage5.Name = "tabPage5";
-		tabPage5.Size = new Size(1082, 539);
-		tabPage5.TabIndex = 4;
-		tabPage5.Text = "Оплаты";
-		tabPage5.UseVisualStyleBackColor = true;
-		// 
 		// tableLayoutPanel6
 		// 
 		tableLayoutPanel6.ColumnCount = 2;
@@ -1043,6 +1033,15 @@ partial class MainForm
 		panel5.Name = "panel5";
 		panel5.Size = new Size(294, 480);
 		panel5.TabIndex = 2;
+		// 
+		// tabPage5
+		// 
+		tabPage5.Location = new Point(4, 29);
+		tabPage5.Name = "tabPage5";
+		tabPage5.Size = new Size(1082, 539);
+		tabPage5.TabIndex = 4;
+		tabPage5.Text = "Оплаты";
+		tabPage5.UseVisualStyleBackColor = true;
 		// 
 		// MainForm
 		// 
