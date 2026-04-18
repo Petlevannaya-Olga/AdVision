@@ -33,7 +33,7 @@ public partial class MainForm : Form
     private const string LoadContractsErrorTitle = "Ошибка загрузки договоров";
 
     // Количество записей на странице
-    private const int PageSize = 10;
+    private const int PageSize = 50;
     private const int DirectoryPageSize = 10;
     private const int ContractsPageSize = 10;
 

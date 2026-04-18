@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using AdVision.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AdVision.Infrastructure.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260418143058_DiscountsTableUpdate")]
+    partial class DiscountsTableUpdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.5");
@@ -139,7 +142,12 @@ namespace AdVision.Infrastructure.Migrations
                     b.HasIndex("Name")
                         .IsUnique();
 
-                    b.ToTable("discounts", (string)null);
+                    b.ToTable("discounts", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_discounts_min_total", "\"min_total\" > 0");
+
+                            t.HasCheckConstraint("CK_discounts_percent", "\"percent\" >= 1 AND \"percent\" <= 100");
+                        });
                 });
 
             modelBuilder.Entity("AdVision.Domain.Employees.Employee", b =>
