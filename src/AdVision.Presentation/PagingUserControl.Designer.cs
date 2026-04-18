@@ -29,10 +29,10 @@
 		private void InitializeComponent()
 		{
 			tableLayoutPanel1 = new TableLayoutPanel();
-			btnPrev = new Button();
-			btnNext = new Button();
-			btnAdd = new Button();
 			lblPaging = new Label();
+			btnNext = new Button();
+			btnPrev = new Button();
+			btnAdd = new Button();
 			tableLayoutPanel1.SuspendLayout();
 			SuspendLayout();
 			// 
@@ -56,17 +56,14 @@
 			tableLayoutPanel1.Size = new Size(754, 56);
 			tableLayoutPanel1.TabIndex = 0;
 			// 
-			// btnPrev
+			// lblPaging
 			// 
-			btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-			btnPrev.BackColor = Color.Transparent;
-			btnPrev.FlatStyle = FlatStyle.Popup;
-			btnPrev.Location = new Point(457, 24);
-			btnPrev.Name = "btnPrev";
-			btnPrev.Size = new Size(44, 29);
-			btnPrev.TabIndex = 14;
-			btnPrev.Text = "<";
-			btnPrev.UseVisualStyleBackColor = false;
+			lblPaging.AutoSize = true;
+			lblPaging.Location = new Point(3, 0);
+			lblPaging.Name = "lblPaging";
+			lblPaging.Size = new Size(58, 20);
+			lblPaging.TabIndex = 13;
+			lblPaging.Text = "label11";
 			// 
 			// btnNext
 			// 
@@ -79,6 +76,20 @@
 			btnNext.TabIndex = 15;
 			btnNext.Text = ">";
 			btnNext.UseVisualStyleBackColor = false;
+			btnNext.Click += BtnNext_Click;
+			// 
+			// btnPrev
+			// 
+			btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+			btnPrev.BackColor = Color.Transparent;
+			btnPrev.FlatStyle = FlatStyle.Popup;
+			btnPrev.Location = new Point(457, 24);
+			btnPrev.Name = "btnPrev";
+			btnPrev.Size = new Size(44, 29);
+			btnPrev.TabIndex = 14;
+			btnPrev.Text = "<";
+			btnPrev.UseVisualStyleBackColor = false;
+			btnPrev.Click += BtnPrev_Click;
 			// 
 			// btnAdd
 			// 
@@ -91,15 +102,7 @@
 			btnAdd.TabIndex = 16;
 			btnAdd.Text = "Добавить";
 			btnAdd.UseVisualStyleBackColor = false;
-			// 
-			// lblPaging
-			// 
-			lblPaging.AutoSize = true;
-			lblPaging.Location = new Point(3, 0);
-			lblPaging.Name = "lblPaging";
-			lblPaging.Size = new Size(58, 20);
-			lblPaging.TabIndex = 13;
-			lblPaging.Text = "label11";
+			btnAdd.Click += BtnAdd_Click;
 			// 
 			// PagingUserControl
 			// 
