@@ -42,4 +42,10 @@ public interface IVenueRepository
         DateOnly? dateFrom,
         DateOnly? dateTo,
         CancellationToken cancellationToken);
+    
+    Task<Result<bool, Error>> IsAvailableForBookingAsync(
+        VenueId venueId,
+        DateOnly dateFrom,
+        DateOnly dateTo,
+        CancellationToken cancellationToken);
 }

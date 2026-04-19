@@ -1,7 +1,8 @@
 ﻿using AdVision.Application;
 using AdVision.Application.Venues.GetAvailableVenuesQuery;
 using AdVision.Application.Venues.GetDistinctQuery;
-using AdVision.Application.Venues.GetVenueByAsyncQuery;
+using AdVision.Application.Venues.GetVenueByQuery;
+using AdVision.Application.Venues.IsVenueAvailableForBookingQuery;
 using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
 using AdVision.Contracts;
 using AdVision.Domain.Venues;
@@ -22,7 +23,8 @@ public partial class OrderItemForm : Form
 		_availableVenuesQueryHandler;
 
 	private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
-	private readonly IQueryHandler<VenueDto, GetVenueByQueryAsync> _getVenueQueryHandler;
+	private readonly IQueryHandler<VenueDto, GetVenueByQuery> _getVenueQueryHandler;
+	private readonly IQueryHandler<bool, IsVenueAvailableForBookingQuery> _isVenueAvailableForBookingQueryHandler;
 	private readonly INotificationService _notificationService;
 	private readonly IServiceProvider _serviceProvider;
 	private readonly ILogger<OrderItemForm> _logger;
@@ -39,7 +41,8 @@ public partial class OrderItemForm : Form
 		IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> venueTypesQueryHandler,
 		IQueryHandler<PagedResult<AvailableVenueDto>, GetAvailableVenuesQuery> availableVenuesQueryHandler,
 		IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
-		IQueryHandler<VenueDto, GetVenueByQueryAsync> getVenueQueryHandler,
+		IQueryHandler<VenueDto, GetVenueByQuery> getVenueQueryHandler,
+		IQueryHandler<bool, IsVenueAvailableForBookingQuery> isVenueAvailableForBookingQueryHandler,
 		INotificationService notificationService,
 		IServiceProvider serviceProvider,
 		ILogger<OrderItemForm> logger)
@@ -48,6 +51,7 @@ public partial class OrderItemForm : Form
 		_availableVenuesQueryHandler = availableVenuesQueryHandler;
 		_getDistinctQueryHandler = getDistinctQueryHandler;
 		_getVenueQueryHandler = getVenueQueryHandler;
+		_isVenueAvailableForBookingQueryHandler = isVenueAvailableForBookingQueryHandler;
 		_notificationService = notificationService;
 		_serviceProvider = serviceProvider;
 		_logger = logger;
@@ -455,7 +459,7 @@ public partial class OrderItemForm : Form
 		}
 
 		var fullVenue =
-			await _getVenueQueryHandler.Handle(new GetVenueByQueryAsync(x => x.Id == new VenueId(venue.VenueId)),
+			await _getVenueQueryHandler.Handle(new GetVenueByQuery(x => x.Id == new VenueId(venue.VenueId)),
 				_cts.Token);
 		if (fullVenue.IsFailure)
 		{
@@ -485,7 +489,7 @@ public partial class OrderItemForm : Form
 		}
 
 		var isAvailable = await IsVenueAvailableForBookingAsync(
-			venue.TariffId,
+			new VenueId(venue.VenueId),
 			bookingFrom,
 			bookingTo);
 
@@ -577,35 +581,18 @@ public partial class OrderItemForm : Form
 	}
 
 	private async Task<bool> IsVenueAvailableForBookingAsync(
-		Guid tariffId,
+		VenueId venueId,
 		DateOnly bookingFrom,
 		DateOnly bookingTo)
 	{
-		var result = await _availableVenuesQueryHandler.Handle(
-			new GetAvailableVenuesQuery(
-				1,
-				int.MaxValue,
-				string.IsNullOrWhiteSpace(txtName.Text) ? null : txtName.Text.Trim(),
-				cbVenueTypes.SelectedValue is Guid venueTypeId ? venueTypeId : null,
-				cbRegions.SelectedItem as string,
-				cbDistricts.SelectedItem as string,
-				cbCities.SelectedItem as string,
-				string.IsNullOrWhiteSpace(txtStreet.Text) ? null : txtStreet.Text.Trim(),
-				(int)nudRatingFrom.Value,
-				(int)nudRatingTo.Value,
-				nudPriceFrom.Value > 0 ? nudPriceFrom.Value : null,
-				nudPriceTo.Value > 0 ? nudPriceTo.Value : null,
-				bookingFrom,
-				bookingTo),
-			CancellationToken.None);
+		var result = await _isVenueAvailableForBookingQueryHandler.Handle(
+			new IsVenueAvailableForBookingQuery(venueId, bookingFrom, bookingTo), _cts.Token);
 
-		if (result.IsFailure)
-		{
-			ShowError("Ошибка проверки доступности площадки", result.Error);
-			return false;
-		}
-
-		return result.Value.Items.Any(x => x.TariffId == tariffId);
+		if (!result.IsFailure) 
+			return result.Value;
+		
+		ShowError("Ошибка проверки доступности площадки", result.Error);
+		return false;
 	}
 
 	private void BtnBookingReset_Click(object sender, EventArgs e)
@@ -647,7 +634,7 @@ public partial class OrderItemForm : Form
 		}
 
 		var isAvailable = await IsVenueAvailableForBookingAsync(
-			venue.TariffId,
+			new VenueId(venue.VenueId),
 			bookingFrom,
 			bookingTo);
 

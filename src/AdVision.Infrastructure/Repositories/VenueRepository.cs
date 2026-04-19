@@ -386,4 +386,105 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                 "Ошибка получения доступных площадок для позиции");
         }
     }
+
+    public async Task<Result<bool, Error>> IsAvailableForBookingAsync(
+        VenueId venueId,
+        DateOnly dateFrom,
+        DateOnly dateTo,
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (dateFrom > dateTo)
+            {
+                return CommonErrors.Validation(
+                    "venue.booking.date.interval.is.invalid",
+                    "Дата начала не может быть больше даты окончания");
+            }
+
+            var tariffs = await dbContext.Tariffs
+                .Where(x => x.VenueId == venueId)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            if (tariffs.Count == 0)
+            {
+                return Result.Success<bool, Error>(false);
+            }
+
+            var coveringTariffs = tariffs
+                .Where(t =>
+                    t.Interval.StartDate <= dateFrom &&
+                    t.Interval.EndDate >= dateTo)
+                .ToList();
+
+            if (coveringTariffs.Count == 0)
+            {
+                return Result.Success<bool, Error>(false);
+            }
+
+            var tariffIds = coveringTariffs
+                .Select(x => x.Id)
+                .ToHashSet();
+
+            var orderItems = await dbContext.OrderItems
+                .Include(x => x.Order)
+                .Include(x => x.Tariff)
+                .Where(x =>
+                    tariffIds.Contains(x.TariffId) &&
+                    x.Order.Status != OrderStatus.Cancelled &&
+                    x.Status != OrderItemStatus.Cancelled &&
+                    x.Period.StartDate <= dateTo &&
+                    x.Period.EndDate >= dateFrom)
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var requestedDays = Enumerable
+                .Range(0, dateTo.DayNumber - dateFrom.DayNumber + 1)
+                .Select(dateFrom.AddDays)
+                .ToHashSet();
+
+            foreach (var tariff in coveringTariffs)
+            {
+                var busyDays = orderItems
+                    .Where(oi => oi.TariffId == tariff.Id)
+                    .SelectMany(oi =>
+                    {
+                        var start = oi.Period.StartDate > dateFrom
+                            ? oi.Period.StartDate
+                            : dateFrom;
+
+                        var end = oi.Period.EndDate < dateTo
+                            ? oi.Period.EndDate
+                            : dateTo;
+
+                        return Enumerable
+                            .Range(0, end.DayNumber - start.DayNumber + 1)
+                            .Select(start.AddDays);
+                    })
+                    .ToHashSet();
+
+                var allDaysAreFree = requestedDays.All(day => !busyDays.Contains(day));
+
+                if (allDaysAreFree)
+                {
+                    return Result.Success<bool, Error>(true);
+                }
+            }
+
+            return Result.Success<bool, Error>(false);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция проверки доступности площадки для бронирования была отменена");
+            return CommonErrors.OperationCancelled("venue.is.available.for.booking.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка проверки доступности площадки для бронирования");
+            return CommonErrors.Db(
+                "venue.is.available.for.booking.from.db.exception",
+                "Ошибка проверки доступности площадки для бронирования");
+        }
+    }
 }

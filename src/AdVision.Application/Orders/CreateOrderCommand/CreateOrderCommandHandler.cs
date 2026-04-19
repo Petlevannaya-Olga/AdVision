@@ -1,4 +1,3 @@
-using AdVision.Application.Orders.CreateOrderCommand;
 using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
 using AdVision.Domain;
@@ -9,6 +8,8 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+
+namespace AdVision.Application.Orders.CreateOrderCommand;
 
 public sealed class CreateOrderCommandHandler(
     IOrderRepository orderRepository,

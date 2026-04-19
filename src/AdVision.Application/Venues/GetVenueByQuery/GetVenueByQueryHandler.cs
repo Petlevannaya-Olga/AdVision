@@ -4,11 +4,11 @@ using CSharpFunctionalExtensions;
 using Shared;
 using Shared.Abstractions;
 
-namespace AdVision.Application.Venues.GetVenueByAsyncQuery;
+namespace AdVision.Application.Venues.GetVenueByQuery;
 
-public sealed class GetVenueByQueryAsyncHandler(IVenueRepository repository) : IQueryHandler<VenueDto, GetVenueByQueryAsync>
+public sealed class GetVenueByQueryHandler(IVenueRepository repository) : IQueryHandler<VenueDto, GetVenueByQuery>
 {
-    public async Task<Result<VenueDto, Errors>> Handle(GetVenueByQueryAsync query, CancellationToken cancellationToken)
+    public async Task<Result<VenueDto, Errors>> Handle(GetVenueByQuery query, CancellationToken cancellationToken)
     {
         var result = await repository.GetByAsync(query.Expression, cancellationToken);
 
