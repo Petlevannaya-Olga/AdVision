@@ -3,7 +3,7 @@ using AdVision.Application.Venues.GetAvailableVenuesQuery;
 using AdVision.Application.Venues.GetDistinctQuery;
 using AdVision.Application.VenueTypes.GetAllVenueTypesQuery;
 using AdVision.Contracts;
-using AdVision.Domain.Venues;
+using AdVision.Presentation.Notifications;
 using Microsoft.Extensions.Logging;
 using Shared.Abstractions;
 
@@ -16,6 +16,7 @@ public partial class OrderItemForm : Form
     private readonly IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> _venueTypesQueryHandler;
     private readonly IQueryHandler<PagedResult<AvailableVenueDto>, GetAvailableVenuesQuery> _availableVenuesQueryHandler;
     private readonly IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> _getDistinctQueryHandler;
+    private readonly INotificationService _notificationService;
     private readonly ILogger<OrderItemForm> _logger;
 
     private bool _isLoading;
@@ -28,11 +29,13 @@ public partial class OrderItemForm : Form
         IQueryHandler<IReadOnlyList<VenueTypeDto>, GetAllVenueTypesQuery> venueTypesQueryHandler,
         IQueryHandler<PagedResult<AvailableVenueDto>, GetAvailableVenuesQuery> availableVenuesQueryHandler,
         IQueryHandler<IReadOnlyList<string>, GetDistinctQuery> getDistinctQueryHandler,
+        INotificationService notificationService,
         ILogger<OrderItemForm> logger)
     {
         _venueTypesQueryHandler = venueTypesQueryHandler;
         _availableVenuesQueryHandler = availableVenuesQueryHandler;
         _getDistinctQueryHandler = getDistinctQueryHandler;
+        _notificationService = notificationService;
         _logger = logger;
 
         InitializeComponent();
@@ -252,11 +255,7 @@ public partial class OrderItemForm : Form
 
         if (dateFrom > dateTo)
         {
-            MessageBox.Show(
-                "Дата начала фильтра не может быть больше даты окончания",
-                "Фильтр площадок",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            _notificationService.ShowError("Фильтр площадок", "Дата начала фильтра не может быть больше даты окончания");
             return;
         }
 
@@ -439,11 +438,7 @@ public partial class OrderItemForm : Form
     {
         if (dgvVenues.CurrentRow?.DataBoundItem is not AvailableVenueDto venue)
         {
-            MessageBox.Show(
-                "Выберите площадку",
-                "Добавление позиции",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            _notificationService.ShowWarning("Добавление позиции", "Выберите площадку");
             return;
         }
 
@@ -452,11 +447,7 @@ public partial class OrderItemForm : Form
 
         if (bookingFrom > bookingTo)
         {
-            MessageBox.Show(
-                "Дата начала бронирования не может быть больше даты окончания",
-                "Добавление позиции",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            _notificationService.ShowWarning("Добавление позиции", "Дата начала бронирования не может быть больше даты окончания");
             return;
         }
 
@@ -467,11 +458,7 @@ public partial class OrderItemForm : Form
 
         if (!isAvailable)
         {
-            MessageBox.Show(
-                "Площадка недоступна на указанные даты бронирования",
-                "Добавление позиции",
-                MessageBoxButtons.OK,
-                MessageBoxIcon.Warning);
+            _notificationService.ShowWarning("Добавление позиции", "Площадка недоступна на указанные даты бронирования");
             return;
         }
 
@@ -550,14 +537,8 @@ public partial class OrderItemForm : Form
     private void ShowError(string title, IEnumerable<object> errors)
     {
         var message = string.Join(Environment.NewLine, errors);
-
         _logger.LogError("{Title}: {Message}", title, message);
-
-        MessageBox.Show(
-            string.IsNullOrWhiteSpace(message) ? "Не удалось загрузить данные" : message,
-            title,
-            MessageBoxButtons.OK,
-            MessageBoxIcon.Error);
+        _notificationService.ShowError(title, string.IsNullOrWhiteSpace(message) ? "Не удалось загрузить данные" : message);
     }
 
     private async Task<bool> IsVenueAvailableForBookingAsync(
