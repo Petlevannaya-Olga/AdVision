@@ -3,6 +3,7 @@ using AdVision.Application.Contracts.GetContractsQuery;
 using AdVision.Application.Customers.GetAllCustomersQuery;
 using AdVision.Application.Discounts.GetAllDiscountsQuery;
 using AdVision.Application.Employees.GetAllEmployeesQuery;
+using AdVision.Application.Orders.GetOrdersQuery;
 using AdVision.Application.Positions.GetAllPositionsQuery;
 using AdVision.Application.Repositories;
 using AdVision.Application.Venues.GetDistinctQuery;
@@ -31,11 +32,13 @@ public partial class MainForm : Form
     private const string LoadEmployeesErrorTitle = "Ошибка загрузки сотрудников";
     private const string LoadCustomersErrorTitle = "Ошибка загрузки заказчиков";
     private const string LoadContractsErrorTitle = "Ошибка загрузки договоров";
+    private const string LoadOrdersErrorTitle = "Ошибка загрузки заказов";
 
     // Количество записей на странице
     private const int PageSize = 50;
     private const int DirectoryPageSize = 10;
     private const int ContractsPageSize = 10;
+    private const int OrdersPageSize = 10;
 
     private readonly CancellationTokenSource _cts = new();
     private readonly INotificationService _notificationService;
@@ -47,7 +50,11 @@ public partial class MainForm : Form
     private readonly IQueryHandler<PagedResult<VenueDto>, GetVenuesQuery> _venuesQueryHandler;
     private readonly IQueryHandler<IReadOnlyList<CustomerDto>, GetAllCustomersQuery> _customersQueryHandler;
     private readonly IQueryHandler<PagedResult<ContractDto>, GetContractsQuery> _contractsQueryHandler;
+    private readonly IQueryHandler<PagedResult<OrderDto>, GetOrdersQuery> _ordersQueryHandler;
+    
+    private readonly IOrderRepository _orderRepository;
     private readonly IContractRepository _contractRepository;
+    
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<MainForm> _logger;
 
@@ -84,6 +91,15 @@ public partial class MainForm : Form
     private int ContractsTotalPages => _contractsTotalCount == 0
         ? 0
         : (int)Math.Ceiling((double)_contractsTotalCount / ContractsPageSize);
+    
+    // вкладка заказы
+    private int _ordersPage = 1;
+    private int _ordersTotalCount;
+    private bool _ordersTabInitialized;
+
+    private int OrdersTotalPages => _ordersTotalCount == 0
+        ? 0
+        : (int)Math.Ceiling((double)_ordersTotalCount / OrdersPageSize);
 
     public MainForm(
         INotificationService notificationService,
@@ -95,6 +111,8 @@ public partial class MainForm : Form
         IQueryHandler<IReadOnlyList<EmployeeDto>, GetAllEmployeesQuery> getAllEmployeesQueryHandler,
         IQueryHandler<IReadOnlyList<CustomerDto>, GetAllCustomersQuery> customersQueryHandler,
         IQueryHandler<PagedResult<ContractDto>, GetContractsQuery> contractsQueryHandler,
+        IQueryHandler<PagedResult<OrderDto>, GetOrdersQuery> ordersQueryHandler,
+        IOrderRepository orderRepository,
         IContractRepository contractRepository,
         IServiceProvider serviceProvider,
         ILogger<MainForm> logger)
@@ -108,7 +126,9 @@ public partial class MainForm : Form
         _employeesQueryHandler = getAllEmployeesQueryHandler;
         _customersQueryHandler = customersQueryHandler;
         _contractsQueryHandler = contractsQueryHandler;
+        _ordersQueryHandler = ordersQueryHandler;
         _contractRepository = contractRepository;
+        _orderRepository = orderRepository;
         _serviceProvider = serviceProvider;
         _logger = logger;
 
@@ -141,6 +161,10 @@ public partial class MainForm : Form
         contractsPagingUserControl.PrevClicked += GoToPreviousContractsPage;
         contractsPagingUserControl.NextClicked += GoToNextContractsPage;
         contractsPagingUserControl.AddClicked += AddContract;
+        
+        ordersPagingUserControl.PrevClicked += GoToPreviousOrdersPage;
+        ordersPagingUserControl.NextClicked += GoToNextOrdersPage;
+        ordersPagingUserControl.AddClicked += AddOrder;
     }
 
     protected override async void OnLoad(EventArgs e)
@@ -255,6 +279,26 @@ public partial class MainForm : Form
                 },
                 "Загрузка договоров отменена",
                 "Ошибка загрузки договоров");
+        }
+        
+        if (tabControl1.SelectedTab == tabPage4 && !_ordersTabInitialized)
+        {
+            _ordersTabInitialized = true;
+
+            await RunUiActionAsync(
+                async () =>
+                {
+                    //await ResetOrdersFiltersAsync();
+                    await InitializeOrdersDateFiltersFromDbAsync();
+                    await LoadOrdersFiltersAsync();
+                    LoadOrderStatuses();
+                    LoadOrderSorting();
+                    ConfigureOrdersGrid();
+                    await LoadOrdersAsync();
+                    //UpdateOrdersResetButtonState();
+                },
+                "Загрузка заказов отменена",
+                "Ошибка загрузки заказов");
         }
     }
 }

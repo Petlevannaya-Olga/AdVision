@@ -2,7 +2,8 @@ using System.Linq.Expressions;
 using AdVision.Application;
 using AdVision.Application.Repositories;
 using AdVision.Contracts;
-using AdVision.Domain.Contracts;
+using AdVision.Domain.Customers;
+using AdVision.Domain.Employees;
 using AdVision.Domain.Orders;
 using CSharpFunctionalExtensions;
 using Microsoft.EntityFrameworkCore;
@@ -100,7 +101,8 @@ public class OrderRepository(
         int page,
         int pageSize,
         Guid? orderId,
-        ContractId? contractId,
+        CustomerId? customerId,
+        EmployeeId? employeeId,
         OrderStatus? status,
         decimal? totalAmountFrom,
         decimal? totalAmountTo,
@@ -127,9 +129,14 @@ public class OrderRepository(
                 query = query.Where(x => x.Id == domainOrderId);
             }
 
-            if (contractId is not null)
+            if (customerId is not null)
             {
-                query = query.Where(x => x.ContractId == contractId);
+                query = query.Where(x => x.Contract.CustomerId == customerId);
+            }
+
+            if (employeeId is not null)
+            {
+                query = query.Where(x => x.Contract.EmployeeId == employeeId);
             }
 
             if (status.HasValue)
@@ -188,55 +195,6 @@ public class OrderRepository(
         }
     }
 
-    private static IQueryable<Order> ApplySorting(
-        IQueryable<Order> query,
-        string? orderBy,
-        bool descending)
-    {
-        return (orderBy, descending) switch
-        {
-            ("Номер заказа", false) => query.OrderBy(x => x.Id),
-            ("Номер заказа", true) => query.OrderByDescending(x => x.Id),
-
-            ("Договор", false) => query.OrderBy(x => x.Contract.Number),
-            ("Договор", true) => query.OrderByDescending(x => x.Contract.Number),
-
-            ("Исполнитель", false) => query
-                .OrderBy(x => x.Contract.Employee.LastName)
-                .ThenBy(x => x.Contract.Employee.FirstName)
-                .ThenBy(x => x.Contract.Employee.MiddleName),
-
-            ("Исполнитель", true) => query
-                .OrderByDescending(x => x.Contract.Employee.LastName)
-                .ThenByDescending(x => x.Contract.Employee.FirstName)
-                .ThenByDescending(x => x.Contract.Employee.MiddleName),
-
-            ("Заказчик", false) => query
-                .OrderBy(x => x.Contract.Customer.LastName)
-                .ThenBy(x => x.Contract.Customer.FirstName)
-                .ThenBy(x => x.Contract.Customer.MiddleName),
-
-            ("Заказчик", true) => query
-                .OrderByDescending(x => x.Contract.Customer.LastName)
-                .ThenByDescending(x => x.Contract.Customer.FirstName)
-                .ThenByDescending(x => x.Contract.Customer.MiddleName),
-
-            ("Сумма", false) => query.OrderBy(x => x.TotalAmount.Value),
-            ("Сумма", true) => query.OrderByDescending(x => x.TotalAmount.Value),
-
-            ("Статус", false) => query.OrderBy(x => x.Status),
-            ("Статус", true) => query.OrderByDescending(x => x.Status),
-
-            ("Дата начала", false) => query.OrderBy(x => x.Items.Min(i => i.Period.StartDate)),
-            ("Дата начала", true) => query.OrderByDescending(x => x.Items.Min(i => i.Period.StartDate)),
-
-            ("Дата окончания", false) => query.OrderBy(x => x.Items.Max(i => i.Period.EndDate)),
-            ("Дата окончания", true) => query.OrderByDescending(x => x.Items.Max(i => i.Period.EndDate)),
-
-            _ => query.OrderBy(x => x.Id)
-        };
-    }
-    
     public async Task<Result<OrderFilterBoundsDto?, Error>> GetFilterBoundsAsync(CancellationToken cancellationToken)
     {
         try
@@ -294,5 +252,54 @@ public class OrderRepository(
                 "get.order.filter.bounds.from.db.exception",
                 "Ошибка при получении границ фильтров заказов");
         }
+    }
+
+    private static IQueryable<Order> ApplySorting(
+        IQueryable<Order> query,
+        string? orderBy,
+        bool descending)
+    {
+        return (orderBy, descending) switch
+        {
+            ("Номер заказа", false) => query.OrderBy(x => x.Id),
+            ("Номер заказа", true) => query.OrderByDescending(x => x.Id),
+
+            ("Договор", false) => query.OrderBy(x => x.Contract.Number),
+            ("Договор", true) => query.OrderByDescending(x => x.Contract.Number),
+
+            ("Исполнитель", false) => query
+                .OrderBy(x => x.Contract.Employee.LastName)
+                .ThenBy(x => x.Contract.Employee.FirstName)
+                .ThenBy(x => x.Contract.Employee.MiddleName),
+
+            ("Исполнитель", true) => query
+                .OrderByDescending(x => x.Contract.Employee.LastName)
+                .ThenByDescending(x => x.Contract.Employee.FirstName)
+                .ThenByDescending(x => x.Contract.Employee.MiddleName),
+
+            ("Заказчик", false) => query
+                .OrderBy(x => x.Contract.Customer.LastName)
+                .ThenBy(x => x.Contract.Customer.FirstName)
+                .ThenBy(x => x.Contract.Customer.MiddleName),
+
+            ("Заказчик", true) => query
+                .OrderByDescending(x => x.Contract.Customer.LastName)
+                .ThenByDescending(x => x.Contract.Customer.FirstName)
+                .ThenByDescending(x => x.Contract.Customer.MiddleName),
+
+            ("Сумма", false) => query.OrderBy(x => x.TotalAmount.Value),
+            ("Сумма", true) => query.OrderByDescending(x => x.TotalAmount.Value),
+
+            ("Статус", false) => query.OrderBy(x => x.Status),
+            ("Статус", true) => query.OrderByDescending(x => x.Status),
+
+            ("Дата начала", false) => query.OrderBy(x => x.Items.Min(i => i.Period.StartDate)),
+            ("Дата начала", true) => query.OrderByDescending(x => x.Items.Min(i => i.Period.StartDate)),
+
+            ("Дата окончания", false) => query.OrderBy(x => x.Items.Max(i => i.Period.EndDate)),
+            ("Дата окончания", true) => query.OrderByDescending(x => x.Items.Max(i => i.Period.EndDate)),
+
+            _ => query.OrderBy(x => x.Id)
+        };
     }
 }

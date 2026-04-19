@@ -45,7 +45,7 @@
 			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
 			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
 			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 50F));
-			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 150F));
+			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100F));
 			tableLayoutPanel1.Controls.Add(btnNext, 3, 0);
 			tableLayoutPanel1.Controls.Add(btnPrev, 2, 0);
 			tableLayoutPanel1.Controls.Add(panel1, 0, 0);
@@ -63,7 +63,7 @@
 			btnNext.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnNext.BackColor = Color.Transparent;
 			btnNext.FlatStyle = FlatStyle.Popup;
-			btnNext.Location = new Point(557, 6);
+			btnNext.Location = new Point(607, 6);
 			btnNext.Name = "btnNext";
 			btnNext.Size = new Size(44, 29);
 			btnNext.TabIndex = 15;
@@ -76,7 +76,7 @@
 			btnPrev.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
 			btnPrev.BackColor = Color.Transparent;
 			btnPrev.FlatStyle = FlatStyle.Popup;
-			btnPrev.Location = new Point(507, 6);
+			btnPrev.Location = new Point(557, 6);
 			btnPrev.Name = "btnPrev";
 			btnPrev.Size = new Size(44, 29);
 			btnPrev.TabIndex = 14;
@@ -90,13 +90,13 @@
 			panel1.Dock = DockStyle.Fill;
 			panel1.Location = new Point(3, 3);
 			panel1.Name = "panel1";
-			panel1.Size = new Size(448, 32);
+			panel1.Size = new Size(498, 32);
 			panel1.TabIndex = 17;
 			// 
 			// lblPaging
 			// 
 			lblPaging.AutoSize = true;
-			lblPaging.Location = new Point(3, 7);
+			lblPaging.Location = new Point(3, 3);
 			lblPaging.Name = "lblPaging";
 			lblPaging.Size = new Size(58, 20);
 			lblPaging.TabIndex = 13;

@@ -107,9 +107,9 @@ partial class MainForm
 		tabPage4 = new TabPage();
 		tableLayoutPanel6 = new TableLayoutPanel();
 		tableLayoutPanel7 = new TableLayoutPanel();
-		dataGridView1 = new DataGridView();
+		dgvOrders = new DataGridView();
 		dataGridView2 = new DataGridView();
-		pagingUserControl2 = new PagingUserControl();
+		ordersPagingUserControl = new PagingUserControl();
 		panel5 = new Panel();
 		tabPage5 = new TabPage();
 		tabControl1.SuspendLayout();
@@ -133,7 +133,7 @@ partial class MainForm
 		tabPage4.SuspendLayout();
 		tableLayoutPanel6.SuspendLayout();
 		tableLayoutPanel7.SuspendLayout();
-		((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+		((System.ComponentModel.ISupportInitialize)dgvOrders).BeginInit();
 		((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
 		SuspendLayout();
 		// 
@@ -176,7 +176,7 @@ partial class MainForm
 		tableLayoutPanel2.Name = "tableLayoutPanel2";
 		tableLayoutPanel2.RowCount = 2;
 		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
 		tableLayoutPanel2.Size = new Size(1076, 533);
 		tableLayoutPanel2.TabIndex = 2;
 		// 
@@ -189,8 +189,9 @@ partial class MainForm
 		venuesDataGridView.Dock = DockStyle.Fill;
 		venuesDataGridView.Location = new Point(303, 3);
 		venuesDataGridView.Name = "venuesDataGridView";
+		venuesDataGridView.ReadOnly = true;
 		venuesDataGridView.RowHeadersWidth = 51;
-		venuesDataGridView.Size = new Size(770, 474);
+		venuesDataGridView.Size = new Size(770, 487);
 		venuesDataGridView.TabIndex = 0;
 		// 
 		// panel2
@@ -220,7 +221,7 @@ partial class MainForm
 		panel2.Dock = DockStyle.Fill;
 		panel2.Location = new Point(3, 3);
 		panel2.Name = "panel2";
-		panel2.Size = new Size(294, 474);
+		panel2.Size = new Size(294, 487);
 		panel2.TabIndex = 3;
 		// 
 		// btnApply
@@ -228,7 +229,7 @@ partial class MainForm
 		btnApply.FlatStyle = FlatStyle.Popup;
 		btnApply.Location = new Point(149, 427);
 		btnApply.Name = "btnApply";
-		btnApply.Size = new Size(145, 29);
+		btnApply.Size = new Size(142, 29);
 		btnApply.TabIndex = 4;
 		btnApply.Text = "Применить";
 		btnApply.UseVisualStyleBackColor = true;
@@ -435,9 +436,9 @@ partial class MainForm
 		// venuesPagingUserControl
 		// 
 		venuesPagingUserControl.Dock = DockStyle.Fill;
-		venuesPagingUserControl.Location = new Point(303, 483);
+		venuesPagingUserControl.Location = new Point(303, 496);
 		venuesPagingUserControl.Name = "venuesPagingUserControl";
-		venuesPagingUserControl.Size = new Size(770, 47);
+		venuesPagingUserControl.Size = new Size(770, 34);
 		venuesPagingUserControl.TabIndex = 4;
 		// 
 		// tabPage2
@@ -462,7 +463,7 @@ partial class MainForm
 		tableLayoutPanel3.Name = "tableLayoutPanel3";
 		tableLayoutPanel3.RowCount = 2;
 		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 44F));
+		tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
 		tableLayoutPanel3.Size = new Size(1076, 533);
 		tableLayoutPanel3.TabIndex = 1;
 		// 
@@ -478,7 +479,7 @@ partial class MainForm
 		tableLayoutPanel1.Name = "tableLayoutPanel1";
 		tableLayoutPanel1.RowCount = 1;
 		tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel1.Size = new Size(1070, 483);
+		tableLayoutPanel1.Size = new Size(1070, 487);
 		tableLayoutPanel1.TabIndex = 0;
 		// 
 		// panel3
@@ -491,7 +492,7 @@ partial class MainForm
 		panel3.Dock = DockStyle.Fill;
 		panel3.Location = new Point(3, 3);
 		panel3.Name = "panel3";
-		panel3.Size = new Size(294, 477);
+		panel3.Size = new Size(294, 481);
 		panel3.TabIndex = 0;
 		// 
 		// btnDiscounts
@@ -561,7 +562,7 @@ partial class MainForm
 		tableLayoutPanel4.RowCount = 2;
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
 		tableLayoutPanel4.RowStyles.Add(new RowStyle());
-		tableLayoutPanel4.Size = new Size(764, 477);
+		tableLayoutPanel4.Size = new Size(764, 481);
 		tableLayoutPanel4.TabIndex = 1;
 		// 
 		// pnlFilters
@@ -591,9 +592,9 @@ partial class MainForm
 		// 
 		panel4.Controls.Add(directoriesPagingUserControl);
 		panel4.Dock = DockStyle.Fill;
-		panel4.Location = new Point(3, 492);
+		panel4.Location = new Point(3, 496);
 		panel4.Name = "panel4";
-		panel4.Size = new Size(1070, 38);
+		panel4.Size = new Size(1070, 34);
 		panel4.TabIndex = 1;
 		// 
 		// directoriesPagingUserControl
@@ -601,7 +602,7 @@ partial class MainForm
 		directoriesPagingUserControl.Dock = DockStyle.Fill;
 		directoriesPagingUserControl.Location = new Point(0, 0);
 		directoriesPagingUserControl.Name = "directoriesPagingUserControl";
-		directoriesPagingUserControl.Size = new Size(1070, 38);
+		directoriesPagingUserControl.Size = new Size(1070, 34);
 		directoriesPagingUserControl.TabIndex = 0;
 		// 
 		// tabPage3
@@ -628,7 +629,7 @@ partial class MainForm
 		tableLayoutPanel5.Name = "tableLayoutPanel5";
 		tableLayoutPanel5.RowCount = 2;
 		tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
 		tableLayoutPanel5.Size = new Size(1076, 533);
 		tableLayoutPanel5.TabIndex = 0;
 		// 
@@ -643,7 +644,7 @@ partial class MainForm
 		dgvContracts.Name = "dgvContracts";
 		dgvContracts.ReadOnly = true;
 		dgvContracts.RowHeadersWidth = 51;
-		dgvContracts.Size = new Size(770, 474);
+		dgvContracts.Size = new Size(770, 487);
 		dgvContracts.TabIndex = 1;
 		// 
 		// panel1
@@ -679,7 +680,7 @@ partial class MainForm
 		panel1.Dock = DockStyle.Fill;
 		panel1.Location = new Point(3, 3);
 		panel1.Name = "panel1";
-		panel1.Size = new Size(294, 474);
+		panel1.Size = new Size(294, 487);
 		panel1.TabIndex = 2;
 		// 
 		// label24
@@ -944,9 +945,9 @@ partial class MainForm
 		// contractsPagingUserControl
 		// 
 		contractsPagingUserControl.Dock = DockStyle.Fill;
-		contractsPagingUserControl.Location = new Point(303, 483);
+		contractsPagingUserControl.Location = new Point(303, 496);
 		contractsPagingUserControl.Name = "contractsPagingUserControl";
-		contractsPagingUserControl.Size = new Size(770, 47);
+		contractsPagingUserControl.Size = new Size(770, 34);
 		contractsPagingUserControl.TabIndex = 3;
 		// 
 		// tabPage4
@@ -965,14 +966,14 @@ partial class MainForm
 		tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 300F));
 		tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel6.Controls.Add(tableLayoutPanel7, 1, 0);
-		tableLayoutPanel6.Controls.Add(pagingUserControl2, 1, 1);
+		tableLayoutPanel6.Controls.Add(ordersPagingUserControl, 1, 1);
 		tableLayoutPanel6.Controls.Add(panel5, 0, 0);
 		tableLayoutPanel6.Dock = DockStyle.Fill;
 		tableLayoutPanel6.Location = new Point(0, 0);
 		tableLayoutPanel6.Name = "tableLayoutPanel6";
 		tableLayoutPanel6.RowCount = 2;
 		tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-		tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 53F));
+		tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
 		tableLayoutPanel6.Size = new Size(1082, 539);
 		tableLayoutPanel6.TabIndex = 0;
 		// 
@@ -981,7 +982,7 @@ partial class MainForm
 		tableLayoutPanel7.ColumnCount = 1;
 		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-		tableLayoutPanel7.Controls.Add(dataGridView1, 0, 0);
+		tableLayoutPanel7.Controls.Add(dgvOrders, 0, 0);
 		tableLayoutPanel7.Controls.Add(dataGridView2, 0, 1);
 		tableLayoutPanel7.Dock = DockStyle.Fill;
 		tableLayoutPanel7.Location = new Point(303, 3);
@@ -989,22 +990,22 @@ partial class MainForm
 		tableLayoutPanel7.RowCount = 2;
 		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
 		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-		tableLayoutPanel7.Size = new Size(776, 480);
+		tableLayoutPanel7.Size = new Size(776, 493);
 		tableLayoutPanel7.TabIndex = 0;
 		// 
-		// dataGridView1
+		// dgvOrders
 		// 
-		dataGridView1.AllowUserToAddRows = false;
-		dataGridView1.AllowUserToDeleteRows = false;
-		dataGridView1.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-		dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-		dataGridView1.Dock = DockStyle.Fill;
-		dataGridView1.Location = new Point(3, 3);
-		dataGridView1.Name = "dataGridView1";
-		dataGridView1.ReadOnly = true;
-		dataGridView1.RowHeadersWidth = 51;
-		dataGridView1.Size = new Size(770, 234);
-		dataGridView1.TabIndex = 0;
+		dgvOrders.AllowUserToAddRows = false;
+		dgvOrders.AllowUserToDeleteRows = false;
+		dgvOrders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dgvOrders.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dgvOrders.Dock = DockStyle.Fill;
+		dgvOrders.Location = new Point(3, 3);
+		dgvOrders.Name = "dgvOrders";
+		dgvOrders.ReadOnly = true;
+		dgvOrders.RowHeadersWidth = 51;
+		dgvOrders.Size = new Size(770, 240);
+		dgvOrders.TabIndex = 0;
 		// 
 		// dataGridView2
 		// 
@@ -1013,26 +1014,27 @@ partial class MainForm
 		dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		dataGridView2.Dock = DockStyle.Fill;
-		dataGridView2.Location = new Point(3, 243);
+		dataGridView2.Location = new Point(3, 249);
 		dataGridView2.Name = "dataGridView2";
 		dataGridView2.ReadOnly = true;
 		dataGridView2.RowHeadersWidth = 51;
-		dataGridView2.Size = new Size(770, 234);
+		dataGridView2.Size = new Size(770, 241);
 		dataGridView2.TabIndex = 1;
 		// 
-		// pagingUserControl2
+		// ordersPagingUserControl
 		// 
-		pagingUserControl2.Location = new Point(303, 489);
-		pagingUserControl2.Name = "pagingUserControl2";
-		pagingUserControl2.Size = new Size(776, 47);
-		pagingUserControl2.TabIndex = 1;
+		ordersPagingUserControl.Dock = DockStyle.Fill;
+		ordersPagingUserControl.Location = new Point(303, 502);
+		ordersPagingUserControl.Name = "ordersPagingUserControl";
+		ordersPagingUserControl.Size = new Size(776, 34);
+		ordersPagingUserControl.TabIndex = 1;
 		// 
 		// panel5
 		// 
 		panel5.Dock = DockStyle.Fill;
 		panel5.Location = new Point(3, 3);
 		panel5.Name = "panel5";
-		panel5.Size = new Size(294, 480);
+		panel5.Size = new Size(294, 493);
 		panel5.TabIndex = 2;
 		// 
 		// tabPage5
@@ -1077,7 +1079,7 @@ partial class MainForm
 		tabPage4.ResumeLayout(false);
 		tableLayoutPanel6.ResumeLayout(false);
 		tableLayoutPanel7.ResumeLayout(false);
-		((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+		((System.ComponentModel.ISupportInitialize)dgvOrders).EndInit();
 		((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
 		ResumeLayout(false);
 	}
@@ -1164,8 +1166,8 @@ partial class MainForm
 	private DateTimePicker dtpEndDateFrom;
 	private TableLayoutPanel tableLayoutPanel6;
 	private TableLayoutPanel tableLayoutPanel7;
-	private DataGridView dataGridView1;
+	private DataGridView dgvOrders;
 	private DataGridView dataGridView2;
-	private PagingUserControl pagingUserControl2;
+	private PagingUserControl ordersPagingUserControl;
 	private Panel panel5;
 }

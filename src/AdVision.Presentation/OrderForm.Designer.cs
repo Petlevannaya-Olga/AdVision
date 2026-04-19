@@ -28,131 +28,192 @@
 		/// </summary>
 		private void InitializeComponent()
 		{
-			textBox1 = new TextBox();
+			txtContractNumber = new TextBox();
 			label1 = new Label();
-			button1 = new Button();
-			pictureBox1 = new PictureBox();
+			btnSelect = new Button();
+			pbContractValidation = new PictureBox();
 			label2 = new Label();
-			dataGridView1 = new DataGridView();
-			pagingUserControl1 = new PagingUserControl();
-			button2 = new Button();
-			button3 = new Button();
-			((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
-			((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+			dgvOrderItems = new DataGridView();
+			orderItemsPagingUserControl = new PagingUserControl();
+			btnSave = new Button();
+			btnClose = new Button();
+			tableLayoutPanel1 = new TableLayoutPanel();
+			panel1 = new Panel();
+			panel2 = new Panel();
+			((System.ComponentModel.ISupportInitialize)pbContractValidation).BeginInit();
+			((System.ComponentModel.ISupportInitialize)dgvOrderItems).BeginInit();
+			tableLayoutPanel1.SuspendLayout();
+			panel1.SuspendLayout();
+			panel2.SuspendLayout();
 			SuspendLayout();
 			// 
-			// textBox1
+			// txtContractNumber
 			// 
-			textBox1.BorderStyle = BorderStyle.FixedSingle;
-			textBox1.Location = new Point(12, 32);
-			textBox1.Name = "textBox1";
-			textBox1.Size = new Size(442, 27);
-			textBox1.TabIndex = 0;
+			txtContractNumber.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+			txtContractNumber.BorderStyle = BorderStyle.FixedSingle;
+			txtContractNumber.Location = new Point(3, 3);
+			txtContractNumber.Name = "txtContractNumber";
+			txtContractNumber.ReadOnly = true;
+			txtContractNumber.Size = new Size(777, 27);
+			txtContractNumber.TabIndex = 0;
 			// 
 			// label1
 			// 
 			label1.AutoSize = true;
-			label1.Location = new Point(12, 9);
+			label1.Location = new Point(13, 10);
 			label1.Name = "label1";
 			label1.Size = new Size(69, 20);
 			label1.TabIndex = 1;
 			label1.Text = "Договор";
 			// 
-			// button1
+			// btnSelect
 			// 
-			button1.FlatStyle = FlatStyle.Popup;
-			button1.Location = new Point(460, 32);
-			button1.Name = "button1";
-			button1.Size = new Size(37, 27);
-			button1.TabIndex = 2;
-			button1.Text = "...";
-			button1.UseVisualStyleBackColor = true;
+			btnSelect.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnSelect.FlatStyle = FlatStyle.Popup;
+			btnSelect.Location = new Point(786, 3);
+			btnSelect.Name = "btnSelect";
+			btnSelect.Size = new Size(37, 27);
+			btnSelect.TabIndex = 2;
+			btnSelect.Text = "...";
+			btnSelect.UseVisualStyleBackColor = true;
+			btnSelect.Click += BtnSelect_Click;
 			// 
-			// pictureBox1
+			// pbContractValidation
 			// 
-			pictureBox1.Location = new Point(503, 32);
-			pictureBox1.Name = "pictureBox1";
-			pictureBox1.Size = new Size(27, 27);
-			pictureBox1.TabIndex = 3;
-			pictureBox1.TabStop = false;
+			pbContractValidation.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			pbContractValidation.BackColor = SystemColors.Control;
+			pbContractValidation.Location = new Point(829, 3);
+			pbContractValidation.Name = "pbContractValidation";
+			pbContractValidation.Size = new Size(27, 27);
+			pbContractValidation.TabIndex = 3;
+			pbContractValidation.TabStop = false;
 			// 
 			// label2
 			// 
 			label2.AutoSize = true;
-			label2.Location = new Point(12, 71);
+			label2.Location = new Point(13, 70);
 			label2.Name = "label2";
 			label2.Size = new Size(72, 20);
 			label2.TabIndex = 4;
 			label2.Text = "Позиции";
 			// 
-			// dataGridView1
+			// dgvOrderItems
 			// 
-			dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-			dataGridView1.Location = new Point(12, 94);
-			dataGridView1.Name = "dataGridView1";
-			dataGridView1.RowHeadersWidth = 51;
-			dataGridView1.Size = new Size(518, 339);
-			dataGridView1.TabIndex = 5;
+			dgvOrderItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+			dgvOrderItems.Dock = DockStyle.Fill;
+			dgvOrderItems.Location = new Point(13, 93);
+			dgvOrderItems.Name = "dgvOrderItems";
+			dgvOrderItems.RowHeadersWidth = 51;
+			dgvOrderItems.Size = new Size(859, 335);
+			dgvOrderItems.TabIndex = 5;
 			// 
-			// pagingUserControl1
+			// orderItemsPagingUserControl
 			// 
-			pagingUserControl1.Location = new Point(4, 439);
-			pagingUserControl1.Name = "pagingUserControl1";
-			pagingUserControl1.Size = new Size(539, 45);
-			pagingUserControl1.TabIndex = 6;
+			orderItemsPagingUserControl.Dock = DockStyle.Fill;
+			orderItemsPagingUserControl.Location = new Point(13, 434);
+			orderItemsPagingUserControl.Name = "orderItemsPagingUserControl";
+			orderItemsPagingUserControl.Size = new Size(859, 35);
+			orderItemsPagingUserControl.TabIndex = 6;
 			// 
-			// button2
+			// btnSave
 			// 
-			button2.FlatStyle = FlatStyle.Popup;
-			button2.Location = new Point(337, 490);
-			button2.Name = "button2";
-			button2.Size = new Size(94, 29);
-			button2.TabIndex = 7;
-			button2.Text = "Сохранить";
-			button2.UseVisualStyleBackColor = true;
+			btnSave.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnSave.FlatStyle = FlatStyle.Popup;
+			btnSave.Location = new Point(663, 9);
+			btnSave.Name = "btnSave";
+			btnSave.Size = new Size(94, 26);
+			btnSave.TabIndex = 7;
+			btnSave.Text = "Сохранить";
+			btnSave.UseVisualStyleBackColor = true;
 			// 
-			// button3
+			// btnClose
 			// 
-			button3.FlatStyle = FlatStyle.Popup;
-			button3.Location = new Point(436, 490);
-			button3.Name = "button3";
-			button3.Size = new Size(94, 29);
-			button3.TabIndex = 7;
-			button3.Text = "Закрыть";
-			button3.UseVisualStyleBackColor = true;
+			btnClose.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnClose.FlatStyle = FlatStyle.Popup;
+			btnClose.Location = new Point(762, 9);
+			btnClose.Name = "btnClose";
+			btnClose.Size = new Size(94, 26);
+			btnClose.TabIndex = 7;
+			btnClose.Text = "Закрыть";
+			btnClose.UseVisualStyleBackColor = true;
+			// 
+			// tableLayoutPanel1
+			// 
+			tableLayoutPanel1.ColumnCount = 1;
+			tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+			tableLayoutPanel1.Controls.Add(label1, 0, 0);
+			tableLayoutPanel1.Controls.Add(panel1, 0, 1);
+			tableLayoutPanel1.Controls.Add(label2, 0, 2);
+			tableLayoutPanel1.Controls.Add(orderItemsPagingUserControl, 0, 4);
+			tableLayoutPanel1.Controls.Add(dgvOrderItems, 0, 3);
+			tableLayoutPanel1.Controls.Add(panel2, 0, 5);
+			tableLayoutPanel1.Dock = DockStyle.Fill;
+			tableLayoutPanel1.Location = new Point(0, 0);
+			tableLayoutPanel1.Name = "tableLayoutPanel1";
+			tableLayoutPanel1.Padding = new Padding(10);
+			tableLayoutPanel1.RowCount = 6;
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 41F));
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
+			tableLayoutPanel1.Size = new Size(885, 532);
+			tableLayoutPanel1.TabIndex = 8;
+			// 
+			// panel1
+			// 
+			panel1.Controls.Add(txtContractNumber);
+			panel1.Controls.Add(btnSelect);
+			panel1.Controls.Add(pbContractValidation);
+			panel1.Dock = DockStyle.Fill;
+			panel1.Location = new Point(13, 33);
+			panel1.Name = "panel1";
+			panel1.Size = new Size(859, 34);
+			panel1.TabIndex = 2;
+			// 
+			// panel2
+			// 
+			panel2.Controls.Add(btnClose);
+			panel2.Controls.Add(btnSave);
+			panel2.Dock = DockStyle.Fill;
+			panel2.Location = new Point(13, 475);
+			panel2.Name = "panel2";
+			panel2.Size = new Size(859, 44);
+			panel2.TabIndex = 7;
 			// 
 			// OrderForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(544, 532);
-			Controls.Add(button3);
-			Controls.Add(button2);
-			Controls.Add(pagingUserControl1);
-			Controls.Add(dataGridView1);
-			Controls.Add(label2);
-			Controls.Add(pictureBox1);
-			Controls.Add(button1);
-			Controls.Add(label1);
-			Controls.Add(textBox1);
+			ClientSize = new Size(885, 532);
+			Controls.Add(tableLayoutPanel1);
 			Name = "OrderForm";
+			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Создание заказа";
-			((System.ComponentModel.ISupportInitialize)pictureBox1).EndInit();
-			((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+			((System.ComponentModel.ISupportInitialize)pbContractValidation).EndInit();
+			((System.ComponentModel.ISupportInitialize)dgvOrderItems).EndInit();
+			tableLayoutPanel1.ResumeLayout(false);
+			tableLayoutPanel1.PerformLayout();
+			panel1.ResumeLayout(false);
+			panel1.PerformLayout();
+			panel2.ResumeLayout(false);
 			ResumeLayout(false);
-			PerformLayout();
 		}
 
 		#endregion
 
-		private TextBox textBox1;
+		private TextBox txtContractNumber;
 		private Label label1;
-		private Button button1;
-		private PictureBox pictureBox1;
+		private Button btnSelect;
+		private PictureBox pbContractValidation;
 		private Label label2;
-		private DataGridView dataGridView1;
-		private PagingUserControl pagingUserControl1;
-		private Button button2;
-		private Button button3;
+		private DataGridView dgvOrderItems;
+		private PagingUserControl orderItemsPagingUserControl;
+		private Button btnSave;
+		private Button btnClose;
+		private TableLayoutPanel tableLayoutPanel1;
+		private Panel panel1;
+		private Panel panel2;
 	}
 }

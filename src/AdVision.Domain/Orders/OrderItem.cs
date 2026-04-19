@@ -13,11 +13,21 @@ public sealed class OrderItem
     /// Идентификатор заказа
     /// </summary>
     public OrderId OrderId { get; private set; }
+    
+    /// <summary>
+    /// Навигационное свойство
+    /// </summary>
+    public Order Order { get; init; } = null!;
 
     /// <summary>
     /// Идентификатор тарифа
     /// </summary>
     public TariffId TariffId { get; private set; }
+    
+    /// <summary>
+    /// Навигационное свойство
+    /// </summary>
+    public Tariff Tariff { get; init; } = null!;
 
     /// <summary>
     /// Статус позиции заказа

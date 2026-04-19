@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using AdVision.Contracts;
 using AdVision.Domain.Venues;
 using CSharpFunctionalExtensions;
 using Shared;
@@ -23,5 +24,20 @@ public interface IVenueRepository
 
     Task<Result<IReadOnlyList<string>, Error>> GetDistinctAsync(
         Expression<Func<Venue, string>> selector,
+        CancellationToken cancellationToken);
+    
+    Task<Result<IReadOnlyList<AvailableVenueForPositionDto>, Error>> GetAvailableForPositionAsync(
+        string? name,
+        Guid? venueTypeId,
+        string? region,
+        string? district,
+        string? city,
+        string? street,
+        int ratingFrom,
+        int ratingTo,
+        decimal? priceFrom,
+        decimal? priceTo,
+        DateOnly? dateFrom,
+        DateOnly? dateTo,
         CancellationToken cancellationToken);
 }

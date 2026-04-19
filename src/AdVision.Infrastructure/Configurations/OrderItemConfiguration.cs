@@ -85,13 +85,13 @@ public sealed class OrderItemConfiguration : IEntityTypeConfiguration<OrderItem>
             .HasIndex(x => new { x.OrderId, x.Status });
 
         builder
-            .HasOne<Order>()
+            .HasOne(x => x.Order)
             .WithMany(x => x.Items)
             .HasForeignKey(x => x.OrderId)
             .OnDelete(DeleteBehavior.Cascade);
 
         builder
-            .HasOne<Tariff>()
+            .HasOne(x => x.Tariff)
             .WithMany()
             .HasForeignKey(x => x.TariffId)
             .OnDelete(DeleteBehavior.Restrict);

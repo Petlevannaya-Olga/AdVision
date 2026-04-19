@@ -1,6 +1,7 @@
 using System.Linq.Expressions;
 using AdVision.Contracts;
-using AdVision.Domain.Contracts;
+using AdVision.Domain.Customers;
+using AdVision.Domain.Employees;
 using AdVision.Domain.Orders;
 using CSharpFunctionalExtensions;
 using Shared;
@@ -21,7 +22,8 @@ public interface IOrderRepository
         int page,
         int pageSize,
         Guid? orderId,
-        ContractId? contractId,
+        CustomerId? customerId,
+        EmployeeId? employeeId,
         OrderStatus? status,
         decimal? totalAmountFrom,
         decimal? totalAmountTo,
@@ -32,6 +34,6 @@ public interface IOrderRepository
         string? orderBy,
         bool descending,
         CancellationToken cancellationToken);
-    
+
     Task<Result<OrderFilterBoundsDto?, Error>> GetFilterBoundsAsync(CancellationToken cancellationToken);
 }
