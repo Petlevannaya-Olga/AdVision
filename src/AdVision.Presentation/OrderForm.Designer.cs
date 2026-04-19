@@ -40,6 +40,7 @@
 			tableLayoutPanel1 = new TableLayoutPanel();
 			panel1 = new Panel();
 			panel2 = new Panel();
+			lblTotalAmount = new Label();
 			((System.ComponentModel.ISupportInitialize)pbContractValidation).BeginInit();
 			((System.ComponentModel.ISupportInitialize)dgvOrderItems).BeginInit();
 			tableLayoutPanel1.SuspendLayout();
@@ -174,6 +175,7 @@
 			// 
 			// panel2
 			// 
+			panel2.Controls.Add(lblTotalAmount);
 			panel2.Controls.Add(btnClose);
 			panel2.Controls.Add(btnSave);
 			panel2.Dock = DockStyle.Fill;
@@ -181,6 +183,15 @@
 			panel2.Name = "panel2";
 			panel2.Size = new Size(859, 44);
 			panel2.TabIndex = 7;
+			// 
+			// lblTotalAmount
+			// 
+			lblTotalAmount.AutoSize = true;
+			lblTotalAmount.Location = new Point(3, 12);
+			lblTotalAmount.Name = "lblTotalAmount";
+			lblTotalAmount.Size = new Size(50, 20);
+			lblTotalAmount.TabIndex = 8;
+			lblTotalAmount.Text = "label3";
 			// 
 			// OrderForm
 			// 
@@ -198,6 +209,7 @@
 			panel1.ResumeLayout(false);
 			panel1.PerformLayout();
 			panel2.ResumeLayout(false);
+			panel2.PerformLayout();
 			ResumeLayout(false);
 		}
 
@@ -215,5 +227,6 @@
 		private TableLayoutPanel tableLayoutPanel1;
 		private Panel panel1;
 		private Panel panel2;
+		private Label lblTotalAmount;
 	}
 }

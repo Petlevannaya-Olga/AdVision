@@ -12,6 +12,8 @@ public partial class CreatePositionForm : Form
     private readonly IQueryHandler<IReadOnlyList<AvailableVenueForPositionDto>, GetAvailableVenuesForPositionQuery> _availableVenuesQueryHandler;
     private readonly ILogger<CreatePositionForm> _logger;
 
+    private bool _isLoading;
+
     public SelectedPositionDto? SelectedPosition { get; private set; }
 
     public CreatePositionForm(
@@ -26,16 +28,31 @@ public partial class CreatePositionForm : Form
         InitializeComponent();
 
         ConfigureVenuesGrid();
+
         btnAdd.Click += BtnAdd_Click;
+        dgvVenues.CellDoubleClick += DgvVenues_CellDoubleClick;
     }
 
     protected override async void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
 
-        await LoadVenueTypesAsync();
-        await LoadRegionsAsync();
-        await LoadVenuesAsync();
+        _isLoading = true;
+        try
+        {
+            dtpDateFrom.Value = DateTime.Today;
+            dtpDateTo.Value = DateTime.Today;
+            dtpBookingFrom.Value = DateTime.Today;
+            dtpBookingTo.Value = DateTime.Today;
+
+            await LoadVenueTypesAsync();
+            await LoadRegionsAsync();
+            await LoadVenuesAsync();
+        }
+        finally
+        {
+            _isLoading = false;
+        }
     }
 
     private void ConfigureVenuesGrid()
@@ -109,7 +126,7 @@ public partial class CreatePositionForm : Form
             HeaderText = @"Тариф до",
             Name = "colTariffEnd"
         });
-        
+
         dgvVenues.Columns.Add(new DataGridViewTextBoxColumn
         {
             DataPropertyName = nameof(AvailableVenueForPositionDto.FreeDaysCount),
@@ -145,12 +162,16 @@ public partial class CreatePositionForm : Form
 
     private async Task LoadVenuesAsync()
     {
-        DateOnly? dateFrom = DateOnly.FromDateTime(dtpDateFrom.Value);
-        DateOnly? dateTo = DateOnly.FromDateTime(dtpDateTo.Value);
+        if (_isLoading)
+        {
+            return;
+        }
+
+        var dateFrom = DateOnly.FromDateTime(dtpDateFrom.Value);
+        var dateTo = DateOnly.FromDateTime(dtpDateTo.Value);
 
         if (dateFrom > dateTo)
         {
-            ShowError("Ошибка фильтра", new[] { "Дата начала не может быть больше даты окончания" });
             return;
         }
 
@@ -182,7 +203,22 @@ public partial class CreatePositionForm : Form
         };
     }
 
-    private void BtnAdd_Click(object? sender, EventArgs e)
+    private async void BtnAdd_Click(object? sender, EventArgs e)
+    {
+        await AddSelectedVenueAsync();
+    }
+
+    private async void DgvVenues_CellDoubleClick(object? sender, DataGridViewCellEventArgs e)
+    {
+        if (e.RowIndex < 0)
+        {
+            return;
+        }
+
+        await AddSelectedVenueAsync();
+    }
+
+    private async Task AddSelectedVenueAsync()
     {
         if (dgvVenues.CurrentRow?.DataBoundItem is not AvailableVenueForPositionDto venue)
         {
@@ -194,13 +230,28 @@ public partial class CreatePositionForm : Form
             return;
         }
 
-        var startDate = DateOnly.FromDateTime(dtpDateFrom.Value);
-        var endDate = DateOnly.FromDateTime(dtpDateTo.Value);
+        var bookingFrom = DateOnly.FromDateTime(dtpBookingFrom.Value);
+        var bookingTo = DateOnly.FromDateTime(dtpBookingTo.Value);
 
-        if (startDate > endDate)
+        if (bookingFrom > bookingTo)
         {
             MessageBox.Show(
-                "Дата начала не может быть больше даты окончания",
+                "Дата начала бронирования не может быть больше даты окончания",
+                "Добавление позиции",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        var isAvailable = await IsVenueAvailableForBookingAsync(
+            venue.TariffId,
+            bookingFrom,
+            bookingTo);
+
+        if (!isAvailable)
+        {
+            MessageBox.Show(
+                "Площадка недоступна на указанные даты бронирования",
                 "Добавление позиции",
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
@@ -209,10 +260,11 @@ public partial class CreatePositionForm : Form
 
         SelectedPosition = new SelectedPositionDto(
             venue.TariffId,
+            venue.VenueId,
             venue.VenueName,
             venue.Price,
-            startDate,
-            endDate);
+            bookingFrom,
+            bookingTo);
 
         DialogResult = DialogResult.OK;
         Close();
@@ -225,21 +277,31 @@ public partial class CreatePositionForm : Form
 
     private async void BtnReset_Click(object sender, EventArgs e)
     {
-        txtName.Clear();
-        txtStreet.Clear();
+        _isLoading = true;
+        try
+        {
+            txtName.Clear();
+            txtStreet.Clear();
 
-        cbVenueTypes.SelectedIndex = -1;
-        cbRegions.SelectedIndex = -1;
-        cbDistricts.DataSource = null;
-        cbCities.DataSource = null;
+            cbVenueTypes.SelectedIndex = -1;
+            cbRegions.SelectedIndex = -1;
+            cbDistricts.DataSource = null;
+            cbCities.DataSource = null;
 
-        nudRatingFrom.Value = 1;
-        nudRatingTo.Value = 10;
-        nudPriceFrom.Value = 0;
-        nudPriceTo.Value = 0;
+            nudRatingFrom.Value = 1;
+            nudRatingTo.Value = 10;
+            nudPriceFrom.Value = 0;
+            nudPriceTo.Value = 0;
 
-        dtpDateFrom.Value = DateTime.Today;
-        dtpDateTo.Value = DateTime.Today;
+            dtpDateFrom.Value = DateTime.Today;
+            dtpDateTo.Value = DateTime.Today;
+            dtpBookingFrom.Value = DateTime.Today;
+            dtpBookingTo.Value = DateTime.Today;
+        }
+        finally
+        {
+            _isLoading = false;
+        }
 
         await LoadRegionsAsync();
         await LoadVenuesAsync();
@@ -247,79 +309,136 @@ public partial class CreatePositionForm : Form
 
     private async void CbRegions_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadDistrictsAsync();
     }
 
     private async void CbDistricts_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadCitiesAsync();
     }
 
     private async void CbCities_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void CbVenueTypes_SelectedIndexChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void TxtName_TextChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void TxtStreet_TextChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void NudRatingFrom_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void NudRatingTo_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void NudPriceFrom_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void NudPriceTo_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void DtpDateFrom_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private async void DtpDateTo_ValueChanged(object sender, EventArgs e)
     {
+        if (_isLoading)
+        {
+            return;
+        }
+
         await LoadVenuesAsync();
     }
 
     private Task LoadRegionsAsync()
     {
-        // сюда вставь уже существующую у тебя загрузку регионов через GetDistinctQuery
         return Task.CompletedTask;
     }
 
     private Task LoadDistrictsAsync()
     {
-        // сюда вставь уже существующую у тебя загрузку районов через GetDistinctQuery
         return Task.CompletedTask;
     }
 
     private Task LoadCitiesAsync()
     {
-        // сюда вставь уже существующую у тебя загрузку городов через GetDistinctQuery
         return Task.CompletedTask;
     }
 
@@ -334,5 +453,35 @@ public partial class CreatePositionForm : Form
             title,
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
+    }
+
+    private async Task<bool> IsVenueAvailableForBookingAsync(
+        Guid tariffId,
+        DateOnly bookingFrom,
+        DateOnly bookingTo)
+    {
+        var result = await _availableVenuesQueryHandler.Handle(
+            new GetAvailableVenuesForPositionQuery(
+                string.IsNullOrWhiteSpace(txtName.Text) ? null : txtName.Text.Trim(),
+                cbVenueTypes.SelectedValue is Guid venueTypeId ? venueTypeId : null,
+                cbRegions.SelectedItem?.ToString(),
+                cbDistricts.SelectedItem?.ToString(),
+                cbCities.SelectedItem?.ToString(),
+                string.IsNullOrWhiteSpace(txtStreet.Text) ? null : txtStreet.Text.Trim(),
+                (int)nudRatingFrom.Value,
+                (int)nudRatingTo.Value,
+                nudPriceFrom.Value > 0 ? nudPriceFrom.Value : null,
+                nudPriceTo.Value > 0 ? nudPriceTo.Value : null,
+                bookingFrom,
+                bookingTo),
+            CancellationToken.None);
+
+        if (result.IsFailure)
+        {
+            ShowError("Ошибка проверки доступности площадки", result.Error);
+            return false;
+        }
+
+        return result.Value.Any(x => x.TariffId == tariffId);
     }
 }
