@@ -1,6 +1,6 @@
+using AdVision.Application.Orders.CreateOrderCommand;
 using AdVision.Application.Repositories;
 using AdVision.Application.SharedErrors;
-using AdVision.Contracts;
 using AdVision.Domain;
 using AdVision.Domain.Contracts;
 using AdVision.Domain.Orders;
@@ -9,8 +9,6 @@ using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
-
-namespace AdVision.Application.Orders.CreateOrderCommand;
 
 public sealed class CreateOrderCommandHandler(
     IOrderRepository orderRepository,
@@ -93,12 +91,7 @@ public sealed class CreateOrderCommandHandler(
                 periodResult.Value));
         }
 
-        var totalAmount = Money.Zero();
-
-        foreach (var item in orderItems)
-        {
-            totalAmount = totalAmount.Add(item.price);
-        }
+        var totalWithoutDiscount = CalculateTotalWithoutDiscount(orderItems);
 
         var customerDiscountsResult = await customerDiscountRepository.GetByCustomerIdAsync(
             contract.CustomerId,
@@ -110,7 +103,7 @@ public sealed class CreateOrderCommandHandler(
         }
 
         var maxDiscountPercent = customerDiscountsResult.Value
-            .Where(x => totalAmount.Value >= x.Discount.MinTotal.Value)
+            .Where(x => totalWithoutDiscount >= x.Discount.MinTotal.Value)
             .Select(x => x.Discount.Percent.Value)
             .DefaultIfEmpty(0)
             .Max();
@@ -130,5 +123,24 @@ public sealed class CreateOrderCommandHandler(
         logger.LogInformation("Создан новый заказ с id = {OrderId}", order.Id.Value);
 
         return order.Id.Value;
+    }
+
+    private static decimal CalculateTotalWithoutDiscount(
+        IReadOnlyCollection<(TariffId tariffId, Money price, DateInterval period)> items)
+    {
+        decimal total = 0;
+
+        foreach (var item in items)
+        {
+            var daysCount = GetDaysCount(item.period.StartDate, item.period.EndDate);
+            total += item.price.Value * daysCount;
+        }
+
+        return total;
+    }
+
+    private static int GetDaysCount(DateOnly startDate, DateOnly endDate)
+    {
+        return endDate.DayNumber - startDate.DayNumber + 1;
     }
 }

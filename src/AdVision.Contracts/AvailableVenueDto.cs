@@ -1,6 +1,6 @@
 namespace AdVision.Contracts;
 
-public sealed record AvailableVenueForPositionDto(
+public sealed record AvailableVenueDto(
     Guid VenueId,
     Guid TariffId,
     string VenueName,

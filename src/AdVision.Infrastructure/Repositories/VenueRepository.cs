@@ -165,7 +165,9 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
             : query.OrderBy(orderBy);
     }
 
-    public async Task<Result<IReadOnlyList<AvailableVenueForPositionDto>, Error>> GetAvailableForPositionAsync(
+    public async Task<Result<PagedResult<AvailableVenueDto>, Error>> GetAvailableAsync(
+        int page,
+        int pageSize,
         string? name,
         Guid? venueTypeId,
         string? region,
@@ -182,6 +184,16 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
     {
         try
         {
+            if (page <= 0)
+            {
+                page = 1;
+            }
+
+            if (pageSize <= 0)
+            {
+                pageSize = 20;
+            }
+
             var venues = await dbContext.Venues
                 .Include(x => x.Type)
                 .AsNoTracking()
@@ -238,7 +250,7 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                     .ToList();
             }
 
-            var result = new List<AvailableVenueForPositionDto>();
+            var items = new List<AvailableVenueDto>();
 
             if (dateFrom.HasValue && dateTo.HasValue)
             {
@@ -303,7 +315,7 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                         continue;
                     }
 
-                    result.Add(new AvailableVenueForPositionDto(
+                    items.Add(new AvailableVenueDto(
                         tariff.VenueId.Value,
                         tariff.Id.Value,
                         tariff.Venue.Name.Value,
@@ -322,8 +334,8 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
             }
             else
             {
-                result = filteredTariffs
-                    .Select(t => new AvailableVenueForPositionDto(
+                items = filteredTariffs
+                    .Select(t => new AvailableVenueDto(
                         t.VenueId.Value,
                         t.Id.Value,
                         t.Venue.Name.Value,
@@ -341,13 +353,25 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                     .ToList();
             }
 
-            result = result
+            items = items
                 .OrderBy(x => x.VenueName)
                 .ThenBy(x => x.Price)
                 .ThenByDescending(x => x.FreeDaysCount)
                 .ToList();
 
-            return Result.Success<IReadOnlyList<AvailableVenueForPositionDto>, Error>(result);
+            var totalCount = items.Count;
+
+            var pagedItems = items
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
+            return Result.Success<PagedResult<AvailableVenueDto>, Error>(
+                new PagedResult<AvailableVenueDto>(
+                    pagedItems,
+                    page,
+                    pageSize,
+                    totalCount));
         }
         catch (OperationCanceledException)
         {

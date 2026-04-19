@@ -4,17 +4,19 @@ using CSharpFunctionalExtensions;
 using Shared;
 using Shared.Abstractions;
 
-namespace AdVision.Application.Venues.GetAvailableVenuesForPositionQuery;
+namespace AdVision.Application.Venues.GetAvailableVenuesQuery;
 
-public sealed class GetAvailableVenuesForPositionQueryHandler(
+public sealed class GetAvailableVenuesQueryHandler(
     IVenueRepository venueRepository)
-    : IQueryHandler<IReadOnlyList<AvailableVenueForPositionDto>, GetAvailableVenuesForPositionQuery>
+    : IQueryHandler<PagedResult<AvailableVenueDto>, GetAvailableVenuesQuery>
 {
-    public async Task<Result<IReadOnlyList<AvailableVenueForPositionDto>, Errors>> Handle(
-        GetAvailableVenuesForPositionQuery query,
+    public async Task<Result<PagedResult<AvailableVenueDto>, Errors>> Handle(
+        Venues.GetAvailableVenuesQuery.GetAvailableVenuesQuery query,
         CancellationToken cancellationToken)
     {
-        var result = await venueRepository.GetAvailableForPositionAsync(
+        var result = await venueRepository.GetAvailableAsync(
+            query.Page,
+            query.PageSize,
             query.Name,
             query.VenueTypeId,
             query.Region,
@@ -34,6 +36,6 @@ public sealed class GetAvailableVenuesForPositionQueryHandler(
             return result.Error.ToErrors();
         }
 
-        return Result.Success<IReadOnlyList<AvailableVenueForPositionDto>, Errors>(result.Value);
+        return Result.Success<PagedResult<AvailableVenueDto>, Errors>(result.Value);
     }
 }

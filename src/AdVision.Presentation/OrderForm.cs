@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using AdVision.Application.Orders.CreateOrderCommand;
+using AdVision.Application.Repositories;
 using AdVision.Contracts;
+using AdVision.Domain.Customers;
 using AdVision.Presentation.Notifications;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,6 +12,7 @@ namespace AdVision.Presentation;
 
 public partial class OrderForm : Form
 {
+    private readonly ICustomerDiscountRepository _customerDiscountRepository;
     private readonly ICommandHandler<Guid, CreateOrderCommand> _createOrderCommandHandler;
     private readonly INotificationService _notificationService;
     private readonly IServiceProvider _serviceProvider;
@@ -17,15 +20,19 @@ public partial class OrderForm : Form
 
     private Guid? _selectedContractId;
     private readonly BindingList<CreateOrderItemRow> _items = [];
+    private decimal _maxDiscountPercent;
+    private Guid? _selectedCustomerId;
 
     public event Action? OrderCreated;
 
     public OrderForm(
+        ICustomerDiscountRepository customerDiscountRepository,
         ICommandHandler<Guid, CreateOrderCommand> createOrderCommandHandler,
         INotificationService notificationService,
         IServiceProvider serviceProvider,
         ILogger<OrderForm> logger)
     {
+        _customerDiscountRepository = customerDiscountRepository;
         _createOrderCommandHandler = createOrderCommandHandler;
         _notificationService = notificationService;
         _serviceProvider = serviceProvider;
@@ -70,9 +77,45 @@ public partial class OrderForm : Form
         }
 
         var contract = form.SelectedContract;
+
         txtContractNumber.Text = contract.Number;
         pbContractValidation.Image = Properties.Resources.success;
         _selectedContractId = contract.Id;
+        _selectedCustomerId = contract.CustomerId;
+
+        _ = RefreshDiscountAsync();
+    }
+    
+    private async Task RefreshDiscountAsync()
+    {
+        if (_selectedCustomerId is null)
+        {
+            _maxDiscountPercent = 0;
+            UpdateOrderTotal();
+            return;
+        }
+
+        var totalWithoutDiscount = CalculateTotalWithoutDiscount();
+
+        // здесь получаешь скидки клиента
+        var result = await _customerDiscountRepository.GetByCustomerIdAsync(
+            new CustomerId(_selectedCustomerId.Value),
+            CancellationToken.None);
+
+        if (result.IsFailure)
+        {
+            _maxDiscountPercent = 0;
+            UpdateOrderTotal();
+            return;
+        }
+
+        _maxDiscountPercent = result.Value
+            .Where(x => totalWithoutDiscount >= x.Discount.MinTotal.Value)
+            .Select(x => x.Discount.Percent.Value)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        UpdateOrderTotal();
     }
 
     private void ConfigureOrderItemsGrid()
@@ -117,7 +160,7 @@ public partial class OrderForm : Form
 
     private void AddPosition()
     {
-        var form = _serviceProvider.GetRequiredService<CreatePositionForm>();
+        var form = _serviceProvider.GetRequiredService<OrderItemForm>();
 
         if (form.ShowDialog() != DialogResult.OK || form.SelectedPosition is null)
         {
@@ -147,14 +190,37 @@ public partial class OrderForm : Form
             position.StartDate,
             position.EndDate));
 
+        _ = RefreshDiscountAsync();
         UpdateOrderTotal();
     }
 
     private void UpdateOrderTotal()
     {
-        var total = _items.Sum(x => x.Price);
-        lblTotalAmount.Text = @"Итого:" + total.ToString("N2") + @"с учетом скидки!!! по дням";
-        // TODO с учетом скидки
+        var totalWithoutDiscount = CalculateTotalWithoutDiscount();
+        var totalWithDiscount = ApplyDiscount(totalWithoutDiscount, _maxDiscountPercent);
+
+        lblTotalAmount.Text = totalWithDiscount.ToString("N2");
+    }
+    
+    private static int GetDaysCount(DateOnly startDate, DateOnly endDate)
+    {
+        return endDate.DayNumber - startDate.DayNumber + 1;
+    }
+    
+    private static decimal CalculatePositionTotal(CreateOrderItemRow item)
+    {
+        var daysCount = GetDaysCount(item.StartDate, item.EndDate);
+        return item.Price * daysCount;
+    }
+    
+    private decimal CalculateTotalWithoutDiscount()
+    {
+        return _items.Sum(CalculatePositionTotal);
+    }
+    
+    private static decimal ApplyDiscount(decimal total, decimal maxDiscountPercent)
+    {
+        return total * (1 - maxDiscountPercent / 100m);
     }
 
     private async void BtnSave_Click(object sender, EventArgs e)
@@ -209,6 +275,4 @@ public partial class OrderForm : Form
     {
         return start1 <= end2 && end1 >= start2;
     }
-    
-    
 }

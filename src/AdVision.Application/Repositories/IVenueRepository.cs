@@ -26,7 +26,9 @@ public interface IVenueRepository
         Expression<Func<Venue, string>> selector,
         CancellationToken cancellationToken);
     
-    Task<Result<IReadOnlyList<AvailableVenueForPositionDto>, Error>> GetAvailableForPositionAsync(
+    Task<Result<PagedResult<AvailableVenueDto>, Error>> GetAvailableAsync(
+        int page,
+        int pageSize,
         string? name,
         Guid? venueTypeId,
         string? region,

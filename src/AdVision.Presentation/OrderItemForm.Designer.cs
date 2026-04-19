@@ -1,6 +1,6 @@
 ﻿namespace AdVision.Presentation
 {
-	partial class CreatePositionForm
+	partial class OrderItemForm
 	{
 		/// <summary>
 		/// Required designer variable.
@@ -61,12 +61,16 @@
 			label1 = new Label();
 			dgvVenues = new DataGridView();
 			panel2 = new Panel();
+			btnPrevPage = new Button();
+			btnNextPage = new Button();
+			lblPageInfo = new Label();
+			panel3 = new Panel();
 			dtpBookingTo = new DateTimePicker();
+			btnAdd = new Button();
 			label18 = new Label();
+			label16 = new Label();
 			dtpBookingFrom = new DateTimePicker();
 			label17 = new Label();
-			label16 = new Label();
-			btnAdd = new Button();
 			tableLayoutPanel1.SuspendLayout();
 			panel1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)nudPriceTo).BeginInit();
@@ -75,6 +79,7 @@
 			((System.ComponentModel.ISupportInitialize)nudRatingFrom).BeginInit();
 			((System.ComponentModel.ISupportInitialize)dgvVenues).BeginInit();
 			panel2.SuspendLayout();
+			panel3.SuspendLayout();
 			SuspendLayout();
 			// 
 			// tableLayoutPanel1
@@ -84,15 +89,17 @@
 			tableLayoutPanel1.Controls.Add(panel1, 0, 0);
 			tableLayoutPanel1.Controls.Add(dgvVenues, 0, 1);
 			tableLayoutPanel1.Controls.Add(panel2, 0, 2);
+			tableLayoutPanel1.Controls.Add(panel3, 0, 3);
 			tableLayoutPanel1.Dock = DockStyle.Fill;
 			tableLayoutPanel1.Location = new Point(0, 0);
 			tableLayoutPanel1.Name = "tableLayoutPanel1";
 			tableLayoutPanel1.Padding = new Padding(10);
-			tableLayoutPanel1.RowCount = 3;
+			tableLayoutPanel1.RowCount = 4;
 			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 300F));
 			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
 			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
-			tableLayoutPanel1.Size = new Size(963, 590);
+			tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 40F));
+			tableLayoutPanel1.Size = new Size(847, 590);
 			tableLayoutPanel1.TabIndex = 0;
 			// 
 			// panel1
@@ -129,7 +136,7 @@
 			panel1.Dock = DockStyle.Fill;
 			panel1.Location = new Point(13, 13);
 			panel1.Name = "panel1";
-			panel1.Size = new Size(937, 294);
+			panel1.Size = new Size(821, 294);
 			panel1.TabIndex = 0;
 			// 
 			// btnReset
@@ -408,42 +415,104 @@
 			dgvVenues.Name = "dgvVenues";
 			dgvVenues.ReadOnly = true;
 			dgvVenues.RowHeadersWidth = 51;
-			dgvVenues.Size = new Size(937, 224);
+			dgvVenues.Size = new Size(821, 184);
 			dgvVenues.TabIndex = 2;
 			// 
 			// panel2
 			// 
-			panel2.Controls.Add(dtpBookingTo);
-			panel2.Controls.Add(label18);
-			panel2.Controls.Add(dtpBookingFrom);
-			panel2.Controls.Add(label17);
-			panel2.Controls.Add(label16);
-			panel2.Controls.Add(btnAdd);
+			panel2.Controls.Add(btnPrevPage);
+			panel2.Controls.Add(btnNextPage);
+			panel2.Controls.Add(lblPageInfo);
 			panel2.Dock = DockStyle.Fill;
-			panel2.Location = new Point(13, 543);
+			panel2.Location = new Point(13, 503);
 			panel2.Name = "panel2";
-			panel2.Size = new Size(937, 34);
+			panel2.Size = new Size(821, 34);
 			panel2.TabIndex = 3;
+			// 
+			// btnPrevPage
+			// 
+			btnPrevPage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnPrevPage.FlatStyle = FlatStyle.Popup;
+			btnPrevPage.Location = new Point(713, 2);
+			btnPrevPage.Name = "btnPrevPage";
+			btnPrevPage.Size = new Size(46, 29);
+			btnPrevPage.TabIndex = 1;
+			btnPrevPage.Text = "<";
+			btnPrevPage.UseVisualStyleBackColor = true;
+			// 
+			// btnNextPage
+			// 
+			btnNextPage.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnNextPage.FlatStyle = FlatStyle.Popup;
+			btnNextPage.Location = new Point(765, 2);
+			btnNextPage.Name = "btnNextPage";
+			btnNextPage.Size = new Size(46, 29);
+			btnNextPage.TabIndex = 1;
+			btnNextPage.Text = ">";
+			btnNextPage.UseVisualStyleBackColor = true;
+			// 
+			// lblPageInfo
+			// 
+			lblPageInfo.AutoSize = true;
+			lblPageInfo.Location = new Point(3, 7);
+			lblPageInfo.Name = "lblPageInfo";
+			lblPageInfo.Size = new Size(58, 20);
+			lblPageInfo.TabIndex = 0;
+			lblPageInfo.Text = "label19";
+			// 
+			// panel3
+			// 
+			panel3.Controls.Add(dtpBookingTo);
+			panel3.Controls.Add(btnAdd);
+			panel3.Controls.Add(label18);
+			panel3.Controls.Add(label16);
+			panel3.Controls.Add(dtpBookingFrom);
+			panel3.Controls.Add(label17);
+			panel3.Dock = DockStyle.Fill;
+			panel3.Location = new Point(13, 543);
+			panel3.Name = "panel3";
+			panel3.Size = new Size(821, 34);
+			panel3.TabIndex = 4;
 			// 
 			// dtpBookingTo
 			// 
-			dtpBookingTo.Location = new Point(432, 4);
+			dtpBookingTo.Location = new Point(432, 2);
 			dtpBookingTo.Name = "dtpBookingTo";
 			dtpBookingTo.Size = new Size(182, 27);
 			dtpBookingTo.TabIndex = 3;
 			// 
+			// btnAdd
+			// 
+			btnAdd.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Right;
+			btnAdd.FlatStyle = FlatStyle.Popup;
+			btnAdd.Location = new Point(620, 2);
+			btnAdd.Name = "btnAdd";
+			btnAdd.Size = new Size(191, 29);
+			btnAdd.TabIndex = 0;
+			btnAdd.Text = "Добавить";
+			btnAdd.UseVisualStyleBackColor = true;
+			// 
 			// label18
 			// 
 			label18.AutoSize = true;
-			label18.Location = new Point(399, 7);
+			label18.Location = new Point(399, 5);
 			label18.Name = "label18";
 			label18.Size = new Size(27, 20);
 			label18.TabIndex = 2;
 			label18.Text = "по";
 			// 
+			// label16
+			// 
+			label16.AutoSize = true;
+			label16.Location = new Point(3, 5);
+			label16.Name = "label16";
+			label16.Size = new Size(155, 20);
+			label16.TabIndex = 1;
+			label16.Text = "Забронировать даты";
+			// 
 			// dtpBookingFrom
 			// 
-			dtpBookingFrom.Location = new Point(203, 4);
+			dtpBookingFrom.Location = new Point(203, 2);
 			dtpBookingFrom.Name = "dtpBookingFrom";
 			dtpBookingFrom.Size = new Size(182, 27);
 			dtpBookingFrom.TabIndex = 3;
@@ -451,37 +520,19 @@
 			// label17
 			// 
 			label17.AutoSize = true;
-			label17.Location = new Point(181, 7);
+			label17.Location = new Point(181, 5);
 			label17.Name = "label17";
 			label17.Size = new Size(16, 20);
 			label17.TabIndex = 2;
 			label17.Text = "с";
 			// 
-			// label16
-			// 
-			label16.AutoSize = true;
-			label16.Location = new Point(3, 7);
-			label16.Name = "label16";
-			label16.Size = new Size(155, 20);
-			label16.TabIndex = 1;
-			label16.Text = "Забронировать даты";
-			// 
-			// btnAdd
-			// 
-			btnAdd.Location = new Point(736, 2);
-			btnAdd.Name = "btnAdd";
-			btnAdd.Size = new Size(198, 29);
-			btnAdd.TabIndex = 0;
-			btnAdd.Text = "Добавить";
-			btnAdd.UseVisualStyleBackColor = true;
-			// 
 			// CreatePositionForm
 			// 
 			AutoScaleDimensions = new SizeF(8F, 20F);
 			AutoScaleMode = AutoScaleMode.Font;
-			ClientSize = new Size(963, 590);
+			ClientSize = new Size(847, 590);
 			Controls.Add(tableLayoutPanel1);
-			Name = "CreatePositionForm";
+			Name = "OrderItemForm";
 			StartPosition = FormStartPosition.CenterScreen;
 			Text = "Добавление новой позиции к заказу";
 			tableLayoutPanel1.ResumeLayout(false);
@@ -494,6 +545,8 @@
 			((System.ComponentModel.ISupportInitialize)dgvVenues).EndInit();
 			panel2.ResumeLayout(false);
 			panel2.PerformLayout();
+			panel3.ResumeLayout(false);
+			panel3.PerformLayout();
 			ResumeLayout(false);
 		}
 
@@ -538,5 +591,9 @@
 		private Label label16;
 		private DateTimePicker dtpBookingTo;
 		private Label label18;
+		private Button btnPrevPage;
+		private Button btnNextPage;
+		private Label lblPageInfo;
+		private Panel panel3;
 	}
 }

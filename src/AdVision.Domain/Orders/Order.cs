@@ -60,14 +60,17 @@ public sealed class Order
 
     private Money CalculateTotalAmount(decimal maxDiscountPercent)
     {
-        var total = Money.Zero();
+        decimal total = 0;
 
         foreach (var item in _items)
         {
-            total = total.Add(item.Price);
+            var daysCount = item.Period.EndDate.DayNumber - item.Period.StartDate.DayNumber + 1;
+            total += item.Price.Value * daysCount;
         }
 
-        return total.ApplyDiscount(maxDiscountPercent);
+        var totalMoney = Money.Create(total).Value;
+
+        return totalMoney.ApplyDiscount(maxDiscountPercent);
     }
 
     // EF Core

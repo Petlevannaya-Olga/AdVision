@@ -1,8 +1,10 @@
 using Shared.Abstractions;
 
-namespace AdVision.Application.Venues.GetAvailableVenuesForPositionQuery;
+namespace AdVision.Application.Venues.GetAvailableVenuesQuery;
 
-public sealed record GetAvailableVenuesForPositionQuery(
+public sealed record GetAvailableVenuesQuery(
+    int Page,
+    int PageSize,
     string? Name,
     Guid? VenueTypeId,
     string? Region,
