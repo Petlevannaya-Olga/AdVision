@@ -171,14 +171,14 @@ public partial class OrderItemForm : Form
 		dgvVenues.Columns.Add(new DataGridViewTextBoxColumn
 		{
 			DataPropertyName = nameof(AvailableVenueDto.FreeDaysCount),
-			HeaderText = @"Свободных дней",
+			HeaderText = @"Свободных дней на выбранные даты",
 			Name = "colFreeDays"
 		});
 
 		dgvVenues.Columns.Add(new DataGridViewCheckBoxColumn
 		{
 			DataPropertyName = nameof(AvailableVenueDto.HasPartialAvailability),
-			HeaderText = @"Частично доступна",
+			HeaderText = @"Частично доступна на выбранные даты",
 			Name = "colPartial"
 		});
 	}
