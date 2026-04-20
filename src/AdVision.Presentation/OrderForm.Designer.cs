@@ -126,6 +126,7 @@
 			btnSave.TabIndex = 7;
 			btnSave.Text = "Сохранить";
 			btnSave.UseVisualStyleBackColor = true;
+			btnSave.Click += BtnSave_Click;
 			// 
 			// btnClose
 			// 
@@ -137,6 +138,7 @@
 			btnClose.TabIndex = 7;
 			btnClose.Text = "Закрыть";
 			btnClose.UseVisualStyleBackColor = true;
+			btnClose.Click += BtnCancel_Click;
 			// 
 			// tableLayoutPanel1
 			// 

@@ -12,16 +12,27 @@ namespace AdVision.Presentation;
 
 public partial class OrderForm : Form
 {
+    private const int PageSize = 10;
+
     private readonly ICustomerDiscountRepository _customerDiscountRepository;
     private readonly ICommandHandler<Guid, CreateOrderCommand> _createOrderCommandHandler;
     private readonly INotificationService _notificationService;
     private readonly IServiceProvider _serviceProvider;
     private readonly ILogger<OrderForm> _logger;
 
-    private Guid? _selectedContractId;
     private readonly BindingList<CreateOrderItemRow> _items = [];
-    private decimal _maxDiscountPercent;
+    private readonly BindingSource _pagedItemsBindingSource = new();
+
+    private Guid? _selectedContractId;
     private Guid? _selectedCustomerId;
+    private decimal _maxDiscountPercent;
+
+    private bool _isLoading;
+    private int _page = 1;
+
+    private int TotalPages => _items.Count == 0
+        ? 0
+        : (int)Math.Ceiling((double)_items.Count / PageSize);
 
     public event Action? OrderCreated;
 
@@ -40,82 +51,28 @@ public partial class OrderForm : Form
 
         InitializeComponent();
 
-        pbContractValidation.Image = Properties.Resources.exception;
-
-        ConfigureOrderItemsGrid();
-        SubscribeControls();
-        UpdateOrderTotal();
+        
     }
 
     private void SubscribeControls()
     {
         orderItemsPagingUserControl.AddClicked += AddPosition;
+        orderItemsPagingUserControl.PrevClicked += GoToPreviousOrderItemsPage;
+        orderItemsPagingUserControl.NextClicked += GoToNextOrderItemsPage;
     }
 
     protected override void OnLoad(EventArgs e)
     {
         base.OnLoad(e);
-    }
+        
+        btnSave.Enabled = false;
+        pbContractValidation.Image = Properties.Resources.exception;
 
-    private void BtnCancel_Click(object sender, EventArgs e)
-    {
-        Close();
-    }
-
-    private void BtnSelect_Click(object sender, EventArgs e)
-    {
-        SelectContract();
-    }
-
-    private void SelectContract()
-    {
-        var form = _serviceProvider.GetRequiredService<SelectContractForm>();
-
-        if (form.ShowDialog() != DialogResult.OK || form.SelectedContract is null)
-        {
-            return;
-        }
-
-        var contract = form.SelectedContract;
-
-        txtContractNumber.Text = contract.Number;
-        pbContractValidation.Image = Properties.Resources.success;
-        _selectedContractId = contract.Id;
-        _selectedCustomerId = contract.CustomerId;
-
-        _ = RefreshDiscountAsync();
-    }
-    
-    private async Task RefreshDiscountAsync()
-    {
-        if (_selectedCustomerId is null)
-        {
-            _maxDiscountPercent = 0;
-            UpdateOrderTotal();
-            return;
-        }
-
-        var totalWithoutDiscount = CalculateTotalWithoutDiscount();
-
-        // здесь получаешь скидки клиента
-        var result = await _customerDiscountRepository.GetByCustomerIdAsync(
-            new CustomerId(_selectedCustomerId.Value),
-            CancellationToken.None);
-
-        if (result.IsFailure)
-        {
-            _maxDiscountPercent = 0;
-            UpdateOrderTotal();
-            return;
-        }
-
-        _maxDiscountPercent = result.Value
-            .Where(x => totalWithoutDiscount >= x.Discount.MinTotal.Value)
-            .Select(x => x.Discount.Percent.Value)
-            .DefaultIfEmpty(0)
-            .Max();
-
+        ConfigureOrderItemsGrid();
+        SubscribeControls();
+        RefreshOrderItemsGrid();
         UpdateOrderTotal();
+        UpdateOrderItemsPagingState();
     }
 
     private void ConfigureOrderItemsGrid()
@@ -155,7 +112,68 @@ public partial class OrderForm : Form
             Name = "colEndDate"
         });
 
-        dgvOrderItems.DataSource = _items;
+        dgvOrderItems.DataSource = _pagedItemsBindingSource;
+    }
+
+    private void BtnCancel_Click(object sender, EventArgs e)
+    {
+        Close();
+    }
+
+    private void BtnSelect_Click(object sender, EventArgs e)
+    {
+        SelectContract();
+    }
+
+    private void SelectContract()
+    {
+        var form = _serviceProvider.GetRequiredService<SelectContractForm>();
+
+        if (form.ShowDialog() != DialogResult.OK || form.SelectedContract is null)
+        {
+            return;
+        }
+
+        var contract = form.SelectedContract;
+
+        txtContractNumber.Text = contract.Number;
+        pbContractValidation.Image = Properties.Resources.success;
+        _selectedContractId = contract.Id;
+        _selectedCustomerId = contract.CustomerId;
+
+        UpdateSaveButtonState();
+        _ = RefreshDiscountAsync();
+    }
+
+    private async Task RefreshDiscountAsync()
+    {
+        if (_selectedCustomerId is null)
+        {
+            _maxDiscountPercent = 0;
+            UpdateOrderTotal();
+            return;
+        }
+
+        var totalWithoutDiscount = CalculateTotalWithoutDiscount();
+
+        var result = await _customerDiscountRepository.GetByCustomerIdAsync(
+            new CustomerId(_selectedCustomerId.Value),
+            CancellationToken.None);
+
+        if (result.IsFailure)
+        {
+            _maxDiscountPercent = 0;
+            UpdateOrderTotal();
+            return;
+        }
+
+        _maxDiscountPercent = result.Value
+            .Where(x => totalWithoutDiscount >= x.Discount.MinTotal.Value)
+            .Select(x => x.Discount.Percent.Value)
+            .DefaultIfEmpty(0)
+            .Max();
+
+        UpdateOrderTotal();
     }
 
     private void AddPosition()
@@ -190,8 +208,76 @@ public partial class OrderForm : Form
             position.StartDate,
             position.EndDate));
 
+        _page = TotalPages == 0 ? 1 : TotalPages;
+
+        UpdateSaveButtonState();
+        RefreshOrderItemsGrid();
         _ = RefreshDiscountAsync();
         UpdateOrderTotal();
+    }
+
+    private void RefreshOrderItemsGrid()
+    {
+        if (TotalPages == 0)
+        {
+            _page = 1;
+            _pagedItemsBindingSource.DataSource = new List<CreateOrderItemRow>();
+            UpdateOrderItemsPagingState();
+            return;
+        }
+
+        if (_page > TotalPages)
+        {
+            _page = TotalPages;
+        }
+
+        if (_page < 1)
+        {
+            _page = 1;
+        }
+
+        var pageItems = _items
+            .Skip((_page - 1) * PageSize)
+            .Take(PageSize)
+            .ToList();
+
+        _pagedItemsBindingSource.DataSource = pageItems;
+
+        UpdateOrderItemsPagingState();
+    }
+
+    private void UpdateOrderItemsPagingState()
+    {
+        orderItemsPagingUserControl.SetState(
+            _items.Count,
+            _page,
+            TotalPages,
+            _isLoading);
+
+        orderItemsPagingUserControl.SetAddVisible(true);
+        orderItemsPagingUserControl.SetAddEnabled(!_isLoading);
+    }
+
+    private void GoToPreviousOrderItemsPage()
+    {
+        if (_isLoading || _page <= 1)
+        {
+            return;
+        }
+
+        _page--;
+        RefreshOrderItemsGrid();
+    }
+
+    private void GoToNextOrderItemsPage()
+    {
+        if (_isLoading || TotalPages == 0 || _page >= TotalPages)
+        {
+            return;
+        }
+
+        _page++;
+        RefreshOrderItemsGrid();
     }
 
     private void UpdateOrderTotal()
@@ -201,23 +287,23 @@ public partial class OrderForm : Form
 
         lblTotalAmount.Text = totalWithDiscount.ToString("N2");
     }
-    
+
     private static int GetDaysCount(DateOnly startDate, DateOnly endDate)
     {
         return endDate.DayNumber - startDate.DayNumber + 1;
     }
-    
+
     private static decimal CalculatePositionTotal(CreateOrderItemRow item)
     {
         var daysCount = GetDaysCount(item.StartDate, item.EndDate);
         return item.Price * daysCount;
     }
-    
+
     private decimal CalculateTotalWithoutDiscount()
     {
         return _items.Sum(CalculatePositionTotal);
     }
-    
+
     private static decimal ApplyDiscount(decimal total, decimal maxDiscountPercent)
     {
         return total * (1 - maxDiscountPercent / 100m);
@@ -266,7 +352,7 @@ public partial class OrderForm : Form
         DialogResult = DialogResult.OK;
         Close();
     }
-    
+
     private static bool Intersects(
         DateOnly start1,
         DateOnly end1,
@@ -274,5 +360,16 @@ public partial class OrderForm : Form
         DateOnly end2)
     {
         return start1 <= end2 && end1 >= start2;
+    }
+    
+    private bool IsFormValid()
+    {
+        return _selectedContractId is not null
+               && _items.Count > 0;
+    }
+    
+    private void UpdateSaveButtonState()
+    {
+        btnSave.Enabled = IsFormValid();
     }
 }
