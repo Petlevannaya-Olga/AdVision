@@ -329,6 +329,7 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                         tariff.Interval.StartDate,
                         tariff.Interval.EndDate,
                         freeDaysCount,
+                        busyDays.ToList(),
                         freeDaysCount < tariffDays.Count));
                 }
             }
@@ -349,6 +350,7 @@ public class VenueRepository(ApplicationDbContext dbContext, ILogger<VenueReposi
                         t.Interval.StartDate,
                         t.Interval.EndDate,
                         0,
+                        [],
                         false))
                     .ToList();
             }

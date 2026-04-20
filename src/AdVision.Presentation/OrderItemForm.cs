@@ -181,6 +181,13 @@ public partial class OrderItemForm : Form
 			HeaderText = @"Частично доступна на выбранные даты",
 			Name = "colPartial"
 		});
+		
+		dgvVenues.Columns.Add(new DataGridViewTextBoxColumn
+		{
+			DataPropertyName = nameof(AvailableVenueDto.BusyDatesText),
+			HeaderText = @"Занятые даты",
+			Name = "colBusyDates"
+		});
 	}
 
 	private async Task LoadVenueFiltersAsync()
