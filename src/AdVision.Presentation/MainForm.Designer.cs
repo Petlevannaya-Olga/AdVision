@@ -109,11 +109,12 @@ partial class MainForm
 		tableLayoutPanel7 = new TableLayoutPanel();
 		dgvOrders = new DataGridView();
 		dgvOrderItems = new DataGridView();
-		ordersPagingUserControl = new PagingUserControl();
-		panel5 = new Panel();
-		tabPage5 = new TabPage();
 		label25 = new Label();
 		label26 = new Label();
+		ordersPagingUserControl = new PagingUserControl();
+		panel5 = new Panel();
+		btnOrderApply = new Button();
+		btnOrderReset = new Button();
 		label27 = new Label();
 		label28 = new Label();
 		dtpOrderEndDateTo = new DateTimePicker();
@@ -132,8 +133,6 @@ partial class MainForm
 		label35 = new Label();
 		txtOrderContractNumber = new TextBox();
 		label36 = new Label();
-		btnOrderApply = new Button();
-		btnOrderReset = new Button();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -166,7 +165,6 @@ partial class MainForm
 		tabControl1.Controls.Add(tabPage2);
 		tabControl1.Controls.Add(tabPage3);
 		tabControl1.Controls.Add(tabPage4);
-		tabControl1.Controls.Add(tabPage5);
 		tabControl1.Dock = DockStyle.Fill;
 		tabControl1.Location = new Point(0, 0);
 		tabControl1.Name = "tabControl1";
@@ -1048,6 +1046,24 @@ partial class MainForm
 		dgvOrderItems.Size = new Size(770, 221);
 		dgvOrderItems.TabIndex = 1;
 		// 
+		// label25
+		// 
+		label25.AutoSize = true;
+		label25.Location = new Point(3, 0);
+		label25.Name = "label25";
+		label25.Size = new Size(58, 20);
+		label25.TabIndex = 2;
+		label25.Text = "Заказы";
+		// 
+		// label26
+		// 
+		label26.AutoSize = true;
+		label26.Location = new Point(3, 246);
+		label26.Name = "label26";
+		label26.Size = new Size(133, 20);
+		label26.TabIndex = 3;
+		label26.Text = "Позиции в заказе";
+		// 
 		// ordersPagingUserControl
 		// 
 		ordersPagingUserControl.Dock = DockStyle.Fill;
@@ -1084,32 +1100,27 @@ partial class MainForm
 		panel5.Size = new Size(294, 493);
 		panel5.TabIndex = 2;
 		// 
-		// tabPage5
+		// btnOrderApply
 		// 
-		tabPage5.Location = new Point(4, 29);
-		tabPage5.Name = "tabPage5";
-		tabPage5.Size = new Size(1082, 539);
-		tabPage5.TabIndex = 4;
-		tabPage5.Text = "Оплаты";
-		tabPage5.UseVisualStyleBackColor = true;
+		btnOrderApply.FlatStyle = FlatStyle.Popup;
+		btnOrderApply.Location = new Point(149, 337);
+		btnOrderApply.Name = "btnOrderApply";
+		btnOrderApply.Size = new Size(145, 29);
+		btnOrderApply.TabIndex = 34;
+		btnOrderApply.Text = "Применить";
+		btnOrderApply.UseVisualStyleBackColor = true;
+		btnOrderApply.Click += BtnOrderApply_Click;
 		// 
-		// label25
+		// btnOrderReset
 		// 
-		label25.AutoSize = true;
-		label25.Location = new Point(3, 0);
-		label25.Name = "label25";
-		label25.Size = new Size(58, 20);
-		label25.TabIndex = 2;
-		label25.Text = "Заказы";
-		// 
-		// label26
-		// 
-		label26.AutoSize = true;
-		label26.Location = new Point(3, 246);
-		label26.Name = "label26";
-		label26.Size = new Size(133, 20);
-		label26.TabIndex = 3;
-		label26.Text = "Позиции в заказе";
+		btnOrderReset.FlatStyle = FlatStyle.Popup;
+		btnOrderReset.Location = new Point(3, 337);
+		btnOrderReset.Name = "btnOrderReset";
+		btnOrderReset.Size = new Size(143, 29);
+		btnOrderReset.TabIndex = 35;
+		btnOrderReset.Text = "Сбросить";
+		btnOrderReset.UseVisualStyleBackColor = true;
+		btnOrderReset.Click += BtnOrderReset_Click;
 		// 
 		// label27
 		// 
@@ -1262,7 +1273,7 @@ partial class MainForm
 		txtOrderContractNumber.Name = "txtOrderContractNumber";
 		txtOrderContractNumber.Size = new Size(288, 27);
 		txtOrderContractNumber.TabIndex = 17;
-		txtOrderContractNumber.TextChanged += TxtOrderContractNumber_TextChanged;
+		txtOrderContractNumber.TextChanged += this.TxtOrderContractNumber_TextChanged;
 		// 
 		// label36
 		// 
@@ -1272,28 +1283,6 @@ partial class MainForm
 		label36.Size = new Size(127, 20);
 		label36.TabIndex = 16;
 		label36.Text = "Номер договора";
-		// 
-		// btnOrderApply
-		// 
-		btnOrderApply.FlatStyle = FlatStyle.Popup;
-		btnOrderApply.Location = new Point(149, 337);
-		btnOrderApply.Name = "btnOrderApply";
-		btnOrderApply.Size = new Size(145, 29);
-		btnOrderApply.TabIndex = 34;
-		btnOrderApply.Text = "Применить";
-		btnOrderApply.UseVisualStyleBackColor = true;
-		btnOrderApply.Click += BtnOrderApply_Click;
-		// 
-		// btnOrderReset
-		// 
-		btnOrderReset.FlatStyle = FlatStyle.Popup;
-		btnOrderReset.Location = new Point(3, 337);
-		btnOrderReset.Name = "btnOrderReset";
-		btnOrderReset.Size = new Size(143, 29);
-		btnOrderReset.TabIndex = 35;
-		btnOrderReset.Text = "Сбросить";
-		btnOrderReset.UseVisualStyleBackColor = true;
-		btnOrderReset.Click += BtnOrderReset_Click;
 		// 
 		// MainForm
 		// 
@@ -1373,7 +1362,6 @@ partial class MainForm
 	private Button btnVenueTypes;
 	private TabPage tabPage3;
 	private TabPage tabPage4;
-	private TabPage tabPage5;
 	private Button btnCustomers;
 	private Button btnEmployees;
 	private DataGridView dgvDirectories;
