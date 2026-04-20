@@ -39,6 +39,7 @@ public static class DependencyInjection
         services.AddSingleton<ICustomerDiscountRepository, CustomerDiscountRepository>();
         services.AddSingleton<IContractRepository, ContractRepository>();
         services.AddSingleton<IOrderRepository, OrderRepository>();
+        services.AddScoped<IOrderItemRepository, OrderItemRepository>();
         
         // Генераторы
         services.AddTransient<IVenueNameFakeGenerator, VenueNameFakeGenerator>();

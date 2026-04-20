@@ -108,7 +108,7 @@ partial class MainForm
 		tableLayoutPanel6 = new TableLayoutPanel();
 		tableLayoutPanel7 = new TableLayoutPanel();
 		dgvOrders = new DataGridView();
-		dataGridView2 = new DataGridView();
+		dgvOrderItems = new DataGridView();
 		ordersPagingUserControl = new PagingUserControl();
 		panel5 = new Panel();
 		tabPage5 = new TabPage();
@@ -134,7 +134,7 @@ partial class MainForm
 		tableLayoutPanel6.SuspendLayout();
 		tableLayoutPanel7.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)dgvOrders).BeginInit();
-		((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
+		((System.ComponentModel.ISupportInitialize)dgvOrderItems).BeginInit();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -983,7 +983,7 @@ partial class MainForm
 		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
 		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
 		tableLayoutPanel7.Controls.Add(dgvOrders, 0, 0);
-		tableLayoutPanel7.Controls.Add(dataGridView2, 0, 1);
+		tableLayoutPanel7.Controls.Add(dgvOrderItems, 0, 1);
 		tableLayoutPanel7.Dock = DockStyle.Fill;
 		tableLayoutPanel7.Location = new Point(303, 3);
 		tableLayoutPanel7.Name = "tableLayoutPanel7";
@@ -1006,20 +1006,21 @@ partial class MainForm
 		dgvOrders.RowHeadersWidth = 51;
 		dgvOrders.Size = new Size(770, 240);
 		dgvOrders.TabIndex = 0;
+		dgvOrders.SelectionChanged += DgvOrders_SelectionChanged;
 		// 
-		// dataGridView2
+		// dgvOrderItems
 		// 
-		dataGridView2.AllowUserToAddRows = false;
-		dataGridView2.AllowUserToDeleteRows = false;
-		dataGridView2.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-		dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-		dataGridView2.Dock = DockStyle.Fill;
-		dataGridView2.Location = new Point(3, 249);
-		dataGridView2.Name = "dataGridView2";
-		dataGridView2.ReadOnly = true;
-		dataGridView2.RowHeadersWidth = 51;
-		dataGridView2.Size = new Size(770, 241);
-		dataGridView2.TabIndex = 1;
+		dgvOrderItems.AllowUserToAddRows = false;
+		dgvOrderItems.AllowUserToDeleteRows = false;
+		dgvOrderItems.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+		dgvOrderItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+		dgvOrderItems.Dock = DockStyle.Fill;
+		dgvOrderItems.Location = new Point(3, 249);
+		dgvOrderItems.Name = "dgvOrderItems";
+		dgvOrderItems.ReadOnly = true;
+		dgvOrderItems.RowHeadersWidth = 51;
+		dgvOrderItems.Size = new Size(770, 241);
+		dgvOrderItems.TabIndex = 1;
 		// 
 		// ordersPagingUserControl
 		// 
@@ -1080,7 +1081,7 @@ partial class MainForm
 		tableLayoutPanel6.ResumeLayout(false);
 		tableLayoutPanel7.ResumeLayout(false);
 		((System.ComponentModel.ISupportInitialize)dgvOrders).EndInit();
-		((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
+		((System.ComponentModel.ISupportInitialize)dgvOrderItems).EndInit();
 		ResumeLayout(false);
 	}
 
@@ -1167,7 +1168,7 @@ partial class MainForm
 	private TableLayoutPanel tableLayoutPanel6;
 	private TableLayoutPanel tableLayoutPanel7;
 	private DataGridView dgvOrders;
-	private DataGridView dataGridView2;
+	private DataGridView dgvOrderItems;
 	private PagingUserControl ordersPagingUserControl;
 	private Panel panel5;
 }

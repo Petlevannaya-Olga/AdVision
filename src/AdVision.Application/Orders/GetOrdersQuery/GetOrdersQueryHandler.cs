@@ -1,7 +1,5 @@
 using AdVision.Application.Repositories;
 using AdVision.Contracts;
-using AdVision.Domain.Customers;
-using AdVision.Domain.Employees;
 using AdVision.Domain.Orders;
 using CSharpFunctionalExtensions;
 using Shared;
@@ -17,48 +15,21 @@ public sealed class GetOrdersQueryHandler(
         GetOrdersQuery query,
         CancellationToken cancellationToken)
     {
-        Guid? parsedOrderId = null;
-
-        if (!string.IsNullOrWhiteSpace(query.OrderId))
-        {
-            if (!Guid.TryParse(query.OrderId.Trim(), out var orderId))
-            {
-                return CommonErrors.Validation(
-                    "order.id.is.invalid",
-                    "Некорректный идентификатор заказа",
-                    nameof(query.OrderId)).ToErrors();
-            }
-
-            parsedOrderId = orderId;
-        }
-
-        CustomerId? customerId = query.CustomerId.HasValue
-            ? new CustomerId(query.CustomerId.Value)
-            : null;
-
-        EmployeeId? employeeId = query.EmployeeId.HasValue
-            ? new EmployeeId(query.EmployeeId.Value)
-            : null;
-
-        OrderStatus? status = query.Status.HasValue
-            ? MapStatus(query.Status.Value)
-            : null;
-
         var result = await orderRepository.GetPagedAsync(
             query.Page,
             query.PageSize,
-            parsedOrderId,
-            customerId,
-            employeeId,
-            status,
-            query.TotalAmountFrom,
-            query.TotalAmountTo,
-            query.StartDateFrom,
-            query.StartDateTo,
-            query.EndDateFrom,
-            query.EndDateTo,
-            query.OrderBy,
-            query.Descending,
+            null,
+            null,
+            null,
+            null,
+            null,
+            null,
+            DateOnly.MinValue,
+            DateOnly.MaxValue,
+            DateOnly.MinValue,
+            DateOnly.MaxValue,
+            null,
+            false,
             cancellationToken);
 
         if (result.IsFailure)
@@ -88,27 +59,13 @@ public sealed class GetOrdersQueryHandler(
     private static string BuildEmployeeName(Order x)
     {
         var e = x.Contract.Employee;
-
         return $"{e.LastName.Value} {e.FirstName.Value} {e.MiddleName.Value}";
     }
 
     private static string BuildCustomerName(Order x)
     {
         var c = x.Contract.Customer;
-
         return $"{c.LastName.Value} {c.FirstName.Value} {c.MiddleName.Value}";
-    }
-
-    private static OrderStatus MapStatus(OrderStatusDto status)
-    {
-        return status switch
-        {
-            OrderStatusDto.Planned => OrderStatus.Planned,
-            OrderStatusDto.InProgress => OrderStatus.InProgress,
-            OrderStatusDto.Completed => OrderStatus.Completed,
-            OrderStatusDto.Cancelled => OrderStatus.Cancelled,
-            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
-        };
     }
 
     private static OrderStatusDto MapStatus(OrderStatus status)

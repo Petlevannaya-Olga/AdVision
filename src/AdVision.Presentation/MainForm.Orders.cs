@@ -1,5 +1,4 @@
-using AdVision.Application.Customers.GetAllCustomersQuery;
-using AdVision.Application.Employees.GetAllEmployeesQuery;
+using AdVision.Application.OrderItems.GetOrderItemsByIdQuery;
 using AdVision.Application.Orders.GetOrdersQuery;
 using AdVision.Contracts;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,13 +18,9 @@ public partial class MainForm
     {
         dgvOrders.AutoGenerateColumns = false;
         dgvOrders.Columns.Clear();
-
-        dgvOrders.Columns.Add(new DataGridViewTextBoxColumn
-        {
-            DataPropertyName = nameof(OrderDto.Id),
-            HeaderText = @"Номер заказа",
-            Name = "colOrderId"
-        });
+        dgvOrders.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        dgvOrders.MultiSelect = false;
+        dgvOrders.ReadOnly = true;
 
         dgvOrders.Columns.Add(new DataGridViewTextBoxColumn
         {
@@ -79,24 +74,57 @@ public partial class MainForm
         });
     }
 
+    private void ConfigureOrderItemsGrid()
+    {
+        dgvOrderItems.AutoGenerateColumns = false;
+        dgvOrderItems.Columns.Clear();
+        dgvOrderItems.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        dgvOrderItems.MultiSelect = false;
+        dgvOrderItems.ReadOnly = true;
+
+        dgvOrderItems.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(OrderItemDto.VenueName),
+            HeaderText = @"Площадка",
+            Name = "colOrderItemVenue",
+            AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+        });
+
+        dgvOrderItems.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(OrderItemDto.Price),
+            HeaderText = @"Цена",
+            Name = "colOrderItemPrice"
+        });
+
+        dgvOrderItems.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(OrderItemDto.StartDate),
+            HeaderText = @"Дата начала",
+            Name = "colOrderItemStartDate"
+        });
+
+        dgvOrderItems.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(OrderItemDto.EndDate),
+            HeaderText = @"Дата окончания",
+            Name = "colOrderItemEndDate"
+        });
+
+        dgvOrderItems.Columns.Add(new DataGridViewTextBoxColumn
+        {
+            DataPropertyName = nameof(OrderItemDto.Status),
+            HeaderText = @"Статус",
+            Name = "colOrderItemStatus"
+        });
+    }
+
     private async Task LoadOrdersAsync()
     {
-        /*var result = await _ordersQueryHandler.Handle(
+        var result = await _ordersQueryHandler.Handle(
             new GetOrdersQuery(
                 _ordersPage,
-                OrdersPageSize,
-                string.IsNullOrWhiteSpace(txtOrderId.Text) ? null : txtOrderId.Text.Trim(),
-                cbOrderCustomer.SelectedValue is Guid customerId ? customerId : null,
-                cbOrderEmployee.SelectedValue is Guid employeeId ? employeeId : null,
-                cbOrderStatuses.SelectedValue is OrderStatusDto status ? status : null,
-                decimal.TryParse(txtOrderAmountFrom.Text.Trim(), out var amountFrom) ? amountFrom : null,
-                decimal.TryParse(txtOrderAmountTo.Text.Trim(), out var amountTo) ? amountTo : null,
-                DateOnly.FromDateTime(dtpOrderStartDateFrom.Value),
-                DateOnly.FromDateTime(dtpOrderStartDateTo.Value),
-                DateOnly.FromDateTime(dtpOrderEndDateFrom.Value),
-                DateOnly.FromDateTime(dtpOrderEndDateTo.Value),
-                cbOrderSort.SelectedItem?.ToString(),
-                cbOrderDesc.Checked),
+                OrdersPageSize),
             _cts.Token);
 
         if (result.IsFailure)
@@ -108,12 +136,86 @@ public partial class MainForm
         var paged = result.Value;
         _ordersTotalCount = paged.TotalCount;
 
-        dgvOrders.DataSource = new BindingSource
+        _isLoading = true;
+        try
         {
-            DataSource = paged.Items
-        };
+            dgvOrders.DataSource = new BindingSource
+            {
+                DataSource = paged.Items
+            };
+        }
+        finally
+        {
+            _isLoading = false;
+        }
 
-        UpdateOrdersPagingState();*/
+        UpdateOrdersPagingState();
+        await SelectFirstOrderIfAvailableAsync();
+    }
+
+    private async Task LoadOrderItemsAsync(Guid orderId)
+    {
+        var result = await _orderItemsQueryHandler.Handle(
+            new GetOrderItemsByOrderIdQuery(orderId),
+            _cts.Token);
+
+        if (result.IsFailure)
+        {
+            ShowLoadError("Ошибка загрузки позиций заказа", result.Error);
+            dgvOrderItems.DataSource = null;
+            return;
+        }
+
+        dgvOrderItems.DataSource = new BindingSource
+        {
+            DataSource = result.Value
+        };
+    }
+
+    private async Task SelectFirstOrderIfAvailableAsync()
+    {
+        if (dgvOrders.Rows.Count == 0)
+        {
+            dgvOrderItems.DataSource = null;
+            return;
+        }
+
+        var firstRow = dgvOrders.Rows[0];
+
+        firstRow.Selected = true;
+
+        if (firstRow.Cells.Count > 0)
+        {
+            dgvOrders.CurrentCell = firstRow.Cells[0];
+        }
+
+        if (firstRow.DataBoundItem is OrderDto order)
+        {
+            await LoadOrderItemsAsync(order.Id);
+        }
+        else
+        {
+            dgvOrderItems.DataSource = null;
+        }
+    }
+
+    private async void DgvOrders_SelectionChanged(object? sender, EventArgs e)
+    {
+        if (_isLoading)
+        {
+            return;
+        }
+
+        if (dgvOrders.CurrentRow?.DataBoundItem is not OrderDto order)
+        {
+            dgvOrderItems.DataSource = null;
+            return;
+        }
+
+        await RunUiActionAsync(
+            async () => await LoadOrderItemsAsync(order.Id),
+            "Загрузка позиций заказа отменена",
+            "Ошибка загрузки позиций заказа");
     }
 
     private void UpdateOrdersPagingState()
@@ -172,85 +274,50 @@ public partial class MainForm
 
     private async void OnOrderCreated()
     {
-        // await RunUiActionAsync(
-        //     async () =>
-        //     {
-        //         await ResetOrdersFiltersAsync();
-        //         _ordersPage = 1;
-        //         await LoadOrdersAsync();
-        //         UpdateOrdersResetButtonState();
-        //     },
-        //     "Обновление списка заказов отменено",
-        //     "Ошибка обновления списка заказов");
+        await RunUiActionAsync(
+            async () =>
+            {
+                _ordersPage = 1;
+                await LoadOrdersAsync();
+            },
+            "Обновление списка заказов отменено",
+            "Ошибка обновления списка заказов");
     }
-
-    /*private async Task ResetOrdersFiltersAsync()
-    {
-        txtOrderId.Clear();
-        txtOrderAmountFrom.Clear();
-        txtOrderAmountTo.Clear();
-
-        cbOrderEmployee.SelectedIndex = -1;
-        cbOrderCustomer.SelectedIndex = -1;
-        cbOrderStatuses.SelectedIndex = -1;
-        cbOrderSort.SelectedIndex = -1;
-        cbOrderDesc.Checked = false;
-
-        await InitializeOrdersDateFiltersFromDbAsync();
-    }*/
-
-    /*private bool HasActiveOrdersFilters()
-    {
-        return !string.IsNullOrWhiteSpace(txtOrderId.Text) ||
-               !string.IsNullOrWhiteSpace(txtOrderAmountFrom.Text) ||
-               !string.IsNullOrWhiteSpace(txtOrderAmountTo.Text) ||
-               cbOrderEmployee.SelectedIndex >= 0 ||
-               cbOrderCustomer.SelectedIndex >= 0 ||
-               cbOrderStatuses.SelectedIndex >= 0 ||
-               cbOrderSort.SelectedIndex >= 0 ||
-               cbOrderDesc.Checked ||
-               dtpOrderStartDateFrom.Value != _orderStartDateFromDefault ||
-               dtpOrderStartDateTo.Value != _orderStartDateToDefault ||
-               dtpOrderEndDateFrom.Value != _orderEndDateFromDefault ||
-               dtpOrderEndDateTo.Value != _orderEndDateToDefault;
-    }*/
-
-    // private void UpdateOrdersResetButtonState()
-    // {
-    //     btnOrdersReset.Enabled = HasActiveOrdersFilters();
-    // }
 
     private async void BtnOrdersApply_Click(object? sender, EventArgs e)
     {
-        // await RunUiActionAsync(
-        //     async () =>
-        //     {
-        //         _ordersPage = 1;
-        //         await LoadOrdersAsync();
-        //         UpdateOrdersResetButtonState();
-        //     },
-        //     "Применение фильтра заказов отменено",
-        //     "Ошибка применения фильтра заказов");
+        await RunUiActionAsync(
+            async () =>
+            {
+                _ordersPage = 1;
+                await LoadOrdersAsync();
+            },
+            "Применение фильтра заказов отменено",
+            "Ошибка применения фильтра заказов");
     }
 
     private async void BtnOrdersReset_Click(object sender, EventArgs e)
     {
-        
+        await RunUiActionAsync(
+            async () =>
+            {
+                _ordersPage = 1;
+                await LoadOrdersAsync();
+            },
+            "Сброс фильтра заказов отменен",
+            "Ошибка сброса фильтра заказов");
     }
 
     private async Task LoadOrdersFiltersAsync()
     {
-        
     }
 
     private void LoadOrderStatuses()
     {
-        
     }
 
     private void LoadOrderSorting()
     {
-        
     }
 
     private static string MapOrderStatusToRu(OrderStatusDto status)
