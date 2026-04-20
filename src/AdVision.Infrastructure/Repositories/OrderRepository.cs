@@ -51,9 +51,9 @@ public class OrderRepository(
                 .Orders
                 .Include(x => x.Items)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Customer)
+                .ThenInclude(x => x.Customer)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Employee)
+                .ThenInclude(x => x.Employee)
                 .FirstOrDefaultAsync(expression, cancellationToken);
         }
         catch (OperationCanceledException)
@@ -78,9 +78,9 @@ public class OrderRepository(
                 .Orders
                 .Include(x => x.Items)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Customer)
+                .ThenInclude(x => x.Customer)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Employee)
+                .ThenInclude(x => x.Employee)
                 .ToListAsync(cancellationToken);
         }
         catch (OperationCanceledException)
@@ -100,12 +100,9 @@ public class OrderRepository(
     public async Task<Result<PagedResult<Order>, Error>> GetPagedAsync(
         int page,
         int pageSize,
-        Guid? orderId,
         CustomerId? customerId,
         EmployeeId? employeeId,
         OrderStatus? status,
-        decimal? totalAmountFrom,
-        decimal? totalAmountTo,
         DateOnly startDateFrom,
         DateOnly startDateTo,
         DateOnly endDateFrom,
@@ -117,17 +114,11 @@ public class OrderRepository(
         try
         {
             IQueryable<Order> query = dbContext.Orders
-                .Include(x => x.Items)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Customer)
+                .ThenInclude(x => x.Customer)
                 .Include(x => x.Contract)
-                    .ThenInclude(x => x.Employee);
-
-            if (orderId.HasValue)
-            {
-                var domainOrderId = new OrderId(orderId.Value);
-                query = query.Where(x => x.Id == domainOrderId);
-            }
+                .ThenInclude(x => x.Employee)
+                .Include(x => x.Items);
 
             if (customerId is not null)
             {
@@ -144,27 +135,15 @@ public class OrderRepository(
                 query = query.Where(x => x.Status == status.Value);
             }
 
-            if (totalAmountFrom.HasValue)
-            {
-                query = query.Where(x => x.TotalAmount.Value >= totalAmountFrom.Value);
-            }
-
-            if (totalAmountTo.HasValue)
-            {
-                query = query.Where(x => x.TotalAmount.Value <= totalAmountTo.Value);
-            }
+            query = query.Where(x =>
+                x.Items.Any() &&
+                x.Items.Min(i => i.Period.StartDate) >= startDateFrom &&
+                x.Items.Min(i => i.Period.StartDate) <= startDateTo);
 
             query = query.Where(x =>
-                !x.Items.Any() ||
-                x.Items.Any(i =>
-                    i.Period.StartDate >= startDateFrom &&
-                    i.Period.StartDate <= startDateTo));
-
-            query = query.Where(x =>
-                !x.Items.Any() ||
-                x.Items.Any(i =>
-                    i.Period.EndDate >= endDateFrom &&
-                    i.Period.EndDate <= endDateTo));
+                x.Items.Any() &&
+                x.Items.Max(i => i.Period.EndDate) >= endDateFrom &&
+                x.Items.Max(i => i.Period.EndDate) <= endDateTo);
 
             query = ApplySorting(query, orderBy, descending);
 
@@ -301,5 +280,160 @@ public class OrderRepository(
 
             _ => query.OrderBy(x => x.Id)
         };
+    }
+    
+    public async Task<Result<IReadOnlyList<OrderStatusDto>, Error>> GetDistinctStatusesAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var statuses = await dbContext.Orders
+                .AsNoTracking()
+                .Select(x => x.Status)
+                .Distinct()
+                .OrderBy(x => x)
+                .ToListAsync(cancellationToken);
+
+            var result = statuses
+                .Select(x => x switch
+                {
+                    OrderStatus.Planned => OrderStatusDto.Planned,
+                    OrderStatus.InProgress => OrderStatusDto.InProgress,
+                    OrderStatus.Completed => OrderStatusDto.Completed,
+                    OrderStatus.Cancelled => OrderStatusDto.Cancelled,
+                    _ => throw new ArgumentOutOfRangeException(nameof(x), x, null)
+                })
+                .ToList();
+
+            return Result.Success<IReadOnlyList<OrderStatusDto>, Error>(result);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения статусов заказов была отменена");
+            return CommonErrors.OperationCancelled("get.order.statuses.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка получения статусов заказов");
+            return CommonErrors.Db(
+                "get.order.statuses.from.db.exception",
+                "Ошибка получения статусов заказов");
+        }
+    }
+    
+    public async Task<Result<IReadOnlyList<CustomerDto>, Error>> GetDistinctCustomersAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var customers = await dbContext.Orders
+                .AsNoTracking()
+                .Include(x => x.Contract)
+                .ThenInclude(x => x.Customer)
+                .Select(x => x.Contract.Customer)
+                .Distinct()
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .ThenBy(x => x.MiddleName)
+                .Select(x => new CustomerDto(
+                    x.Id.Value,
+                    x.LastName.Value,
+                    x.FirstName.Value,
+                    x.MiddleName.Value,
+                    $"{x.LastName.Value} {x.FirstName.Value} {x.MiddleName.Value}"))
+                .ToListAsync(cancellationToken);
+
+            return Result.Success<IReadOnlyList<CustomerDto>, Error>(customers);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения заказчиков из заказов была отменена");
+            return CommonErrors.OperationCancelled("get.order.customers.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка получения заказчиков из заказов");
+            return CommonErrors.Db(
+                "get.order.customers.from.db.exception",
+                "Ошибка получения заказчиков из заказов");
+        }
+    }
+    
+    public async Task<Result<IReadOnlyList<EmployeeOrderDto>, Error>> GetDistinctEmployeesAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var employees = await dbContext.Orders
+                .AsNoTracking()
+                .Include(x => x.Contract)
+                .ThenInclude(x => x.Employee)
+                .Select(x => x.Contract.Employee)
+                .Distinct()
+                .OrderBy(x => x.LastName)
+                .ThenBy(x => x.FirstName)
+                .ThenBy(x => x.MiddleName)
+                .Select(x => new EmployeeOrderDto(
+                    x.Id.Value,
+                    x.LastName.Value,
+                    x.FirstName.Value,
+                    x.MiddleName.Value))
+                .ToListAsync(cancellationToken);
+
+            return Result.Success<IReadOnlyList<EmployeeOrderDto>, Error>(employees);
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения исполнителей из заказов была отменена");
+            return CommonErrors.OperationCancelled("get.order.employees.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка получения исполнителей из заказов");
+            return CommonErrors.Db(
+                "get.order.employees.from.db.exception",
+                "Ошибка получения исполнителей из заказов");
+        }
+    }
+    
+    public async Task<Result<OrderDateBoundsDto?, Error>> GetDateBoundsAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            var orderItems = await dbContext.OrderItems
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            if (orderItems.Count == 0)
+            {
+                return Result.Success<OrderDateBoundsDto?, Error>(null);
+            }
+
+            var startDateMin = orderItems.Min(x => x.Period.StartDate);
+            var startDateMax = orderItems.Max(x => x.Period.StartDate);
+
+            var endDateMin = orderItems.Min(x => x.Period.EndDate);
+            var endDateMax = orderItems.Max(x => x.Period.EndDate);
+
+            return Result.Success<OrderDateBoundsDto?, Error>(
+                new OrderDateBoundsDto(
+                    startDateMin,
+                    startDateMax,
+                    endDateMin,
+                    endDateMax));
+        }
+        catch (OperationCanceledException)
+        {
+            logger.LogError("Операция получения границ дат заказов была отменена");
+            return CommonErrors.OperationCancelled("get.order.date.bounds.was.canceled");
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Ошибка при получении границ дат заказов");
+            return CommonErrors.Db(
+                "get.order.date.bounds.from.db.exception",
+                "Ошибка при получении границ дат заказов");
+        }
     }
 }

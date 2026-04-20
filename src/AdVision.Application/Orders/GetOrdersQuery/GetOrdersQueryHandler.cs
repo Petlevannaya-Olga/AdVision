@@ -1,5 +1,7 @@
 using AdVision.Application.Repositories;
 using AdVision.Contracts;
+using AdVision.Domain.Customers;
+using AdVision.Domain.Employees;
 using AdVision.Domain.Orders;
 using CSharpFunctionalExtensions;
 using Shared;
@@ -15,21 +17,30 @@ public sealed class GetOrdersQueryHandler(
         GetOrdersQuery query,
         CancellationToken cancellationToken)
     {
+        CustomerId? customerId = query.CustomerId.HasValue
+            ? new CustomerId(query.CustomerId.Value)
+            : null;
+
+        EmployeeId? employeeId = query.EmployeeId.HasValue
+            ? new EmployeeId(query.EmployeeId.Value)
+            : null;
+
+        OrderStatus? status = query.Status.HasValue
+            ? MapStatus(query.Status.Value)
+            : null;
+
         var result = await orderRepository.GetPagedAsync(
             query.Page,
             query.PageSize,
-            null,
-            null,
-            null,
-            null,
-            null,
-            null,
-            DateOnly.MinValue,
-            DateOnly.MaxValue,
-            DateOnly.MinValue,
-            DateOnly.MaxValue,
-            null,
-            false,
+            customerId,
+            employeeId,
+            status,
+            query.StartDateFrom,
+            query.StartDateTo,
+            query.EndDateFrom,
+            query.EndDateTo,
+            query.OrderBy,
+            query.Descending,
             cancellationToken);
 
         if (result.IsFailure)
@@ -66,6 +77,18 @@ public sealed class GetOrdersQueryHandler(
     {
         var c = x.Contract.Customer;
         return $"{c.LastName.Value} {c.FirstName.Value} {c.MiddleName.Value}";
+    }
+
+    private static OrderStatus MapStatus(OrderStatusDto status)
+    {
+        return status switch
+        {
+            OrderStatusDto.Planned => OrderStatus.Planned,
+            OrderStatusDto.InProgress => OrderStatus.InProgress,
+            OrderStatusDto.Completed => OrderStatus.Completed,
+            OrderStatusDto.Cancelled => OrderStatus.Cancelled,
+            _ => throw new ArgumentOutOfRangeException(nameof(status), status, null)
+        };
     }
 
     private static OrderStatusDto MapStatus(OrderStatus status)

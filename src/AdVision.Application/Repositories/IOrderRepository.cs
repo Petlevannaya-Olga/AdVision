@@ -21,12 +21,9 @@ public interface IOrderRepository
     Task<Result<PagedResult<Order>, Error>> GetPagedAsync(
         int page,
         int pageSize,
-        Guid? orderId,
         CustomerId? customerId,
         EmployeeId? employeeId,
         OrderStatus? status,
-        decimal? totalAmountFrom,
-        decimal? totalAmountTo,
         DateOnly startDateFrom,
         DateOnly startDateTo,
         DateOnly endDateFrom,
@@ -36,4 +33,16 @@ public interface IOrderRepository
         CancellationToken cancellationToken);
 
     Task<Result<OrderFilterBoundsDto?, Error>> GetFilterBoundsAsync(CancellationToken cancellationToken);
+    
+    Task<Result<IReadOnlyList<OrderStatusDto>, Error>> GetDistinctStatusesAsync(
+        CancellationToken cancellationToken);
+    
+    Task<Result<IReadOnlyList<EmployeeOrderDto>, Error>> GetDistinctEmployeesAsync(
+        CancellationToken cancellationToken);
+
+    Task<Result<IReadOnlyList<CustomerDto>, Error>> GetDistinctCustomersAsync(
+        CancellationToken cancellationToken);
+    
+    Task<Result<OrderDateBoundsDto?, Error>> GetDateBoundsAsync(
+        CancellationToken cancellationToken);
 }

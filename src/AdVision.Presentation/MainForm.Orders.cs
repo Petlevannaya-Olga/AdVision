@@ -1,3 +1,5 @@
+using AdVision.Application.Customers.GetAllCustomersQuery;
+using AdVision.Application.Employees.GetAllEmployeesQuery;
 using AdVision.Application.OrderItems.GetOrderItemsByIdQuery;
 using AdVision.Application.Orders.GetOrdersQuery;
 using AdVision.Contracts;
@@ -124,7 +126,16 @@ public partial class MainForm
 		var result = await _ordersQueryHandler.Handle(
 			new GetOrdersQuery(
 				_ordersPage,
-				OrdersPageSize),
+				OrdersPageSize,
+				cbOrderCustomers.SelectedValue is Guid customerId ? customerId : null,
+				cbOrderEmployees.SelectedValue is Guid employeeId ? employeeId : null,
+				cbOrderStatuses.SelectedValue is OrderStatusDto status ? status : null,
+				DateOnly.FromDateTime(dtpOrderStartDateFrom.Value),
+				DateOnly.FromDateTime(dtpOrderStartDateTo.Value),
+				DateOnly.FromDateTime(dtpOrderEndDateFrom.Value),
+				DateOnly.FromDateTime(dtpOrderEndDateTo.Value),
+				cbOrderStatuses.SelectedItem?.ToString(),
+				false),
 			_cts.Token);
 
 		if (result.IsFailure)
@@ -279,6 +290,8 @@ public partial class MainForm
 			{
 				_ordersPage = 1;
 				await LoadOrdersAsync();
+				await LoadOrderCustomersAsync();
+				await LoadOrderEmployeesAsync();
 			},
 			"Обновление списка заказов отменено",
 			"Ошибка обновления списка заказов");
@@ -308,10 +321,6 @@ public partial class MainForm
 			"Ошибка сброса фильтра заказов");
 	}
 
-	private async Task LoadOrdersFiltersAsync()
-	{
-	}
-
 	private void LoadOrderStatuses()
 	{
 	}
@@ -334,7 +343,7 @@ public partial class MainForm
 
 	private async Task InitializeOrdersDateFiltersFromDbAsync()
 	{
-		var result = await _orderRepository.GetFilterBoundsAsync(_cts.Token);
+		var result = await _orderRepository.GetDateBoundsAsync(_cts.Token);
 
 		if (result.IsFailure)
 		{
@@ -361,10 +370,10 @@ public partial class MainForm
 			_orderEndDateToDefault = bounds.EndDateMax?.ToDateTime(TimeOnly.MinValue) ?? DateTime.Today;
 		}
 
-		// dtpOrderStartDateFrom.Value = _orderStartDateFromDefault;
-		// dtpOrderStartDateTo.Value = _orderStartDateToDefault;
-		// dtpOrderEndDateFrom.Value = _orderEndDateFromDefault;
-		// dtpOrderEndDateTo.Value = _orderEndDateToDefault;
+		dtpOrderStartDateFrom.Value = _orderStartDateFromDefault;
+		dtpOrderStartDateTo.Value = _orderStartDateToDefault;
+		dtpOrderEndDateFrom.Value = _orderEndDateFromDefault;
+		dtpOrderEndDateTo.Value = _orderEndDateToDefault;
 	}
 
 	private void TxtOrderContractNumber_TextChanged(object sender, EventArgs e)
@@ -407,15 +416,132 @@ public partial class MainForm
 
 	}
 
-	private void BtnOrderReset_Click(object sender, EventArgs e)
+	private async void BtnOrderReset_Click(object sender, EventArgs e)
 	{
-
+		await RunUiActionAsync(
+			async () =>
+			{
+				await ResetOrdersFiltersAsync();
+				_ordersPage = 1;
+				await LoadOrdersAsync();
+				UpdateOrdersResetButtonState();
+			},
+			"Сброс фильтра заказов отменен",
+			"Ошибка сброса фильтра заказов");
 	}
 
-	private void BtnOrderApply_Click(object sender, EventArgs e)
+	private async void BtnOrderApply_Click(object sender, EventArgs e)
 	{
+		await RunUiActionAsync(
+			async () =>
+			{
+				_ordersPage = 1;
+				await LoadOrdersAsync();
+				UpdateOrdersResetButtonState();
+			},
+			"Применение фильтра заказов отменено",
+			"Ошибка применения фильтра заказов");
+	}
+	
+	private async Task LoadOrdersFiltersAsync()
+	{
+		await LoadOrderCustomersAsync();
+		await LoadOrderEmployeesAsync();
+		await LoadOrderStatusesAsync();
+		await InitializeOrdersDateFiltersFromDbAsync();
 
+		cbOrderCustomers.SelectedIndex = -1;
+		cbOrderEmployees.SelectedIndex = -1;
+		cbOrderStatuses.SelectedIndex = -1;
+		cbOrderStatuses.SelectedIndex = -1;
+
+		UpdateOrdersResetButtonState();
+	}
+	
+	private async Task LoadOrderCustomersAsync()
+	{
+		cbOrderCustomers.DataSource = null;
+
+		var result = await _orderRepository.GetDistinctCustomersAsync(_cts.Token);
+
+		if (result.IsFailure)
+		{
+			ShowLoadError("Ошибка загрузки заказчиков", new[] { result.Error });
+			return;
+		}
+
+		cbOrderCustomers.DataSource = result.Value;
+		cbOrderCustomers.DisplayMember = nameof(CustomerDto.FullName);
+		cbOrderCustomers.ValueMember = nameof(CustomerDto.Id);
+		cbOrderCustomers.SelectedIndex = -1;
+	}
+	
+	private async Task LoadOrderEmployeesAsync()
+	{
+		cbOrderEmployees.DataSource = null;
+
+		var result = await _orderRepository.GetDistinctEmployeesAsync(_cts.Token);
+
+		if (result.IsFailure)
+		{
+			ShowLoadError("Ошибка загрузки исполнителей", new[] { result.Error });
+			return;
+		}
+
+		cbOrderEmployees.DataSource = result.Value;
+		cbOrderEmployees.DisplayMember = nameof(EmployeeDto.FullName);
+		cbOrderEmployees.ValueMember = nameof(EmployeeDto.Id);
+		cbOrderEmployees.SelectedIndex = -1;
 	}
 
+	private async Task LoadOrderStatusesAsync()
+	{
+		cbOrderStatuses.DataSource = null;
+
+		var result = await _orderRepository.GetDistinctStatusesAsync(_cts.Token);
+
+		if (result.IsFailure)
+		{
+			ShowLoadError("Ошибка загрузки статусов заказов", new[] { result.Error });
+			return;
+		}
+
+		var statuses = result.Value
+			.Select(x => new
+			{
+				Value = x,
+				Name = MapOrderStatusToRu(x)
+			})
+			.ToList();
+
+		cbOrderStatuses.DataSource = statuses;
+		cbOrderStatuses.DisplayMember = "Name";
+		cbOrderStatuses.ValueMember = "Value";
+		cbOrderStatuses.SelectedIndex = -1;
+	}
+	
+	private void UpdateOrdersResetButtonState()
+	{
+		btnOrderReset.Enabled =
+			cbOrderCustomers.SelectedIndex >= 0 ||
+			cbOrderEmployees.SelectedIndex >= 0 ||
+			cbOrderStatuses.SelectedIndex >= 0 ||
+			cbOrderStatuses.SelectedIndex >= 0 ||
+			dtpOrderStartDateFrom.Value != _orderStartDateFromDefault ||
+			dtpOrderStartDateTo.Value != _orderStartDateToDefault ||
+			dtpOrderEndDateFrom.Value != _orderEndDateFromDefault ||
+			dtpOrderEndDateTo.Value != _orderEndDateToDefault;
+	}
+	
+	private async Task ResetOrdersFiltersAsync()
+	{
+		cbOrderCustomers.SelectedIndex = -1;
+		cbOrderEmployees.SelectedIndex = -1;
+		cbOrderStatuses.SelectedIndex = -1;
+		cbOrderStatuses.SelectedIndex = -1;
+
+		await InitializeOrdersDateFiltersFromDbAsync();
+	}
+	
 	#endregion
 }

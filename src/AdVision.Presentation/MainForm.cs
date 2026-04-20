@@ -295,7 +295,7 @@ public partial class MainForm : Form
 					//await ResetOrdersFiltersAsync();
 					await InitializeOrdersDateFiltersFromDbAsync();
 					await LoadOrdersFiltersAsync();
-					LoadOrderStatuses();
+					await LoadOrderStatusesAsync();
 					LoadOrderSorting();
 					ConfigureOrdersGrid();
 					ConfigureOrderItemsGrid();
