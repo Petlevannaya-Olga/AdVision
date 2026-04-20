@@ -15,7 +15,8 @@ public class CustomerDiscountRepository(
     ApplicationDbContext dbContext,
     ILogger<CustomerDiscountRepository> logger) : ICustomerDiscountRepository
 {
-    public async Task<Result<Guid, Error>> AddAsync(CustomerDiscount customerDiscount, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Error>> AddAsync(CustomerDiscount customerDiscount,
+        CancellationToken cancellationToken)
     {
         try
         {
@@ -122,6 +123,7 @@ public class CustomerDiscountRepository(
         {
             return await dbContext
                 .CustomerDiscounts
+                .Include(x => x.Discount)
                 .Where(x => x.CustomerId == customerId)
                 .ToListAsync(cancellationToken);
         }

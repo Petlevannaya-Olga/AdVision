@@ -112,6 +112,28 @@ partial class MainForm
 		ordersPagingUserControl = new PagingUserControl();
 		panel5 = new Panel();
 		tabPage5 = new TabPage();
+		label25 = new Label();
+		label26 = new Label();
+		label27 = new Label();
+		label28 = new Label();
+		dtpOrderEndDateTo = new DateTimePicker();
+		label29 = new Label();
+		dtpOrderStartDateTo = new DateTimePicker();
+		label30 = new Label();
+		label31 = new Label();
+		dtpOrderEndDateFrom = new DateTimePicker();
+		label32 = new Label();
+		dtpOrderStartDateFrom = new DateTimePicker();
+		label33 = new Label();
+		cbOrderCustomers = new ComboBox();
+		label34 = new Label();
+		cbOrderStatuses = new ComboBox();
+		cbOrderEmployees = new ComboBox();
+		label35 = new Label();
+		txtOrderContractNumber = new TextBox();
+		label36 = new Label();
+		btnOrderApply = new Button();
+		btnOrderReset = new Button();
 		tabControl1.SuspendLayout();
 		tabPage1.SuspendLayout();
 		tableLayoutPanel2.SuspendLayout();
@@ -135,6 +157,7 @@ partial class MainForm
 		tableLayoutPanel7.SuspendLayout();
 		((System.ComponentModel.ISupportInitialize)dgvOrders).BeginInit();
 		((System.ComponentModel.ISupportInitialize)dgvOrderItems).BeginInit();
+		panel5.SuspendLayout();
 		SuspendLayout();
 		// 
 		// tabControl1
@@ -981,14 +1004,17 @@ partial class MainForm
 		// 
 		tableLayoutPanel7.ColumnCount = 1;
 		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
-		tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-		tableLayoutPanel7.Controls.Add(dgvOrders, 0, 0);
-		tableLayoutPanel7.Controls.Add(dgvOrderItems, 0, 1);
+		tableLayoutPanel7.Controls.Add(dgvOrders, 0, 1);
+		tableLayoutPanel7.Controls.Add(dgvOrderItems, 0, 3);
+		tableLayoutPanel7.Controls.Add(label25, 0, 0);
+		tableLayoutPanel7.Controls.Add(label26, 0, 2);
 		tableLayoutPanel7.Dock = DockStyle.Fill;
 		tableLayoutPanel7.Location = new Point(303, 3);
 		tableLayoutPanel7.Name = "tableLayoutPanel7";
-		tableLayoutPanel7.RowCount = 2;
+		tableLayoutPanel7.RowCount = 4;
+		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
 		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
 		tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
 		tableLayoutPanel7.Size = new Size(776, 493);
 		tableLayoutPanel7.TabIndex = 0;
@@ -1000,11 +1026,11 @@ partial class MainForm
 		dgvOrders.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		dgvOrders.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		dgvOrders.Dock = DockStyle.Fill;
-		dgvOrders.Location = new Point(3, 3);
+		dgvOrders.Location = new Point(3, 23);
 		dgvOrders.Name = "dgvOrders";
 		dgvOrders.ReadOnly = true;
 		dgvOrders.RowHeadersWidth = 51;
-		dgvOrders.Size = new Size(770, 240);
+		dgvOrders.Size = new Size(770, 220);
 		dgvOrders.TabIndex = 0;
 		dgvOrders.SelectionChanged += DgvOrders_SelectionChanged;
 		// 
@@ -1015,11 +1041,11 @@ partial class MainForm
 		dgvOrderItems.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
 		dgvOrderItems.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
 		dgvOrderItems.Dock = DockStyle.Fill;
-		dgvOrderItems.Location = new Point(3, 249);
+		dgvOrderItems.Location = new Point(3, 269);
 		dgvOrderItems.Name = "dgvOrderItems";
 		dgvOrderItems.ReadOnly = true;
 		dgvOrderItems.RowHeadersWidth = 51;
-		dgvOrderItems.Size = new Size(770, 241);
+		dgvOrderItems.Size = new Size(770, 221);
 		dgvOrderItems.TabIndex = 1;
 		// 
 		// ordersPagingUserControl
@@ -1032,6 +1058,26 @@ partial class MainForm
 		// 
 		// panel5
 		// 
+		panel5.Controls.Add(btnOrderApply);
+		panel5.Controls.Add(btnOrderReset);
+		panel5.Controls.Add(label27);
+		panel5.Controls.Add(label28);
+		panel5.Controls.Add(dtpOrderEndDateTo);
+		panel5.Controls.Add(label29);
+		panel5.Controls.Add(dtpOrderStartDateTo);
+		panel5.Controls.Add(label30);
+		panel5.Controls.Add(label31);
+		panel5.Controls.Add(dtpOrderEndDateFrom);
+		panel5.Controls.Add(label32);
+		panel5.Controls.Add(dtpOrderStartDateFrom);
+		panel5.Controls.Add(label33);
+		panel5.Controls.Add(cbOrderCustomers);
+		panel5.Controls.Add(label34);
+		panel5.Controls.Add(cbOrderStatuses);
+		panel5.Controls.Add(cbOrderEmployees);
+		panel5.Controls.Add(label35);
+		panel5.Controls.Add(txtOrderContractNumber);
+		panel5.Controls.Add(label36);
 		panel5.Dock = DockStyle.Fill;
 		panel5.Location = new Point(3, 3);
 		panel5.Name = "panel5";
@@ -1046,6 +1092,208 @@ partial class MainForm
 		tabPage5.TabIndex = 4;
 		tabPage5.Text = "Оплаты";
 		tabPage5.UseVisualStyleBackColor = true;
+		// 
+		// label25
+		// 
+		label25.AutoSize = true;
+		label25.Location = new Point(3, 0);
+		label25.Name = "label25";
+		label25.Size = new Size(58, 20);
+		label25.TabIndex = 2;
+		label25.Text = "Заказы";
+		// 
+		// label26
+		// 
+		label26.AutoSize = true;
+		label26.Location = new Point(3, 246);
+		label26.Name = "label26";
+		label26.Size = new Size(133, 20);
+		label26.TabIndex = 3;
+		label26.Text = "Позиции в заказе";
+		// 
+		// label27
+		// 
+		label27.AutoSize = true;
+		label27.Location = new Point(146, 246);
+		label27.Name = "label27";
+		label27.Size = new Size(26, 20);
+		label27.TabIndex = 33;
+		label27.Text = "до";
+		// 
+		// label28
+		// 
+		label28.AutoSize = true;
+		label28.Location = new Point(146, 192);
+		label28.Name = "label28";
+		label28.Size = new Size(26, 20);
+		label28.TabIndex = 32;
+		label28.Text = "до";
+		// 
+		// dtpOrderEndDateTo
+		// 
+		dtpOrderEndDateTo.Format = DateTimePickerFormat.Short;
+		dtpOrderEndDateTo.Location = new Point(173, 242);
+		dtpOrderEndDateTo.Name = "dtpOrderEndDateTo";
+		dtpOrderEndDateTo.Size = new Size(118, 27);
+		dtpOrderEndDateTo.TabIndex = 31;
+		dtpOrderEndDateTo.ValueChanged += DtpOrderEndDateTo_ValueChanged;
+		// 
+		// label29
+		// 
+		label29.AutoSize = true;
+		label29.Location = new Point(3, 246);
+		label29.Name = "label29";
+		label29.Size = new Size(24, 20);
+		label29.TabIndex = 29;
+		label29.Text = "от";
+		// 
+		// dtpOrderStartDateTo
+		// 
+		dtpOrderStartDateTo.Format = DateTimePickerFormat.Short;
+		dtpOrderStartDateTo.Location = new Point(173, 188);
+		dtpOrderStartDateTo.Name = "dtpOrderStartDateTo";
+		dtpOrderStartDateTo.Size = new Size(118, 27);
+		dtpOrderStartDateTo.TabIndex = 30;
+		dtpOrderStartDateTo.ValueChanged += DtpOrderStartDateTo_ValueChanged;
+		// 
+		// label30
+		// 
+		label30.AutoSize = true;
+		label30.Location = new Point(3, 192);
+		label30.Name = "label30";
+		label30.Size = new Size(24, 20);
+		label30.TabIndex = 28;
+		label30.Text = "от";
+		// 
+		// label31
+		// 
+		label31.AutoSize = true;
+		label31.Location = new Point(3, 271);
+		label31.Name = "label31";
+		label31.Size = new Size(52, 20);
+		label31.TabIndex = 27;
+		label31.Text = "Статус";
+		// 
+		// dtpOrderEndDateFrom
+		// 
+		dtpOrderEndDateFrom.Format = DateTimePickerFormat.Short;
+		dtpOrderEndDateFrom.Location = new Point(28, 242);
+		dtpOrderEndDateFrom.Name = "dtpOrderEndDateFrom";
+		dtpOrderEndDateFrom.Size = new Size(116, 27);
+		dtpOrderEndDateFrom.TabIndex = 26;
+		dtpOrderEndDateFrom.ValueChanged += DtpOrderEndDateFrom_ValueChanged;
+		// 
+		// label32
+		// 
+		label32.AutoSize = true;
+		label32.Location = new Point(3, 218);
+		label32.Name = "label32";
+		label32.Size = new Size(121, 20);
+		label32.TabIndex = 24;
+		label32.Text = "Дата окончания";
+		// 
+		// dtpOrderStartDateFrom
+		// 
+		dtpOrderStartDateFrom.Format = DateTimePickerFormat.Short;
+		dtpOrderStartDateFrom.Location = new Point(28, 188);
+		dtpOrderStartDateFrom.Name = "dtpOrderStartDateFrom";
+		dtpOrderStartDateFrom.Size = new Size(116, 27);
+		dtpOrderStartDateFrom.TabIndex = 25;
+		dtpOrderStartDateFrom.ValueChanged += DtpOrderStartDateFrom_ValueChanged;
+		// 
+		// label33
+		// 
+		label33.AutoSize = true;
+		label33.Location = new Point(3, 163);
+		label33.Name = "label33";
+		label33.Size = new Size(94, 20);
+		label33.TabIndex = 23;
+		label33.Text = "Дата начала";
+		// 
+		// cbOrderCustomers
+		// 
+		cbOrderCustomers.FormattingEnabled = true;
+		cbOrderCustomers.Location = new Point(3, 132);
+		cbOrderCustomers.Name = "cbOrderCustomers";
+		cbOrderCustomers.Size = new Size(288, 28);
+		cbOrderCustomers.TabIndex = 22;
+		cbOrderCustomers.SelectedIndexChanged += CbOrderCustomers_SelectedIndexChanged;
+		// 
+		// label34
+		// 
+		label34.AutoSize = true;
+		label34.Location = new Point(3, 109);
+		label34.Name = "label34";
+		label34.Size = new Size(71, 20);
+		label34.TabIndex = 19;
+		label34.Text = "Заказчик";
+		// 
+		// cbOrderStatuses
+		// 
+		cbOrderStatuses.FormattingEnabled = true;
+		cbOrderStatuses.Location = new Point(3, 294);
+		cbOrderStatuses.Name = "cbOrderStatuses";
+		cbOrderStatuses.Size = new Size(288, 28);
+		cbOrderStatuses.TabIndex = 21;
+		cbOrderStatuses.SelectedIndexChanged += CbOrderStatuses_SelectedIndexChanged;
+		// 
+		// cbOrderEmployees
+		// 
+		cbOrderEmployees.FormattingEnabled = true;
+		cbOrderEmployees.Location = new Point(3, 77);
+		cbOrderEmployees.Name = "cbOrderEmployees";
+		cbOrderEmployees.Size = new Size(288, 28);
+		cbOrderEmployees.TabIndex = 20;
+		cbOrderEmployees.SelectedIndexChanged += CbOrderEmployees_SelectedIndexChanged;
+		// 
+		// label35
+		// 
+		label35.AutoSize = true;
+		label35.Location = new Point(3, 54);
+		label35.Name = "label35";
+		label35.Size = new Size(101, 20);
+		label35.TabIndex = 18;
+		label35.Text = "Исполнитель";
+		// 
+		// txtOrderContractNumber
+		// 
+		txtOrderContractNumber.BorderStyle = BorderStyle.FixedSingle;
+		txtOrderContractNumber.Location = new Point(3, 23);
+		txtOrderContractNumber.Name = "txtOrderContractNumber";
+		txtOrderContractNumber.Size = new Size(288, 27);
+		txtOrderContractNumber.TabIndex = 17;
+		txtOrderContractNumber.TextChanged += TxtOrderContractNumber_TextChanged;
+		// 
+		// label36
+		// 
+		label36.AutoSize = true;
+		label36.Location = new Point(3, 0);
+		label36.Name = "label36";
+		label36.Size = new Size(127, 20);
+		label36.TabIndex = 16;
+		label36.Text = "Номер договора";
+		// 
+		// btnOrderApply
+		// 
+		btnOrderApply.FlatStyle = FlatStyle.Popup;
+		btnOrderApply.Location = new Point(149, 337);
+		btnOrderApply.Name = "btnOrderApply";
+		btnOrderApply.Size = new Size(145, 29);
+		btnOrderApply.TabIndex = 34;
+		btnOrderApply.Text = "Применить";
+		btnOrderApply.UseVisualStyleBackColor = true;
+		btnOrderApply.Click += BtnOrderApply_Click;
+		// 
+		// btnOrderReset
+		// 
+		btnOrderReset.FlatStyle = FlatStyle.Popup;
+		btnOrderReset.Location = new Point(3, 337);
+		btnOrderReset.Name = "btnOrderReset";
+		btnOrderReset.Size = new Size(143, 29);
+		btnOrderReset.TabIndex = 35;
+		btnOrderReset.Text = "Сбросить";
+		btnOrderReset.UseVisualStyleBackColor = true;
+		btnOrderReset.Click += BtnOrderReset_Click;
 		// 
 		// MainForm
 		// 
@@ -1080,8 +1328,11 @@ partial class MainForm
 		tabPage4.ResumeLayout(false);
 		tableLayoutPanel6.ResumeLayout(false);
 		tableLayoutPanel7.ResumeLayout(false);
+		tableLayoutPanel7.PerformLayout();
 		((System.ComponentModel.ISupportInitialize)dgvOrders).EndInit();
 		((System.ComponentModel.ISupportInitialize)dgvOrderItems).EndInit();
+		panel5.ResumeLayout(false);
+		panel5.PerformLayout();
 		ResumeLayout(false);
 	}
 
@@ -1171,4 +1422,26 @@ partial class MainForm
 	private DataGridView dgvOrderItems;
 	private PagingUserControl ordersPagingUserControl;
 	private Panel panel5;
+	private Label label25;
+	private Label label26;
+	private Button btnOrderApply;
+	private Button btnOrderReset;
+	private Label label27;
+	private Label label28;
+	private DateTimePicker dtpOrderEndDateTo;
+	private Label label29;
+	private DateTimePicker dtpOrderStartDateTo;
+	private Label label30;
+	private Label label31;
+	private DateTimePicker dtpOrderEndDateFrom;
+	private Label label32;
+	private DateTimePicker dtpOrderStartDateFrom;
+	private Label label33;
+	private ComboBox cbOrderCustomers;
+	private Label label34;
+	private ComboBox cbOrderStatuses;
+	private ComboBox cbOrderEmployees;
+	private Label label35;
+	private TextBox txtOrderContractNumber;
+	private Label label36;
 }
