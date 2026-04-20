@@ -40,7 +40,7 @@ public partial class CustomerForm : Form
 
     private void SubscribeEvents()
     {
-        btnSave.Click += BtnSave_Click;
+        //btnSave.Click += BtnSave_Click;
         btnClose.Click += BtnClose_Click;
         btnGenerate.Click += BtnGenerate_Click;
 
