@@ -292,7 +292,7 @@ public partial class MainForm : Form
 			await RunUiActionAsync(
 				async () =>
 				{
-					//await ResetOrdersFiltersAsync();
+					await ResetOrdersFiltersAsync();
 					await InitializeOrdersDateFiltersFromDbAsync();
 					await LoadOrdersFiltersAsync();
 					await LoadOrderStatusesAsync();
@@ -300,7 +300,7 @@ public partial class MainForm : Form
 					ConfigureOrdersGrid();
 					ConfigureOrderItemsGrid();
 					await LoadOrdersAsync();
-					//UpdateOrdersResetButtonState();
+					UpdateOrdersResetButtonState();
 				},
 				"Загрузка заказов отменена",
 				"Ошибка загрузки заказов");
