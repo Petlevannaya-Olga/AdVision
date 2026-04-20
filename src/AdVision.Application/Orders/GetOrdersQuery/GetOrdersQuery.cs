@@ -6,6 +6,7 @@ namespace AdVision.Application.Orders.GetOrdersQuery;
 public sealed record GetOrdersQuery(
     int Page,
     int PageSize,
+    string? ContractNumber,
     Guid? CustomerId,
     Guid? EmployeeId,
     OrderStatusDto? Status,
@@ -15,4 +16,4 @@ public sealed record GetOrdersQuery(
     DateOnly EndDateTo,
     string? OrderBy,
     bool Descending
-    ) : IQuery;
+) : IQuery;

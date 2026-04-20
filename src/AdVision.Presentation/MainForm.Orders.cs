@@ -124,18 +124,21 @@ public partial class MainForm
 	private async Task LoadOrdersAsync()
 	{
 		var result = await _ordersQueryHandler.Handle(
-			new GetOrdersQuery(
-				_ordersPage,
-				OrdersPageSize,
-				cbOrderCustomers.SelectedValue is Guid customerId ? customerId : null,
-				cbOrderEmployees.SelectedValue is Guid employeeId ? employeeId : null,
-				cbOrderStatuses.SelectedValue is OrderStatusDto status ? status : null,
-				DateOnly.FromDateTime(dtpOrderStartDateFrom.Value),
-				DateOnly.FromDateTime(dtpOrderStartDateTo.Value),
-				DateOnly.FromDateTime(dtpOrderEndDateFrom.Value),
-				DateOnly.FromDateTime(dtpOrderEndDateTo.Value),
-				cbOrderStatuses.SelectedItem?.ToString(),
-				false),
+				new GetOrdersQuery(
+					_ordersPage,
+					OrdersPageSize,
+					string.IsNullOrWhiteSpace(txtOrderContractNumber.Text)
+						? null
+						: txtOrderContractNumber.Text.Trim(),
+					cbOrderCustomers.SelectedValue is Guid customerId ? customerId : null,
+					cbOrderEmployees.SelectedValue is Guid employeeId ? employeeId : null,
+					cbOrderStatuses.SelectedValue is OrderStatusDto status ? status : null,
+					DateOnly.FromDateTime(dtpOrderStartDateFrom.Value),
+					DateOnly.FromDateTime(dtpOrderStartDateTo.Value),
+					DateOnly.FromDateTime(dtpOrderEndDateFrom.Value),
+					DateOnly.FromDateTime(dtpOrderEndDateTo.Value),
+					"Номер договора",
+					false),
 			_cts.Token);
 
 		if (result.IsFailure)

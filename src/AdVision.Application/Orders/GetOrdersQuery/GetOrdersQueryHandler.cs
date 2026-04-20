@@ -32,6 +32,7 @@ public sealed class GetOrdersQueryHandler(
         var result = await orderRepository.GetPagedAsync(
             query.Page,
             query.PageSize,
+            query.ContractNumber,
             customerId,
             employeeId,
             status,

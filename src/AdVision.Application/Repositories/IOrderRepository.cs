@@ -21,6 +21,7 @@ public interface IOrderRepository
     Task<Result<PagedResult<Order>, Error>> GetPagedAsync(
         int page,
         int pageSize,
+        string? contractNumber,
         CustomerId? customerId,
         EmployeeId? employeeId,
         OrderStatus? status,

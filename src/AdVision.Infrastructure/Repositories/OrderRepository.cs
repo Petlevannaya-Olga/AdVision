@@ -2,6 +2,7 @@ using System.Linq.Expressions;
 using AdVision.Application;
 using AdVision.Application.Repositories;
 using AdVision.Contracts;
+using AdVision.Domain.Contracts;
 using AdVision.Domain.Customers;
 using AdVision.Domain.Employees;
 using AdVision.Domain.Orders;
@@ -100,6 +101,7 @@ public class OrderRepository(
     public async Task<Result<PagedResult<Order>, Error>> GetPagedAsync(
         int page,
         int pageSize,
+        string? contractNumber,
         CustomerId? customerId,
         EmployeeId? employeeId,
         OrderStatus? status,
@@ -145,17 +147,30 @@ public class OrderRepository(
                 x.Items.Max(i => i.Period.EndDate) >= endDateFrom &&
                 x.Items.Max(i => i.Period.EndDate) <= endDateTo);
 
-            query = ApplySorting(query, orderBy, descending);
-
-            var totalCount = await query.CountAsync(cancellationToken);
-
             var items = await query
-                .Skip((page - 1) * pageSize)
-                .Take(pageSize)
+                .AsNoTracking()
                 .ToListAsync(cancellationToken);
 
+            if (!string.IsNullOrWhiteSpace(contractNumber))
+            {
+                items = items
+                    .Where(x => x.Contract.Number.Value.Contains(
+                        contractNumber.Trim(),
+                        StringComparison.InvariantCultureIgnoreCase))
+                    .ToList();
+            }
+
+            items = ApplySorting(items, orderBy, descending).ToList();
+
+            var totalCount = items.Count;
+
+            var pagedItems = items
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToList();
+
             return new PagedResult<Order>(
-                items,
+                pagedItems,
                 page,
                 pageSize,
                 totalCount);
@@ -233,44 +248,38 @@ public class OrderRepository(
         }
     }
 
-    private static IQueryable<Order> ApplySorting(
-        IQueryable<Order> query,
+    private static IEnumerable<Order> ApplySorting(
+        IEnumerable<Order> query,
         string? orderBy,
         bool descending)
     {
         return (orderBy, descending) switch
         {
-            ("Номер заказа", false) => query.OrderBy(x => x.Id),
-            ("Номер заказа", true) => query.OrderByDescending(x => x.Id),
-
-            ("Договор", false) => query.OrderBy(x => x.Contract.Number),
-            ("Договор", true) => query.OrderByDescending(x => x.Contract.Number),
+            ("Номер договора", false) => query.OrderBy(x => x.Contract.Number.Value),
+            ("Номер договора", true) => query.OrderByDescending(x => x.Contract.Number.Value),
 
             ("Исполнитель", false) => query
-                .OrderBy(x => x.Contract.Employee.LastName)
-                .ThenBy(x => x.Contract.Employee.FirstName)
-                .ThenBy(x => x.Contract.Employee.MiddleName),
+                .OrderBy(x => x.Contract.Employee.LastName.Value)
+                .ThenBy(x => x.Contract.Employee.FirstName.Value)
+                .ThenBy(x => x.Contract.Employee.MiddleName.Value),
 
             ("Исполнитель", true) => query
-                .OrderByDescending(x => x.Contract.Employee.LastName)
-                .ThenByDescending(x => x.Contract.Employee.FirstName)
-                .ThenByDescending(x => x.Contract.Employee.MiddleName),
+                .OrderByDescending(x => x.Contract.Employee.LastName.Value)
+                .ThenByDescending(x => x.Contract.Employee.FirstName.Value)
+                .ThenByDescending(x => x.Contract.Employee.MiddleName.Value),
 
             ("Заказчик", false) => query
-                .OrderBy(x => x.Contract.Customer.LastName)
-                .ThenBy(x => x.Contract.Customer.FirstName)
-                .ThenBy(x => x.Contract.Customer.MiddleName),
+                .OrderBy(x => x.Contract.Customer.LastName.Value)
+                .ThenBy(x => x.Contract.Customer.FirstName.Value)
+                .ThenBy(x => x.Contract.Customer.MiddleName.Value),
 
             ("Заказчик", true) => query
-                .OrderByDescending(x => x.Contract.Customer.LastName)
-                .ThenByDescending(x => x.Contract.Customer.FirstName)
-                .ThenByDescending(x => x.Contract.Customer.MiddleName),
+                .OrderByDescending(x => x.Contract.Customer.LastName.Value)
+                .ThenByDescending(x => x.Contract.Customer.FirstName.Value)
+                .ThenByDescending(x => x.Contract.Customer.MiddleName.Value),
 
             ("Сумма", false) => query.OrderBy(x => x.TotalAmount.Value),
             ("Сумма", true) => query.OrderByDescending(x => x.TotalAmount.Value),
-
-            ("Статус", false) => query.OrderBy(x => x.Status),
-            ("Статус", true) => query.OrderByDescending(x => x.Status),
 
             ("Дата начала", false) => query.OrderBy(x => x.Items.Min(i => i.Period.StartDate)),
             ("Дата начала", true) => query.OrderByDescending(x => x.Items.Min(i => i.Period.StartDate)),
@@ -278,10 +287,13 @@ public class OrderRepository(
             ("Дата окончания", false) => query.OrderBy(x => x.Items.Max(i => i.Period.EndDate)),
             ("Дата окончания", true) => query.OrderByDescending(x => x.Items.Max(i => i.Period.EndDate)),
 
-            _ => query.OrderBy(x => x.Id)
+            ("Статус", false) => query.OrderBy(x => x.Status),
+            ("Статус", true) => query.OrderByDescending(x => x.Status),
+
+            _ => query.OrderByDescending(x => x.Id)
         };
     }
-    
+
     public async Task<Result<IReadOnlyList<OrderStatusDto>, Error>> GetDistinctStatusesAsync(
         CancellationToken cancellationToken)
     {
@@ -320,7 +332,7 @@ public class OrderRepository(
                 "Ошибка получения статусов заказов");
         }
     }
-    
+
     public async Task<Result<IReadOnlyList<CustomerDto>, Error>> GetDistinctCustomersAsync(
         CancellationToken cancellationToken)
     {
@@ -358,7 +370,7 @@ public class OrderRepository(
                 "Ошибка получения заказчиков из заказов");
         }
     }
-    
+
     public async Task<Result<IReadOnlyList<EmployeeOrderDto>, Error>> GetDistinctEmployeesAsync(
         CancellationToken cancellationToken)
     {
@@ -395,7 +407,7 @@ public class OrderRepository(
                 "Ошибка получения исполнителей из заказов");
         }
     }
-    
+
     public async Task<Result<OrderDateBoundsDto?, Error>> GetDateBoundsAsync(
         CancellationToken cancellationToken)
     {
